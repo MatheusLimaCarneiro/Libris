@@ -18,7 +18,7 @@ public class Comentario {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
@@ -27,6 +27,10 @@ public class Comentario {
     private Livro livro;
 
     private String texto;
+
+    @OneToOne
+    @JoinColumn(name = "avaliacao_id")
+    private Avaliacao avaliacao;
 
     private LocalDateTime dataComentario;
 }
