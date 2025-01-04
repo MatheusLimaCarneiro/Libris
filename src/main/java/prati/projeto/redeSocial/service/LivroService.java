@@ -1,63 +1,71 @@
 package prati.projeto.redeSocial.service;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 import prati.projeto.redeSocial.modal.entity.Livro;
-import prati.projeto.redeSocial.repository.LivroRepository;
 
 import java.util.List;
 
-@Service
-public class LivroService {
+public interface LivroService {
 
-    @Autowired
-    private LivroRepository livroRepository;
+    /**
+     * Busca um livro pelo ID.
+     * <p>
+     * Este método retorna os dados do livro com o ID especificado. Caso não seja encontrado,
+     * uma exceção será lançada.
+     * </p>
+     *
+     * @param id ID do livro a ser buscado.
+     * @return A entidade Livro correspondente ao ID fornecido.
+     * @throws ResponseStatusException (HttpStatus.NOT_FOUND) Se o livro com o ID fornecido não for encontrado.
+     */
+    Livro getLivroById(Integer id);
 
-    public Livro getLivroById(Integer id) {
-        return livroRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Livro com ID " + id + " não encontrado"));
-    }
+    /**
+     * Salva um novo livro no sistema.
+     * <p>
+     * Este método salva um livro após validar que o ISBN fornecido é único. Caso o ISBN já exista,
+     * uma exceção é lançada.
+     * </p>
+     *
+     * @param livro Entidade Livro contendo os dados a serem salvos.
+     * @return A entidade Livro salva com os dados persistidos.
+     * @throws ResponseStatusException (HttpStatus.BAD_REQUEST) Se o ISBN já estiver cadastrado.
+     */
+    Livro saveLivro(Livro livro);
 
-    public Livro saveLivro(Livro livro) {
-        if (livroRepository.existsByIsbn(livro.getIsbn())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ISBN já cadastrado");
-        }
-        return livroRepository.save(livro);
-    }
+    /**
+     * Deleta um livro pelo ID.
+     * <p>
+     * Este método remove do sistema o livro com o ID especificado. Caso o livro não seja encontrado,
+     * uma exceção será lançada.
+     * </p>
+     *
+     * @param id ID do livro a ser deletado.
+     * @throws ResponseStatusException (HttpStatus.NOT_FOUND) Se o livro com o ID fornecido não for encontrado.
+     */
+    void deleteLivro(Integer id);
 
-    public void deleteLivro(Integer id) {
-        livroRepository.findById(id)
-                .ifPresentOrElse(
-                        livroRepository::delete,
-                        () -> { throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Livro não encontrado"); }
-                );
-    }
+    /**
+     * Atualiza os dados de um livro existente.
+     * <p>
+     * Este método atualiza os dados de um livro pelo ID. Valida que o ISBN não é duplicado,
+     * e lança uma exceção caso o livro não seja encontrado ou o ISBN seja duplicado.
+     * </p>
+     *
+     * @param id    ID do livro a ser atualizado.
+     * @param livro Entidade Livro contendo os dados atualizados.
+     * @throws ResponseStatusException (HttpStatus.NOT_FOUND) Se o livro com o ID fornecido não for encontrado.
+     * @throws ResponseStatusException (HttpStatus.BAD_REQUEST) Se o ISBN já estiver cadastrado.
+     */
+    void updateLivro(Integer id, Livro livro);
 
-    public void updateLivro(Integer id, Livro livro) {
-        livroRepository.findById(id)
-                .map(livroExistente -> {
-                    if (!livroExistente.getIsbn().equals(livro.getIsbn()) &&
-                            livroRepository.existsByIsbn(livro.getIsbn())) {
-                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ISBN já cadastrado");
-                    }
-                    livro.setId(livroExistente.getId());
-                    return livroRepository.save(livro);
-                })
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Livro não encontrado"));
-    }
-
-    public List<Livro> findLivro(Livro filtro){
-        ExampleMatcher matcher = ExampleMatcher
-                .matching()
-                .withIgnoreCase()
-                .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
-        Example example = Example.of(filtro, matcher);
-
-        return livroRepository.findAll(example);
-    }
+    /**
+     * Busca livros com base em filtros fornecidos.
+     * <p>
+     * Este método utiliza um objeto de filtro para buscar livros que correspondam aos
+     * critérios especificados. A pesquisa é case-insensitive e suporta correspondência parcial de strings.
+     * </p>
+     *
+     * @param filtro Objeto Livro contendo os critérios de filtro.
+     * @return Uma lista de livros que atendem aos critérios especificados.
+     */
+    List<Livro> findLivro(Livro filtro);
 }

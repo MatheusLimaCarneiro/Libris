@@ -1,48 +1,56 @@
 package prati.projeto.redeSocial.service;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 import prati.projeto.redeSocial.modal.entity.Usuario;
-import prati.projeto.redeSocial.repository.UsuarioRepository;
 
-@Service
-public class UsuarioService {
+public interface UsuarioService {
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    /**
+     * Busca um usuário pelo ID.
+     * <p>
+     * Este método retorna os dados do usuário com o ID especificado. Caso não seja encontrado,
+     * uma exceção será lançada.
+     * </p>
+     *
+     * @param id ID do usuário a ser buscado.
+     * @return A entidade Usuario correspondente ao ID fornecido.
+     * @throws ResponseStatusException (HttpStatus.NOT_FOUND) Se o usuário com o ID fornecido não for encontrado.
+     */
+    Usuario getUsuarioById(Integer id);
 
-    public Usuario getUsuarioById(Integer id) {
-        return usuarioRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Usuario com ID " + id + " não encontrado"));
-    }
+    /**
+     * Salva um novo usuário no sistema.
+     * <p>
+     * Este método salva um usuário após validar que o email e o username fornecidos são únicos.
+     * Caso já existam no sistema, uma exceção é lançada.
+     * </p>
+     *
+     * @param usuario Entidade Usuario contendo os dados a serem salvos.
+     * @return A entidade Usuario salva com os dados persistidos.
+     * @throws ResponseStatusException (HttpStatus.BAD_REQUEST) Se o email ou username já estiverem cadastrados.
+     */
+    Usuario saveUsuario(Usuario usuario);
 
-    public Usuario saveUsuario(Usuario usuario) {
-        if (usuarioRepository.existsByEmail(usuario.getEmail())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email já cadastrado");
-        }
-        if (usuarioRepository.existsByUsername(usuario.getUsername())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username já cadastrado");
-        }
-        return usuarioRepository.save(usuario);
-    }
+    /**
+     * Deleta um usuário pelo ID.
+     * <p>
+     * Este método remove do sistema o usuário com o ID especificado. Caso o usuário não seja encontrado,
+     * uma exceção será lançada.
+     * </p>
+     *
+     * @param id ID do usuário a ser deletado.
+     * @throws ResponseStatusException (HttpStatus.NOT_FOUND) Se o usuário com o ID fornecido não for encontrado.
+     */
+    void deleteUsuario(Integer id);
 
-    public void deleteUsuario(Integer id) {
-        usuarioRepository.findById(id)
-                .ifPresentOrElse(
-                        usuarioRepository::delete,
-                        () -> { throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario não encontrado"); }
-                );
-    }
-
-    public void updateUsuario(Integer id, Usuario usuario) {
-        usuarioRepository.findById(id)
-                .map(usuarioExistente -> {
-                    usuario.setId(usuarioExistente.getId());
-                    return usuarioRepository.save(usuario);
-                })
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario não encontrado"));
-    }
+    /**
+     * Atualiza os dados de um usuário existente.
+     * <p>
+     * Este método atualiza os dados de um usuário pelo ID. Caso o usuário não seja encontrado,
+     * uma exceção será lançada.
+     * </p>
+     *
+     * @param id      ID do usuário a ser atualizado.
+     * @param usuario Entidade Usuario contendo os dados atualizados.
+     * @throws ResponseStatusException (HttpStatus.NOT_FOUND) Se o usuário com o ID fornecido não for encontrado.
+     */
+    void updateUsuario(Integer id, Usuario usuario);
 }

@@ -5,8 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -27,7 +25,4 @@ public class Avaliacao {
     private Livro livro;
 
     private Double nota;
-
-    @OneToMany(mappedBy = "avaliacao")
-    private List<Comentario> comentarios;
 }
