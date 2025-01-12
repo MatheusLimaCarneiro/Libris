@@ -34,7 +34,7 @@ public class ComentarioServiceImpl implements ComentarioService {
     public Comentario salvar(ComentarioDTO dto) {
         Usuario usuario = validarUsuario(dto.getUsuarioId());
         Livro livro = validarLivro(dto.getLivroId());
-        Avaliacao avaliacao = converterAvaliacao(dto.getAvaliacao());
+        Avaliacao avaliacao = converterAvaliacao(dto.getAvaliacao(),livro);
 
         Comentario comentario = criarComentario(dto, usuario, livro, avaliacao);
 
@@ -66,13 +66,14 @@ public class ComentarioServiceImpl implements ComentarioService {
                 .orElseThrow(() -> new RegraNegocioException("Código de Livro inválido"));
     }
 
-    private Avaliacao converterAvaliacao(AvaliacaoDTO avaliacaoDTO) {
+    private Avaliacao converterAvaliacao(AvaliacaoDTO avaliacaoDTO, Livro livroId) {
         if (avaliacaoDTO == null) {
             throw new RegraNegocioException("Não é possível realizar um comentário sem avaliação.");
         }
         validarNotaAvaliacao(avaliacaoDTO.getNota());
 
         Avaliacao avaliacao = new Avaliacao();
+        avaliacao.setLivro(livroId);
         avaliacao.setNota(avaliacaoDTO.getNota());
         return avaliacaoRepository.save(avaliacao);
     }

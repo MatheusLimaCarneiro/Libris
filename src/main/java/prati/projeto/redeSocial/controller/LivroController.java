@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import prati.projeto.redeSocial.modal.entity.Livro;
-import prati.projeto.redeSocial.service.impl.LivroServiceImpl;
+import prati.projeto.redeSocial.service.LivroService;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ import java.util.List;
 public class LivroController {
 
     @Autowired
-    private LivroServiceImpl livroService;
+    private LivroService livroService;
 
     @GetMapping("{id}")
     public Livro getLivroId(@PathVariable Integer id) {
