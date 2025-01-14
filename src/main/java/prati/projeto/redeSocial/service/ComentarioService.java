@@ -1,6 +1,6 @@
 package prati.projeto.redeSocial.service;
 
-import prati.projeto.redeSocial.dto.ComentarioDTO;
+import prati.projeto.redeSocial.rest.dto.ComentarioDTO;
 import prati.projeto.redeSocial.modal.entity.Comentario;
 
 import java.util.List;

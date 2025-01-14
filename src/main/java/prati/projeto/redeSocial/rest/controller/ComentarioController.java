@@ -1,9 +1,10 @@
-package prati.projeto.redeSocial.controller;
+package prati.projeto.redeSocial.rest.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import prati.projeto.redeSocial.dto.ComentarioDTO;
+import prati.projeto.redeSocial.rest.dto.ComentarioDTO;
 import prati.projeto.redeSocial.modal.entity.Comentario;
 import prati.projeto.redeSocial.service.ComentarioService;
 
@@ -18,7 +19,7 @@ public class ComentarioController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Integer save(@RequestBody ComentarioDTO dto){
+    public Integer save(@RequestBody @Valid ComentarioDTO dto){
         Comentario comentario = comentarioService.salvar(dto);
         return comentario.getId();
     }

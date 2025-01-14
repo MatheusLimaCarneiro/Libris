@@ -1,10 +1,11 @@
-package prati.projeto.redeSocial.controller;
+package prati.projeto.redeSocial.rest.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import prati.projeto.redeSocial.dto.ResenhaDTO;
-import prati.projeto.redeSocial.dto.ResenhaViewDTO;
+import prati.projeto.redeSocial.rest.dto.ResenhaDTO;
+import prati.projeto.redeSocial.rest.dto.ResenhaViewDTO;
 import prati.projeto.redeSocial.service.ResenhaService;
 
 import java.util.List;
@@ -18,7 +19,7 @@ public class ResenhaController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Integer save(@RequestBody ResenhaDTO dto) {
+    public Integer save(@RequestBody @Valid ResenhaDTO dto) {
         return resenhaService.saveResenha(dto);
     }
 
@@ -35,7 +36,8 @@ public class ResenhaController {
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@PathVariable Integer id, @RequestBody ResenhaDTO dto) {
+    public void update(@PathVariable Integer id,
+                       @Valid @RequestBody ResenhaDTO dto) {
         resenhaService.updateResenha(id, dto);
     }
 

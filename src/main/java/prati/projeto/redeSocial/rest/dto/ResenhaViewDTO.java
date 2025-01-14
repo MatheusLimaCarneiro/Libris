@@ -1,4 +1,4 @@
-package prati.projeto.redeSocial.dto;
+package prati.projeto.redeSocial.rest.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

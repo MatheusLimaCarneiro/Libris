@@ -1,5 +1,6 @@
-package prati.projeto.redeSocial.controller;
+package prati.projeto.redeSocial.rest.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,7 @@ public class UsuarioController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Usuario saveUsuario(@RequestBody Usuario usuario) {
+    public Usuario saveUsuario(@RequestBody @Valid Usuario usuario) {
         return usuarioService.saveUsuario(usuario);
     }
 
@@ -32,7 +33,8 @@ public class UsuarioController {
 
     @PutMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateUsuario(@PathVariable Integer id, @RequestBody Usuario usuario) {
+    public void updateUsuario(@PathVariable Integer id,
+                              @RequestBody @Valid Usuario usuario) {
         usuarioService.updateUsuario(id, usuario);
     }
 }

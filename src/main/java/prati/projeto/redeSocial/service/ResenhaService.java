@@ -1,7 +1,7 @@
 package prati.projeto.redeSocial.service;
 
-import prati.projeto.redeSocial.dto.ResenhaDTO;
-import prati.projeto.redeSocial.dto.ResenhaViewDTO;
+import prati.projeto.redeSocial.rest.dto.ResenhaDTO;
+import prati.projeto.redeSocial.rest.dto.ResenhaViewDTO;
 
 import java.util.List;
 

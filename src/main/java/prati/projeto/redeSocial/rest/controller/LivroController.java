@@ -1,4 +1,4 @@
-package prati.projeto.redeSocial.controller;
+package prati.projeto.redeSocial.rest.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
