@@ -10,8 +10,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ResenhaDTO {
 
-    @NotNull(message = "O ID do usuário é obrigatório")
-    private Integer usuarioId;
+    @NotEmpty(message = "Email do usuário é obrigatório")
+    @Email(message = "Email inválido")
+    private String usuarioEmail;
 
     @NotNull(message = "O ID do livro é obrigatório")
     private Integer livroId;
@@ -27,5 +28,5 @@ public class ResenhaDTO {
     @NotNull(message = "A nota é obrigatória")
     @Min(value = 1, message = "A nota deve ser no mínimo 1")
     @Max(value = 5, message = "A nota deve ser no máximo 5")
-    private Integer nota;
+    private Double nota;
 }

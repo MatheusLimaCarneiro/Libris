@@ -18,7 +18,7 @@ import java.time.LocalDate;
 public class Livro {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @NotNull(message = "O campo ID é obrigatório.")
     private Integer id;
 
     @Column(length = 100)

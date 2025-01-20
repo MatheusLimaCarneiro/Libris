@@ -51,4 +51,11 @@ public interface ResenhaService {
      * @throws org.springframework.web.server.ResponseStatusException se o livro não for encontrado
      */
     List<ResenhaViewDTO> findByLivro(Integer livroId);
+
+    /**
+     * Busca todas as resenhas de todos os usuários.
+     *
+     * @return uma lista de objetos {@link ResenhaViewDTO} representando todas as resenhas
+     */
+    List<ResenhaViewDTO> findAllResenhas();
 }

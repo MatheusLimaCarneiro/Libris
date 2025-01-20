@@ -1,9 +1,8 @@
 package prati.projeto.redeSocial.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+import prati.projeto.redeSocial.exception.RegraNegocioException;
 import prati.projeto.redeSocial.rest.dto.LivroResumidoDTO;
 import prati.projeto.redeSocial.rest.dto.ResenhaDTO;
 import prati.projeto.redeSocial.rest.dto.ResenhaViewDTO;
@@ -31,18 +30,15 @@ public class ResenhaServiceImpl implements ResenhaService {
     @Override
     public ResenhaViewDTO getResenhaById(Integer id) {
         Resenha resenha = resenhaRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Resenha com ID " + id + " não encontrada"));
+                .orElseThrow(() -> new RegraNegocioException("Resenha com ID " + id + " não encontrada"));
         return convertToViewDTO(resenha);
     }
 
     @Override
     public Integer saveResenha(ResenhaDTO resenhaDTO) {
-        Usuario usuario = validarUsuario(resenhaDTO.getUsuarioId());
+        Usuario usuario = validarUsuario(resenhaDTO.getUsuarioEmail());
         Livro livro = validarLivro(resenhaDTO.getLivroId());
-
-        if (resenhaDTO.getNota() < 0 || resenhaDTO.getNota() > 5) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A nota deve estar entre 0 e 5");
-        }
+        validarNota(resenhaDTO.getNota());
 
         Resenha resenha = criarResenha(resenhaDTO, usuario, livro);
         resenhaRepository.save(resenha);
@@ -54,17 +50,18 @@ public class ResenhaServiceImpl implements ResenhaService {
         resenhaRepository.findById(id)
                 .ifPresentOrElse(
                         resenhaRepository::delete,
-                        () -> { throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Resenha não encontrada"); }
+                        () -> { throw new RegraNegocioException("Resenha não encontrada"); }
                 );
     }
 
     @Override
     public void updateResenha(Integer id, ResenhaDTO resenhaDTO) {
         Resenha resenhaExistente = resenhaRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Resenha não encontrada"));
+                .orElseThrow(() -> new RegraNegocioException("Resenha não encontrada"));
 
-        Usuario usuario = validarUsuario(resenhaDTO.getUsuarioId());
+        Usuario usuario = validarUsuario(resenhaDTO.getUsuarioEmail());
         Livro livro = validarLivro(resenhaDTO.getLivroId());
+        validarNota(resenhaDTO.getNota());
 
         resenhaExistente.setUsuario(usuario);
         resenhaExistente.setLivro(livro);
@@ -84,14 +81,28 @@ public class ResenhaServiceImpl implements ResenhaService {
                 .collect(Collectors.toList());
     }
 
-    private Usuario validarUsuario(Integer usuarioId) {
-        return usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuário não encontrado"));
+    @Override
+    public List<ResenhaViewDTO> findAllResenhas() {
+        List<Resenha> resenhas = resenhaRepository.findAll();
+        return resenhas.stream()
+                .map(this::convertToViewDTO)
+                .collect(Collectors.toList());
+    }
+
+    private Usuario validarUsuario(String usuarioEmail) {
+        return usuarioRepository.findById(usuarioEmail)
+                .orElseThrow(() -> new RegraNegocioException("Usuário não encontrado"));
     }
 
     private Livro validarLivro(Integer livroId) {
         return livroRepository.findById(livroId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Livro não encontrado"));
+                .orElseThrow(() -> new RegraNegocioException("Livro não encontrado"));
+    }
+
+    private void validarNota(Double nota) {
+        if (nota < 0 || nota > 5) {
+            throw new RegraNegocioException("A nota deve estar entre 0 e 5");
+        }
     }
 
     private Resenha criarResenha(ResenhaDTO dto, Usuario usuario, Livro livro) {

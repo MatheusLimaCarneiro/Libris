@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -19,7 +20,7 @@ public class Comentario {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "usuario_id")
+    @JoinColumn(name = "usuario_email", referencedColumnName = "email")
     private Usuario usuario;
 
     @ManyToOne
@@ -28,9 +29,10 @@ public class Comentario {
 
     private String texto;
 
-    @OneToOne
-    @JoinColumn(name = "avaliacao_id")
-    private Avaliacao avaliacao;
+    private Double nota;
 
     private LocalDateTime dataComentario;
+
+    @OneToMany(mappedBy = "comentarioOriginal", cascade = CascadeType.ALL)
+    private List<ComentarioResposta> respostas;
 }

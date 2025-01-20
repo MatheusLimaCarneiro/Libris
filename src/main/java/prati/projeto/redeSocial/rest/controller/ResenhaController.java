@@ -45,4 +45,10 @@ public class ResenhaController {
     public List<ResenhaViewDTO> findByLivro(@PathVariable Integer livroId) {
         return resenhaService.findByLivro(livroId);
     }
+
+    @GetMapping
+    public List<ResenhaViewDTO> findAll() {
+        return resenhaService.findAllResenhas();
+    }
+
 }

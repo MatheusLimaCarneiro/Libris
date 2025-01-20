@@ -13,5 +13,5 @@ public class ResenhaViewDTO {
     private String autor;
     private String dataPublicacao;
     private String dataEdicao;
-    private Integer nota;
+    private Double nota;
 }

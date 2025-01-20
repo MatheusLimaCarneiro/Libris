@@ -14,9 +14,9 @@ public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
 
-    @GetMapping("{id}")
-    public Usuario getUsuarioId(@PathVariable Integer id) {
-        return usuarioService.getUsuarioById(id);
+    @GetMapping("{email}")
+    public Usuario getUsuarioId(@PathVariable String email) {
+        return usuarioService.getUsuarioByEmail(email);
     }
 
     @PostMapping
@@ -25,16 +25,16 @@ public class UsuarioController {
         return usuarioService.saveUsuario(usuario);
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("{email}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteUsuario(@PathVariable Integer id) {
-        usuarioService.deleteUsuario(id);
+    public void deleteUsuario(@PathVariable String email) {
+        usuarioService.deleteUsuario(email);
     }
 
-    @PutMapping("{id}")
+    @PutMapping("{email}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateUsuario(@PathVariable Integer id,
+    public void updateUsuario(@PathVariable String email,
                               @RequestBody @Valid Usuario usuario) {
-        usuarioService.updateUsuario(id, usuario);
+        usuarioService.updateUsuario(email, usuario);
     }
 }

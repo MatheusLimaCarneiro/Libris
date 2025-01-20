@@ -11,23 +11,25 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "resenha")
-public class Resenha {
+@Table(name = "comentario_resposta")
+public class ComentarioResposta {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "PK_comentario_resposta")
     private Integer id;
+
+    @ManyToOne
+    @JoinColumn(name = "comentario_id")
+    private Comentario comentarioOriginal;
 
     @ManyToOne
     @JoinColumn(name = "usuario_email", referencedColumnName = "email")
     private Usuario usuario;
 
-    @ManyToOne
-    @JoinColumn(name = "livro_id")
-    private Livro livro;
+    @Column(name = "texto_resposta", length = 500)
+    private String texto;
 
-    private String titulo;
-    private String autor;
-    private LocalDateTime dataPublicacao;
-    private LocalDateTime dataEdicao;
-    private Double nota;
+
+    @Column(name = "data_resposta")
+    private LocalDateTime dataResposta;
 }

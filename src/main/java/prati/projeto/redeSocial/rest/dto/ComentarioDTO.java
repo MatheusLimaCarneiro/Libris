@@ -1,13 +1,14 @@
 package prati.projeto.redeSocial.rest.dto;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -16,8 +17,9 @@ public class ComentarioDTO {
 
     private Integer id;
 
-    @NotNull(message = "Informe o código do usuario")
-    private Integer usuarioId;
+    @NotEmpty(message = "Email do usuário é obrigatório")
+    @Email(message = "Email inválido")
+    private String usuarioEmail;
 
     @NotNull(message = "Informe o código do livro")
     private Integer livroId;
@@ -25,8 +27,12 @@ public class ComentarioDTO {
     @NotEmpty(message = "Campo de texto é obrigatório")
     private String texto;
 
-    @Valid
-    private AvaliacaoDTO avaliacao;
+    @NotNull(message = "O comentário não pode ser realizado sem nota")
+    @Min(value = 1, message = "A nota deve ser no mínimo 1")
+    @Max(value = 5, message = "A nota deve ser no máximo 5")
+    private Double nota;
 
     private LocalDateTime dataComentario;
+
+    private List<RespostaDTO> respostas = new ArrayList<>();
 }

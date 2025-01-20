@@ -33,4 +33,11 @@ public class ComentarioController {
     public List<ComentarioDTO> listarTodos() {
         return comentarioService.listarTodos();
     }
+
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ComentarioDTO atualizarComentario(@PathVariable Integer id,
+                                             @RequestBody @Valid ComentarioDTO dto) {
+        return comentarioService.atualizarComentario(id, dto);
+    }
 }

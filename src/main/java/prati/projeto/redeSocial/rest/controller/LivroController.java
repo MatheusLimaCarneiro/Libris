@@ -1,5 +1,6 @@
 package prati.projeto.redeSocial.rest.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +24,7 @@ public class LivroController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Livro saveLivro(@RequestBody Livro livro) {
+    public Livro saveLivro(@RequestBody @Valid Livro livro) {
         return livroService.saveLivro(livro);
     }
 
@@ -35,7 +36,7 @@ public class LivroController {
 
     @PutMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateLivro(@PathVariable Integer id, @RequestBody Livro livro) {
+    public void updateLivro(@PathVariable Integer id, @RequestBody @Valid Livro livro) {
         livroService.updateLivro(id, livro);
     }
 

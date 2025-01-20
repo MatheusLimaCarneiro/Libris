@@ -3,17 +3,11 @@ package prati.projeto.redeSocial.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import prati.projeto.redeSocial.rest.dto.AvaliacaoDTO;
-import prati.projeto.redeSocial.rest.dto.ComentarioDTO;
 import prati.projeto.redeSocial.exception.RegraNegocioException;
-import prati.projeto.redeSocial.modal.entity.Avaliacao;
-import prati.projeto.redeSocial.modal.entity.Comentario;
-import prati.projeto.redeSocial.modal.entity.Livro;
-import prati.projeto.redeSocial.modal.entity.Usuario;
-import prati.projeto.redeSocial.repository.AvaliacaoRepository;
-import prati.projeto.redeSocial.repository.ComentarioRepository;
-import prati.projeto.redeSocial.repository.LivroRepository;
-import prati.projeto.redeSocial.repository.UsuarioRepository;
+import prati.projeto.redeSocial.modal.entity.*;
+import prati.projeto.redeSocial.repository.*;
+import prati.projeto.redeSocial.rest.dto.*;
+import prati.projeto.redeSocial.service.ComentarioRespostaService;
 import prati.projeto.redeSocial.service.ComentarioService;
 
 import java.time.LocalDateTime;
@@ -27,18 +21,22 @@ public class ComentarioServiceImpl implements ComentarioService {
     private final ComentarioRepository comentarioRepository;
     private final UsuarioRepository usuarioRepository;
     private final LivroRepository livroRepository;
-    private final AvaliacaoRepository avaliacaoRepository;
+    private final ComentarioRespostaService respostaService;
 
     @Override
     @Transactional
     public Comentario salvar(ComentarioDTO dto) {
-        Usuario usuario = validarUsuario(dto.getUsuarioId());
+        Usuario usuario = validarUsuario(dto.getUsuarioEmail());
         Livro livro = validarLivro(dto.getLivroId());
-        Avaliacao avaliacao = converterAvaliacao(dto.getAvaliacao(),livro);
+        validarNota(dto.getNota());
 
-        Comentario comentario = criarComentario(dto, usuario, livro, avaliacao);
+        Comentario comentario = new Comentario();
+        comentario.setTexto(dto.getTexto());
+        comentario.setDataComentario(LocalDateTime.now());
+        comentario.setUsuario(usuario);
+        comentario.setLivro(livro);
+        comentario.setNota(dto.getNota());
 
-        avaliacaoRepository.save(avaliacao);
         return comentarioRepository.save(comentario);
     }
 
@@ -51,63 +49,70 @@ public class ComentarioServiceImpl implements ComentarioService {
 
     @Override
     public ComentarioDTO buscarPorId(Integer id) {
-        return comentarioRepository.findById(id)
-                .map(this::convertToDTO)
-                .orElseThrow(() -> new RuntimeException("Comentário não encontrado"));
+        Comentario comentario = comentarioRepository.findById(id)
+                .orElseThrow(() -> new RegraNegocioException("Comentário não encontrado"));
+
+        ComentarioDTO dto = convertToDTO(comentario);
+        dto.setRespostas(respostaService.listarRespostasPorComentario(id));
+        return dto;
     }
 
-    private Usuario validarUsuario(Integer usuarioId) {
-        return usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new RegraNegocioException("Código de Usuário inválido"));
+    @Override
+    @Transactional
+    public ComentarioDTO atualizarComentario(Integer id, ComentarioDTO dto) {
+        Comentario comentario = comentarioRepository.findById(id)
+                .orElseThrow(() -> new RegraNegocioException("Comentário não encontrado"));
+
+        comentario.setTexto(dto.getTexto());
+        comentario.setNota(dto.getNota());
+        validarNota(dto.getNota());
+        comentario.setDataComentario(LocalDateTime.now());
+
+        comentario = comentarioRepository.save(comentario);
+        return convertToDTO(comentario);
+    }
+
+    private Usuario validarUsuario(String usuarioEmail) {
+        return usuarioRepository.findById(usuarioEmail)
+                .orElseThrow(() -> new RegraNegocioException("Usuário não encontrado"));
     }
 
     private Livro validarLivro(Integer livroId) {
         return livroRepository.findById(livroId)
-                .orElseThrow(() -> new RegraNegocioException("Código de Livro inválido"));
+                .orElseThrow(() -> new RegraNegocioException("Livro não encontrado"));
     }
 
-    private Avaliacao converterAvaliacao(AvaliacaoDTO avaliacaoDTO, Livro livroId) {
-        if (avaliacaoDTO == null) {
-            throw new RegraNegocioException("Não é possível realizar um comentário sem avaliação.");
+    private void validarNota(Double nota) {
+        if (nota == null || nota < 1 || nota > 5) {
+            throw new RegraNegocioException("A nota deve ser um valor entre 1 e 5");
         }
-        validarNotaAvaliacao(avaliacaoDTO.getNota());
-
-        Avaliacao avaliacao = new Avaliacao();
-        avaliacao.setLivro(livroId);
-        avaliacao.setNota(avaliacaoDTO.getNota());
-        return avaliacaoRepository.save(avaliacao);
-    }
-
-    private void validarNotaAvaliacao(Double nota) {
-        if (nota == null || nota < 0 || nota > 5) {
-            throw new RegraNegocioException("A nota deve ser um valor entre 0 e 5.");
-        }
-    }
-
-    private Comentario criarComentario(ComentarioDTO dto, Usuario usuario, Livro livro, Avaliacao avaliacao) {
-        Comentario comentario = new Comentario();
-        comentario.setTexto(dto.getTexto());
-        comentario.setDataComentario(LocalDateTime.now());
-        comentario.setUsuario(usuario);
-        comentario.setLivro(livro);
-        comentario.setAvaliacao(avaliacao);
-        return comentario;
     }
 
     private ComentarioDTO convertToDTO(Comentario comentario) {
         ComentarioDTO dto = new ComentarioDTO();
         dto.setId(comentario.getId());
-        dto.setUsuarioId(comentario.getUsuario().getId());
+        dto.setUsuarioEmail(comentario.getUsuario().getEmail());
         dto.setLivroId(comentario.getLivro().getId());
         dto.setTexto(comentario.getTexto());
+        dto.setNota(comentario.getNota());
         dto.setDataComentario(comentario.getDataComentario());
 
-        if (comentario.getAvaliacao() != null) {
-            AvaliacaoDTO avaliacaoDTO = new AvaliacaoDTO();
-            avaliacaoDTO.setNota(comentario.getAvaliacao().getNota());
-            dto.setAvaliacao(avaliacaoDTO);
-        }
-
+        dto.setRespostas(convertRespostasToDTO(comentario.getRespostas()));
         return dto;
+    }
+
+    private List<RespostaDTO> convertRespostasToDTO(List<ComentarioResposta> respostas) {
+        return respostas.stream()
+                .map(this::convertRespostaToDTO)
+                .collect(Collectors.toList());
+    }
+
+    private RespostaDTO convertRespostaToDTO(ComentarioResposta resposta) {
+        return new RespostaDTO(
+                resposta.getId(),
+                resposta.getUsuario().getEmail(),
+                resposta.getTexto(),
+                resposta.getDataResposta()
+        );
     }
 }
