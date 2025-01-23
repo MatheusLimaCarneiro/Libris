@@ -7,7 +7,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class ResenhaViewDTO {
     private Integer id;
-    private UsuarioResumidoDTO usuario;
+    private Integer perfilId;
     private LivroResumidoDTO livro;
     private String titulo;
     private String autor;

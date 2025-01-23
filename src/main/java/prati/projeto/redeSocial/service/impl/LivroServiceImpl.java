@@ -61,7 +61,7 @@ public class LivroServiceImpl implements LivroService {
                 .matching()
                 .withIgnoreCase()
                 .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
-        Example example = Example.of(filtro, matcher);
+        Example<Livro> example = Example.of(filtro, matcher);
 
         return livroRepository.findAll(example);
     }

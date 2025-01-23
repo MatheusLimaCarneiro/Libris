@@ -3,16 +3,15 @@ package prati.projeto.redeSocial.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import prati.projeto.redeSocial.exception.RegraNegocioException;
+import prati.projeto.redeSocial.modal.entity.Perfil;
+import prati.projeto.redeSocial.repository.PerfilRepository;
 import prati.projeto.redeSocial.rest.dto.LivroResumidoDTO;
 import prati.projeto.redeSocial.rest.dto.ResenhaDTO;
 import prati.projeto.redeSocial.rest.dto.ResenhaViewDTO;
-import prati.projeto.redeSocial.rest.dto.UsuarioResumidoDTO;
 import prati.projeto.redeSocial.modal.entity.Livro;
 import prati.projeto.redeSocial.modal.entity.Resenha;
-import prati.projeto.redeSocial.modal.entity.Usuario;
 import prati.projeto.redeSocial.repository.LivroRepository;
 import prati.projeto.redeSocial.repository.ResenhaRepository;
-import prati.projeto.redeSocial.repository.UsuarioRepository;
 import prati.projeto.redeSocial.service.ResenhaService;
 
 import java.time.LocalDateTime;
@@ -24,7 +23,7 @@ import java.util.stream.Collectors;
 public class ResenhaServiceImpl implements ResenhaService {
 
     private final ResenhaRepository resenhaRepository;
-    private final UsuarioRepository usuarioRepository;
+    private final PerfilRepository perfilRepository;
     private final LivroRepository livroRepository;
 
     @Override
@@ -36,11 +35,11 @@ public class ResenhaServiceImpl implements ResenhaService {
 
     @Override
     public Integer saveResenha(ResenhaDTO resenhaDTO) {
-        Usuario usuario = validarUsuario(resenhaDTO.getUsuarioEmail());
         Livro livro = validarLivro(resenhaDTO.getLivroId());
+        Perfil perfil = validarPerfil(resenhaDTO.getPerfilId());
         validarNota(resenhaDTO.getNota());
 
-        Resenha resenha = criarResenha(resenhaDTO, usuario, livro);
+        Resenha resenha = criarResenha(resenhaDTO, perfil, livro);
         resenhaRepository.save(resenha);
         return resenha.getId();
     }
@@ -59,11 +58,11 @@ public class ResenhaServiceImpl implements ResenhaService {
         Resenha resenhaExistente = resenhaRepository.findById(id)
                 .orElseThrow(() -> new RegraNegocioException("Resenha não encontrada"));
 
-        Usuario usuario = validarUsuario(resenhaDTO.getUsuarioEmail());
+        Perfil perfil = validarPerfil(resenhaDTO.getPerfilId());
         Livro livro = validarLivro(resenhaDTO.getLivroId());
         validarNota(resenhaDTO.getNota());
 
-        resenhaExistente.setUsuario(usuario);
+        resenhaExistente.setPerfil(perfil);
         resenhaExistente.setLivro(livro);
         resenhaExistente.setTitulo(resenhaDTO.getTitulo());
         resenhaExistente.setAutor(resenhaDTO.getAutor());
@@ -89,9 +88,9 @@ public class ResenhaServiceImpl implements ResenhaService {
                 .collect(Collectors.toList());
     }
 
-    private Usuario validarUsuario(String usuarioEmail) {
-        return usuarioRepository.findById(usuarioEmail)
-                .orElseThrow(() -> new RegraNegocioException("Usuário não encontrado"));
+    private Perfil validarPerfil(Integer perfilId) {
+        return perfilRepository.findById(perfilId)
+                .orElseThrow(() -> new RegraNegocioException("Perfil não encontrado"));
     }
 
     private Livro validarLivro(Integer livroId) {
@@ -105,9 +104,9 @@ public class ResenhaServiceImpl implements ResenhaService {
         }
     }
 
-    private Resenha criarResenha(ResenhaDTO dto, Usuario usuario, Livro livro) {
+    private Resenha criarResenha(ResenhaDTO dto, Perfil perfil, Livro livro) {
         Resenha resenha = new Resenha();
-        resenha.setUsuario(usuario);
+        resenha.setPerfil(perfil);
         resenha.setLivro(livro);
         resenha.setTitulo(dto.getTitulo());
         resenha.setAutor(dto.getAutor());
@@ -120,10 +119,10 @@ public class ResenhaServiceImpl implements ResenhaService {
     private ResenhaViewDTO convertToViewDTO(Resenha resenha) {
         return new ResenhaViewDTO(
                 resenha.getId(),
-                new UsuarioResumidoDTO(resenha.getUsuario().getUsername(), resenha.getUsuario().getEmail()),
+                resenha.getPerfil().getId(),
                 new LivroResumidoDTO(
                         resenha.getLivro().getTitulo(),
-                        resenha.getLivro().getAutor(),
+                        resenha.getLivro().getAutores(),
                         resenha.getLivro().getDataPublicacao().toString()
                 ),
                 resenha.getTitulo(),

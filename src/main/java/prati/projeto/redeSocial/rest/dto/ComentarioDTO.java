@@ -17,14 +17,14 @@ public class ComentarioDTO {
 
     private Integer id;
 
-    @NotEmpty(message = "Email do usuário é obrigatório")
-    @Email(message = "Email inválido")
-    private String usuarioEmail;
+    @NotNull(message = "Informe o ID do perfil")
+    private Integer perfilId;
 
     @NotNull(message = "Informe o código do livro")
     private Integer livroId;
 
     @NotEmpty(message = "Campo de texto é obrigatório")
+    @Pattern(regexp = ".*\\S.*", message = "O texto não pode conter apenas espaços.")
     private String texto;
 
     @NotNull(message = "O comentário não pode ser realizado sem nota")

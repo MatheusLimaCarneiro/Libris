@@ -19,21 +19,22 @@ import java.util.stream.Collectors;
 public class ComentarioServiceImpl implements ComentarioService {
 
     private final ComentarioRepository comentarioRepository;
-    private final UsuarioRepository usuarioRepository;
+    private final PerfilRepository perfilRepository;
     private final LivroRepository livroRepository;
     private final ComentarioRespostaService respostaService;
+
 
     @Override
     @Transactional
     public Comentario salvar(ComentarioDTO dto) {
-        Usuario usuario = validarUsuario(dto.getUsuarioEmail());
+        Perfil perfil = validarPerfil(dto.getPerfilId());
         Livro livro = validarLivro(dto.getLivroId());
         validarNota(dto.getNota());
 
         Comentario comentario = new Comentario();
         comentario.setTexto(dto.getTexto());
         comentario.setDataComentario(LocalDateTime.now());
-        comentario.setUsuario(usuario);
+        comentario.setPerfil(perfil);
         comentario.setLivro(livro);
         comentario.setNota(dto.getNota());
 
@@ -72,9 +73,9 @@ public class ComentarioServiceImpl implements ComentarioService {
         return convertToDTO(comentario);
     }
 
-    private Usuario validarUsuario(String usuarioEmail) {
-        return usuarioRepository.findById(usuarioEmail)
-                .orElseThrow(() -> new RegraNegocioException("Usuário não encontrado"));
+    private Perfil validarPerfil(Integer perfilId) {
+        return perfilRepository.findById(perfilId)
+                .orElseThrow(() -> new RegraNegocioException("Perfil não encontrado"));
     }
 
     private Livro validarLivro(Integer livroId) {
@@ -91,7 +92,7 @@ public class ComentarioServiceImpl implements ComentarioService {
     private ComentarioDTO convertToDTO(Comentario comentario) {
         ComentarioDTO dto = new ComentarioDTO();
         dto.setId(comentario.getId());
-        dto.setUsuarioEmail(comentario.getUsuario().getEmail());
+        dto.setPerfilId(comentario.getPerfil().getId());
         dto.setLivroId(comentario.getLivro().getId());
         dto.setTexto(comentario.getTexto());
         dto.setNota(comentario.getNota());
@@ -110,7 +111,7 @@ public class ComentarioServiceImpl implements ComentarioService {
     private RespostaDTO convertRespostaToDTO(ComentarioResposta resposta) {
         return new RespostaDTO(
                 resposta.getId(),
-                resposta.getUsuario().getEmail(),
+                resposta.getPerfil().getId(),
                 resposta.getTexto(),
                 resposta.getDataResposta()
         );

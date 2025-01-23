@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Table(name = "comentario_resposta")
 public class ComentarioResposta {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "PK_comentario_resposta")
     private Integer id;
 
@@ -23,8 +23,8 @@ public class ComentarioResposta {
     private Comentario comentarioOriginal;
 
     @ManyToOne
-    @JoinColumn(name = "usuario_email", referencedColumnName = "email")
-    private Usuario usuario;
+    @JoinColumn(name = "perfil_id")
+    private Perfil perfil;
 
     @Column(name = "texto_resposta", length = 500)
     private String texto;

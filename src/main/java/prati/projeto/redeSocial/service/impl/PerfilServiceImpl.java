@@ -1,5 +1,6 @@
 package prati.projeto.redeSocial.service.impl;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import prati.projeto.redeSocial.exception.RegraNegocioException;
@@ -27,20 +28,15 @@ public class PerfilServiceImpl implements PerfilService {
     }
 
     @Override
-    public PerfilDTO savePerfil(Perfil perfil) {
-        if (perfil.getUsuario() == null || perfil.getUsuario().getEmail() == null) {
-            throw new RegraNegocioException("Usuário é obrigatório");
-        }
+    public PerfilDTO savePerfil(@Valid Perfil perfil) {
+        Usuario usuarioCompleto = verificarUsuario(perfil.getUsuario());
 
-        Usuario usuario = usuarioRepository.findById(perfil.getUsuario().getEmail())
-                .orElseThrow(() -> new RegraNegocioException(
-                        "Usuário com EMAIL " + perfil.getUsuario().getEmail() + " não encontrado"));
-
-        if (perfilRepository.existsByUsuarioEmail(usuario.getEmail())) {
+        if (perfilRepository.existsByUsuarioEmail(usuarioCompleto.getEmail())) {
             throw new RegraNegocioException("Usuário já possui um perfil");
         }
 
-        perfil.setUsuario(usuario);
+        perfil.setUsuario(usuarioCompleto);
+
         Perfil savedPerfil = perfilRepository.save(perfil);
         return convertToDTO(savedPerfil);
     }
@@ -55,14 +51,27 @@ public class PerfilServiceImpl implements PerfilService {
     }
 
     @Override
-    public void updatePerfil(Integer id, Perfil perfil) {
+    public void updatePerfil(Integer id, @Valid Perfil perfil) {
         perfilRepository.findById(id)
                 .map(perfilExistente -> {
                     perfil.setId(perfilExistente.getId());
-                    perfil.setUsuario(perfilExistente.getUsuario());
+
+                    Usuario usuarioExistente = perfilExistente.getUsuario();
+                    perfil.setUsuario(usuarioExistente);
+
                     return perfilRepository.save(perfil);
                 })
                 .orElseThrow(() -> new RegraNegocioException("Perfil não encontrado"));
+    }
+
+    private Usuario verificarUsuario(Usuario usuario) {
+        if (usuario == null || usuario.getEmail() == null) {
+            throw new RegraNegocioException("Usuário é obrigatório");
+        }
+
+        return usuarioRepository.findById(usuario.getEmail())
+                .orElseThrow(() -> new RegraNegocioException(
+                        "Usuário com EMAIL " + usuario.getEmail() + " não encontrado"));
     }
 
     private PerfilDTO convertToDTO(Perfil perfil) {
@@ -84,5 +93,4 @@ public class PerfilServiceImpl implements PerfilService {
 
         return dto;
     }
-
 }

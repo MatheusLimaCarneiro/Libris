@@ -14,20 +14,24 @@ import java.time.LocalDateTime;
 @Table(name = "resenha")
 public class Resenha {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "usuario_email", referencedColumnName = "email")
-    private Usuario usuario;
+    @JoinColumn(name = "FK_perfil")
+    private Perfil perfil;
 
     @ManyToOne
-    @JoinColumn(name = "livro_id")
+    @JoinColumn(name = "FK_livro")
     private Livro livro;
 
     private String titulo;
     private String autor;
+
+    @Column(name = "data_criacao")
     private LocalDateTime dataPublicacao;
+
+    @Column(name = "data_alteracao")
     private LocalDateTime dataEdicao;
     private Double nota;
 }

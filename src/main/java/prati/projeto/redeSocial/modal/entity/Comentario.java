@@ -16,12 +16,12 @@ import java.util.List;
 public class Comentario {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "usuario_email", referencedColumnName = "email")
-    private Usuario usuario;
+    @JoinColumn(name = "FK_perfil")
+    private Perfil perfil;
 
     @ManyToOne
     @JoinColumn(name = "livro_id")

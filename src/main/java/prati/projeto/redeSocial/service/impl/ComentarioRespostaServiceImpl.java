@@ -6,10 +6,10 @@ import org.springframework.stereotype.Service;
 import prati.projeto.redeSocial.exception.RegraNegocioException;
 import prati.projeto.redeSocial.modal.entity.Comentario;
 import prati.projeto.redeSocial.modal.entity.ComentarioResposta;
-import prati.projeto.redeSocial.modal.entity.Usuario;
+import prati.projeto.redeSocial.modal.entity.Perfil;
 import prati.projeto.redeSocial.repository.ComentarioRepository;
 import prati.projeto.redeSocial.repository.ComentarioRespostaRepository;
-import prati.projeto.redeSocial.repository.UsuarioRepository;
+import prati.projeto.redeSocial.repository.PerfilRepository;
 import prati.projeto.redeSocial.rest.dto.RespostaDTO;
 import prati.projeto.redeSocial.service.ComentarioRespostaService;
 
@@ -23,7 +23,7 @@ public class ComentarioRespostaServiceImpl implements ComentarioRespostaService 
 
     private final ComentarioRespostaRepository respostaRepository;
     private final ComentarioRepository comentarioRepository;
-    private final UsuarioRepository usuarioRepository;
+    private final PerfilRepository perfilRepository;
 
     @Override
     @Transactional
@@ -31,12 +31,12 @@ public class ComentarioRespostaServiceImpl implements ComentarioRespostaService 
         Comentario comentario = comentarioRepository.findById(comentarioId)
                 .orElseThrow(() -> new RegraNegocioException("Comentário não encontrado"));
 
-        Usuario usuario = usuarioRepository.findById(respostaDTO.getUsuarioEmail())
-                .orElseThrow(() -> new RegraNegocioException("Usuário não encontrado"));
+        Perfil perfil = perfilRepository.findById(respostaDTO.getPerfilId())
+                .orElseThrow(() -> new RegraNegocioException("Perfil não encontrado"));
 
         ComentarioResposta resposta = new ComentarioResposta();
         resposta.setComentarioOriginal(comentario);
-        resposta.setUsuario(usuario);
+        resposta.setPerfil(perfil);
         resposta.setTexto(respostaDTO.getTexto());
         resposta.setDataResposta(LocalDateTime.now());
 
@@ -76,7 +76,7 @@ public class ComentarioRespostaServiceImpl implements ComentarioRespostaService 
     private RespostaDTO convertToDTO(ComentarioResposta resposta) {
         return new RespostaDTO(
                 resposta.getId(),
-                resposta.getUsuario().getEmail(),
+                resposta.getPerfil().getId(),
                 resposta.getTexto(),
                 resposta.getDataResposta()
         );

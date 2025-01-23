@@ -41,9 +41,12 @@ public class LivroController {
     }
 
     @GetMapping("/search")
-    public List<Livro> findLivro(@RequestParam(required = false) String titulo) {
+    public List<Livro> findLivro(
+            @RequestParam(required = false) String titulo,
+            @RequestParam(required = false) String autores) {
         Livro filtro = new Livro();
         filtro.setTitulo(titulo);
+        filtro.setAutores(autores);
         return livroService.findLivro(filtro);
     }
 }

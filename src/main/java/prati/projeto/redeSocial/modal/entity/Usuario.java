@@ -3,6 +3,7 @@ package prati.projeto.redeSocial.modal.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,6 +23,7 @@ public class Usuario {
 
     @Column(length = 50)
     @NotEmpty(message = "Campo nome é obrigatório")
+    @Pattern(regexp = ".*\\S.*", message = "O título não pode conter apenas espaços.")
     private String username;
 
 
