@@ -27,6 +27,7 @@ public class Resenha {
 
     private String titulo;
     private String autor;
+    private String texto;
 
     @Column(name = "data_criacao")
     private LocalDateTime dataPublicacao;

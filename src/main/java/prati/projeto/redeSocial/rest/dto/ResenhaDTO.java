@@ -26,6 +26,10 @@ public class ResenhaDTO {
     @Size(max = 100, message = "O nome do autor pode ter no máximo 100 caracteres")
     private String autor;
 
+    @NotEmpty(message = "O texto da resenha é obrigatório")
+    @Pattern(regexp = ".*\\S.*", message = "O Texto não pode conter apenas espaços.")
+    private String texto;
+
     @NotNull(message = "A nota é obrigatória")
     @Min(value = 1, message = "A nota deve ser no mínimo 1")
     @Max(value = 5, message = "A nota deve ser no máximo 5")

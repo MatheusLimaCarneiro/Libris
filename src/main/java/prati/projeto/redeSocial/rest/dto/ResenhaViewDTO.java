@@ -11,6 +11,7 @@ public class ResenhaViewDTO {
     private LivroResumidoDTO livro;
     private String titulo;
     private String autor;
+    private String texto;
     private String dataPublicacao;
     private String dataEdicao;
     private Double nota;

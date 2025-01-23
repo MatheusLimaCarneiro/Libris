@@ -21,8 +21,8 @@ public interface ResenhaService {
      *
      * @param resenhaDTO um objeto {@link ResenhaDTO} contendo os dados da resenha
      * @return o ID da resenha criada
-     * @throws org.springframework.web.server.ResponseStatusException se o usuário ou livro associado não forem encontrados
-     *                                                                 ou se a nota estiver fora do intervalo permitido (0 a 5)
+     * @throws org.springframework.web.server.ResponseStatusException se o perfil ou livro associado não forem encontrados,
+     *         ou se a nota estiver fora do intervalo permitido (0 a 5)
      */
     Integer saveResenha(ResenhaDTO resenhaDTO);
 
@@ -39,7 +39,7 @@ public interface ResenhaService {
      *
      * @param id o ID da resenha a ser atualizada
      * @param resenhaDTO um objeto {@link ResenhaDTO} contendo os novos dados da resenha
-     * @throws org.springframework.web.server.ResponseStatusException se a resenha, o usuário ou o livro não forem encontrados
+     * @throws org.springframework.web.server.ResponseStatusException se a resenha, o perfil ou o livro não forem encontrados
      */
     void updateResenha(Integer id, ResenhaDTO resenhaDTO);
 
@@ -53,7 +53,7 @@ public interface ResenhaService {
     List<ResenhaViewDTO> findByLivro(Integer livroId);
 
     /**
-     * Busca todas as resenhas de todos os usuários.
+     * Busca todas as resenhas de todos os perfis.
      *
      * @return uma lista de objetos {@link ResenhaViewDTO} representando todas as resenhas
      */

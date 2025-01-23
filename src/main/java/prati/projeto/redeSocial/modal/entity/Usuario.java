@@ -18,7 +18,8 @@ public class Usuario {
 
     @Id
     @Column(length = 100)
-    @Email(message = "Campo de email é obrigatório")
+    @NotEmpty(message = "Campo email é obrigatório")
+    @Email(message = "Campo de email tem quer ser valido")
     private String email;
 
     @Column(length = 50)

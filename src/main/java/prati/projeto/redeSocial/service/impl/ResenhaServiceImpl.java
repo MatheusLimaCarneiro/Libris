@@ -108,6 +108,7 @@ public class ResenhaServiceImpl implements ResenhaService {
         Resenha resenha = new Resenha();
         resenha.setPerfil(perfil);
         resenha.setLivro(livro);
+        resenha.setTexto(dto.getTexto());
         resenha.setTitulo(dto.getTitulo());
         resenha.setAutor(dto.getAutor());
         resenha.setNota(dto.getNota());
@@ -127,6 +128,7 @@ public class ResenhaServiceImpl implements ResenhaService {
                 ),
                 resenha.getTitulo(),
                 resenha.getAutor(),
+                resenha.getTexto(),
                 resenha.getDataPublicacao().toString(),
                 resenha.getDataEdicao().toString(),
                 resenha.getNota()
