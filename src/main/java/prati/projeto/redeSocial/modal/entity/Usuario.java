@@ -6,12 +6,14 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "usuario")
 public class Usuario {
@@ -31,4 +33,7 @@ public class Usuario {
     @NotEmpty(message = "Campo de senha é obrigatório")
     @Size(min = 7, message = "A senha deve ter no mínimo 7 caracteres")
     private String senha;
+
+    @Column(name = "is_admin")
+    private boolean admin = false;
 }

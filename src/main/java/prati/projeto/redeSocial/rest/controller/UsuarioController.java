@@ -19,12 +19,6 @@ public class UsuarioController {
         return usuarioService.getUsuarioByEmail(email);
     }
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public Usuario saveUsuario(@RequestBody @Valid Usuario usuario) {
-        return usuarioService.saveUsuario(usuario);
-    }
-
     @DeleteMapping("{email}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteUsuario(@PathVariable String email) {

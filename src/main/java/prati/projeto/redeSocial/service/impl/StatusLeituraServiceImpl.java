@@ -2,6 +2,7 @@ package prati.projeto.redeSocial.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import prati.projeto.redeSocial.exception.RegraNegocioException;
 import prati.projeto.redeSocial.modal.entity.Livro;
 import prati.projeto.redeSocial.modal.entity.Perfil;
 import prati.projeto.redeSocial.modal.entity.StatusLeitura;
@@ -23,9 +24,9 @@ public class StatusLeituraServiceImpl implements StatusLeituraService {
     @Override
     public StatusLeituraDTO salvarStatus(Integer perfilId, Integer livroId, StatusLeituraEnum statusLeituraEnum) {
         Perfil perfil = perfilRepository.findById(perfilId)
-                .orElseThrow(() -> new RuntimeException("Perfil não encontrado"));
+                .orElseThrow(() -> new RegraNegocioException("Perfil não encontrado"));
         Livro livro = livroRepository.findById(livroId)
-                .orElseThrow(() -> new RuntimeException("Livro não encontrado"));
+                .orElseThrow(() -> new RegraNegocioException("Livro não encontrado"));
         StatusLeitura statusLeitura = new StatusLeitura();
         statusLeitura.setPerfil(perfil);
         statusLeitura.setLivro(livro);
@@ -37,7 +38,7 @@ public class StatusLeituraServiceImpl implements StatusLeituraService {
     @Override
     public StatusLeituraDTO mudarStatus(Integer id, StatusLeituraEnum novoStatus) {
         StatusLeitura statusLeitura = statusLeituraRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("Status de leitura não encontrado"));
+                .orElseThrow(() -> new RegraNegocioException("Status de leitura não encontrado"));
         statusLeitura.setStatusLeitura(novoStatus);
 
         StatusLeitura salvo = statusLeituraRepository.save(statusLeitura);
