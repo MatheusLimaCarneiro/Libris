@@ -5,29 +5,27 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "avaliacao")
 public class Avaliacao {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "PK_avaliacao")
     private Integer id;
 
-   @ManyToOne
-    @JoinColumn(name = "usuario_id")
-    private Usuario usuario;
+    @ManyToOne
+    @JoinColumn(name = "FK_resenha")
+    private Resenha resenha;
 
     @ManyToOne
-    @JoinColumn(name = "livro_id")
-    private Livro livro;
+    @JoinColumn(name = "FK_perfil")
+    private Perfil perfil;
 
-    private Double nota;
+    private String texto;
 
-    @OneToMany(mappedBy = "avaliacao")
-    private List<Comentario> comentarios;
+    private double nota;
 }
