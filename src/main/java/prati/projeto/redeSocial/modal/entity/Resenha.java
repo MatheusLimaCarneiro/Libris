@@ -6,6 +6,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -35,4 +39,7 @@ public class Resenha {
     @Column(name = "data_alteracao")
     private LocalDateTime dataEdicao;
     private Double nota;
+
+    @OneToMany(mappedBy = "resenha", fetch = FetchType.LAZY)
+    private List<Avaliacao> avaliacoes = new ArrayList<>();
 }

@@ -33,7 +33,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public TokenDTO authenticate(@RequestBody CredenciaisDTO credenciais) {
+    public TokenDTO authenticate(@RequestBody @Valid CredenciaisDTO credenciais) {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(
                         credenciais.getLogin(),

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import prati.projeto.redeSocial.exception.RegraNegocioException;
 import prati.projeto.redeSocial.modal.entity.Perfil;
 import prati.projeto.redeSocial.repository.PerfilRepository;
+import prati.projeto.redeSocial.rest.dto.AvaliacaoDTO;
 import prati.projeto.redeSocial.rest.dto.LivroResumidoDTO;
 import prati.projeto.redeSocial.rest.dto.ResenhaDTO;
 import prati.projeto.redeSocial.rest.dto.ResenhaViewDTO;
@@ -118,6 +119,10 @@ public class ResenhaServiceImpl implements ResenhaService {
     }
 
     private ResenhaViewDTO convertToViewDTO(Resenha resenha) {
+        List<AvaliacaoDTO> avaliacoesDTO = resenha.getAvaliacoes().stream()
+                .map(avaliacao -> new AvaliacaoDTO(avaliacao.getPerfil().getId(), avaliacao.getTexto(), avaliacao.getNota()))
+                .collect(Collectors.toList());
+
         return new ResenhaViewDTO(
                 resenha.getId(),
                 resenha.getPerfil().getId(),
@@ -131,7 +136,8 @@ public class ResenhaServiceImpl implements ResenhaService {
                 resenha.getTexto(),
                 resenha.getDataPublicacao().toString(),
                 resenha.getDataEdicao().toString(),
-                resenha.getNota()
+                resenha.getNota(),
+                avaliacoesDTO
         );
     }
 }

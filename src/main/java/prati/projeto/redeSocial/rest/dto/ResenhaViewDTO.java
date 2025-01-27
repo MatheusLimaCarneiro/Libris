@@ -3,6 +3,8 @@ package prati.projeto.redeSocial.rest.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 public class ResenhaViewDTO {
@@ -15,4 +17,5 @@ public class ResenhaViewDTO {
     private String dataPublicacao;
     private String dataEdicao;
     private Double nota;
+    private List<AvaliacaoDTO> avaliacoes;
 }

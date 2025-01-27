@@ -29,7 +29,6 @@ public class ComentarioResposta {
     @Column(name = "texto_resposta", length = 500)
     private String texto;
 
-
     @Column(name = "data_resposta")
     private LocalDateTime dataResposta;
 }
