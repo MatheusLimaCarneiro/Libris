@@ -29,7 +29,6 @@ public class Usuario {
     @Pattern(regexp = ".*\\S.*", message = "O título não pode conter apenas espaços.")
     private String username;
 
-
     @NotEmpty(message = "Campo de senha é obrigatório")
     @Size(min = 7, message = "A senha deve ter no mínimo 7 caracteres")
     private String senha;

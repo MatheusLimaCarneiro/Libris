@@ -28,10 +28,9 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/libris/auth/**").permitAll()
-                        .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
                         .requestMatchers("/libris/usuario/**", "/libris/perfil/**", "/libris/comentarios/**",
-                                "/libris/resenhas/**", "/libris/status/**").hasRole("USER")
+                                "/libris/resenhas/**", "/libris/status/**", "/libris/relacionamentos/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/libris/livro/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers(HttpMethod.POST, "/libris/livro/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/libris/livro/**").hasRole("ADMIN")

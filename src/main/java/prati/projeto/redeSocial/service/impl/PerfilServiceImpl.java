@@ -1,6 +1,5 @@
 package prati.projeto.redeSocial.service.impl;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import prati.projeto.redeSocial.exception.RegraNegocioException;
@@ -28,7 +27,7 @@ public class PerfilServiceImpl implements PerfilService {
     }
 
     @Override
-    public PerfilDTO savePerfil(@Valid Perfil perfil) {
+    public PerfilDTO savePerfil(Perfil perfil) {
         Usuario usuarioCompleto = verificarUsuario(perfil.getUsuario());
 
         if (perfilRepository.existsByUsuarioEmail(usuarioCompleto.getEmail())) {
@@ -44,14 +43,16 @@ public class PerfilServiceImpl implements PerfilService {
     @Override
     public void deletePerfil(Integer id) {
         perfilRepository.findById(id)
-                .ifPresentOrElse(
-                        perfilRepository::delete,
-                        () -> { throw new RegraNegocioException("Perfil não encontrado"); }
-                );
+                .ifPresentOrElse(perfil -> {
+                    perfil.setUsuario(null);
+                    perfilRepository.delete(perfil);
+                }, () -> {
+                    throw new RegraNegocioException("Perfil não encontrado");
+                });
     }
 
     @Override
-    public void updatePerfil(Integer id, @Valid Perfil perfil) {
+    public void updatePerfil(Integer id, Perfil perfil) {
         perfilRepository.findById(id)
                 .map(perfilExistente -> {
                     perfil.setId(perfilExistente.getId());

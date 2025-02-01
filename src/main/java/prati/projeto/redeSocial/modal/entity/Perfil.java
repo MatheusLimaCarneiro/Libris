@@ -3,15 +3,15 @@ package prati.projeto.redeSocial.modal.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.validator.constraints.URL;
 import prati.projeto.redeSocial.modal.enums.GeneroLiterario;
 
+import java.util.Objects;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -54,4 +54,11 @@ public class Perfil {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "FK_usuario", referencedColumnName = "email")
     private Usuario usuario;
+
+    @OneToMany(mappedBy = "seguidor")
+    private Set<RelacionamentoSeguidores> relacionamentosSeguindo;
+
+    @OneToMany(mappedBy = "seguido")
+    private Set<RelacionamentoSeguidores> relacionamentosSeguidores;
+
 }
