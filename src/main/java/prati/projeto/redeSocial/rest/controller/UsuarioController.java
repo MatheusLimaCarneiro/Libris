@@ -5,7 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import prati.projeto.redeSocial.modal.entity.Usuario;
+import prati.projeto.redeSocial.rest.dto.UsuarioResumidoDTO;
+import prati.projeto.redeSocial.rest.response.ApiResponse;
 import prati.projeto.redeSocial.service.UsuarioService;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @RestController
 @RequestMapping("/libris/usuario")
@@ -15,8 +20,10 @@ public class UsuarioController {
     private UsuarioService usuarioService;
 
     @GetMapping("{email}")
-    public Usuario getUsuarioId(@PathVariable String email) {
-        return usuarioService.getUsuarioByEmail(email);
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<UsuarioResumidoDTO> getUsuarioByEmail(@PathVariable String email) {
+        UsuarioResumidoDTO usuarioResumido = usuarioService.getUsuarioByEmail(email);
+        return new ApiResponse<>(usuarioResumido, "Usuário encontrado", true, getFormattedTimestamp());
     }
 
     @DeleteMapping("{email}")
@@ -26,9 +33,16 @@ public class UsuarioController {
     }
 
     @PutMapping("{email}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateUsuario(@PathVariable String email,
-                              @RequestBody @Valid Usuario usuario) {
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<UsuarioResumidoDTO> updateUsuario(@PathVariable String email,
+                                                         @RequestBody @Valid Usuario usuario) {
         usuarioService.updateUsuario(email, usuario);
+        UsuarioResumidoDTO usuarioResumido = new UsuarioResumidoDTO(usuario.getUsername(), usuario.getEmail());
+        return new ApiResponse<>(usuarioResumido, "Usuário atualizado com sucesso", true, getFormattedTimestamp());
+    }
+
+    private String getFormattedTimestamp() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return LocalDateTime.now().format(formatter);
     }
 }

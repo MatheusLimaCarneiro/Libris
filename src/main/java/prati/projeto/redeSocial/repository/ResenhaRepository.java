@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface ResenhaRepository extends JpaRepository<Resenha, Integer> {
     List<Resenha> findByLivroId(Integer livroId);
+
+    Resenha findByPerfilIdAndLivroId(Integer perfilId, Integer livroId);
 }

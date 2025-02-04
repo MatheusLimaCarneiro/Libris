@@ -101,6 +101,7 @@ public class AvaliacaoServiceImpl implements AvaliacaoService{
 
     private AvaliacaoDTO convertToDTO(Avaliacao avaliacao) {
         return new AvaliacaoDTO(
+                avaliacao.getId(),
                 avaliacao.getPerfil().getId(),
                 avaliacao.getTexto(),
                 avaliacao.getNota()

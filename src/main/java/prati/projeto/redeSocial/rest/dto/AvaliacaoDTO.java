@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AvaliacaoDTO {
 
+    private Integer id;
+
     @NotNull(message = "O ID do perfil é obrigatório.")
     private Integer perfilId;
 

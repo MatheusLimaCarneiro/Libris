@@ -13,6 +13,8 @@ import prati.projeto.redeSocial.repository.StatusLeituraRepository;
 import prati.projeto.redeSocial.rest.dto.StatusLeituraDTO;
 import prati.projeto.redeSocial.service.StatusLeituraService;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class StatusLeituraServiceImpl implements StatusLeituraService {
@@ -27,11 +29,19 @@ public class StatusLeituraServiceImpl implements StatusLeituraService {
                 .orElseThrow(() -> new RegraNegocioException("Perfil não encontrado"));
         Livro livro = livroRepository.findById(livroId)
                 .orElseThrow(() -> new RegraNegocioException("Livro não encontrado"));
-        StatusLeitura statusLeitura = new StatusLeitura();
-        statusLeitura.setPerfil(perfil);
-        statusLeitura.setLivro(livro);
-        statusLeitura.setStatusLeitura(statusLeituraEnum);
-        StatusLeitura salvo = statusLeituraRepository.save(statusLeitura);
+
+        Optional<StatusLeitura> statusExistente = statusLeituraRepository.findByPerfilAndLivro(perfil, livro);
+
+        if (statusExistente.isPresent()) {
+            throw new RegraNegocioException("O perfil já possui um status para este livro.");
+        }
+
+        StatusLeitura novoStatus = new StatusLeitura();
+        novoStatus.setPerfil(perfil);
+        novoStatus.setLivro(livro);
+        novoStatus.setStatusLeitura(statusLeituraEnum);
+
+        StatusLeitura salvo = statusLeituraRepository.save(novoStatus);
         return convertToDTO(salvo);
     }
 

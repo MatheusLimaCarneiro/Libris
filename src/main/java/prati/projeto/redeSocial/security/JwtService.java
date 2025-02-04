@@ -11,6 +11,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Service;
 import prati.projeto.redeSocial.LivrosApplication;
 import prati.projeto.redeSocial.modal.entity.Usuario;
+import prati.projeto.redeSocial.rest.dto.TokenDTO;
 
 import javax.crypto.SecretKey;
 import java.time.Duration;
@@ -24,6 +25,9 @@ public class JwtService {
     @Value("${jwt.expiration}")
     private Duration expiracao;
 
+    @Value("${jwt.refresh.expiration}")
+    private Duration refreshExpiracao;
+
     @Value("${jwt.secret}")
     private String chaveAssinatura;
 
@@ -32,39 +36,54 @@ public class JwtService {
     }
 
     public String gerarToken(Usuario usuario) {
-        LocalDateTime dataHoraExpiracao = LocalDateTime.now().plus(expiracao);
+        return criarToken(usuario.getUsername(), expiracao);
+    }
+
+    public String gerarRefreshToken(Usuario usuario) {
+        return criarToken(usuario.getUsername(), refreshExpiracao);
+    }
+
+    private String criarToken(String subject, Duration duracao) {
+        LocalDateTime dataHoraExpiracao = LocalDateTime.now().plus(duracao);
         Instant instant = dataHoraExpiracao.atZone(ZoneId.systemDefault()).toInstant();
         Date data = Date.from(instant);
 
         return Jwts.builder()
-                .setSubject(usuario.getUsername())
+                .setSubject(subject)
                 .setExpiration(data)
                 .signWith(getSigningKey())
                 .compact();
     }
 
-    private Claims obterClaims(String token) throws ExpiredJwtException {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-    }
-
     public boolean tokenValido(String token) {
         try {
-            Claims claims = obterClaims(token);
-            Date dataExpiracao = claims.getExpiration();
-            LocalDateTime data = dataExpiracao.toInstant()
-                    .atZone(ZoneId.systemDefault()).toLocalDateTime();
-            return !LocalDateTime.now().isAfter(data);
+            return !LocalDateTime.now().isAfter(obterDataExpiracao(token));
         } catch (Exception e) {
             return false;
         }
     }
 
-    public String obterLoginUsuario(String token) throws ExpiredJwtException {
+    public String obterLoginUsuario(String token) {
         return obterClaims(token).getSubject();
+    }
+
+    public TokenDTO gerarTokensParaUsuario(Usuario usuario) {
+        String accessToken = gerarToken(usuario);
+        String refreshToken = gerarRefreshToken(usuario);
+        return new TokenDTO(usuario.getUsername(), accessToken, refreshToken);
+    }
+
+    private LocalDateTime obterDataExpiracao(String token) {
+        Date dataExpiracao = obterClaims(token).getExpiration();
+        return dataExpiracao.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+    }
+
+    private Claims obterClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 
     public static void main(String[] args) {

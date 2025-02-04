@@ -1,5 +1,6 @@
 package prati.projeto.redeSocial.service.impl;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import prati.projeto.redeSocial.exception.RegraNegocioException;
@@ -35,10 +36,16 @@ public class ResenhaServiceImpl implements ResenhaService {
     }
 
     @Override
+    @Transactional
     public Integer saveResenha(ResenhaDTO resenhaDTO) {
         Livro livro = validarLivro(resenhaDTO.getLivroId());
         Perfil perfil = validarPerfil(resenhaDTO.getPerfilId());
         validarNota(resenhaDTO.getNota());
+
+        Resenha resenhaExistente = resenhaRepository.findByPerfilIdAndLivroId(perfil.getId(), livro.getId());
+        if (resenhaExistente != null) {
+            throw new RegraNegocioException("O perfil já possui uma resenha para este livro.");
+        }
 
         Resenha resenha = criarResenha(resenhaDTO, perfil, livro);
         resenhaRepository.save(resenha);
@@ -46,15 +53,18 @@ public class ResenhaServiceImpl implements ResenhaService {
     }
 
     @Override
+    @Transactional
     public void deleteResenha(Integer id) {
-        resenhaRepository.findById(id)
-                .ifPresentOrElse(
-                        resenhaRepository::delete,
-                        () -> { throw new RegraNegocioException("Resenha não encontrada"); }
-                );
+        Resenha resenha = resenhaRepository.findById(id)
+                .orElseThrow(() -> new RegraNegocioException("Resenha não encontrada"));
+
+        resenha.getAvaliacoes().clear();
+
+        resenhaRepository.delete(resenha);
     }
 
     @Override
+    @Transactional
     public void updateResenha(Integer id, ResenhaDTO resenhaDTO) {
         Resenha resenhaExistente = resenhaRepository.findById(id)
                 .orElseThrow(() -> new RegraNegocioException("Resenha não encontrada"));
@@ -67,6 +77,7 @@ public class ResenhaServiceImpl implements ResenhaService {
         resenhaExistente.setLivro(livro);
         resenhaExistente.setTitulo(resenhaDTO.getTitulo());
         resenhaExistente.setAutor(resenhaDTO.getAutor());
+        resenhaExistente.setTexto(resenhaDTO.getTexto());
         resenhaExistente.setNota(resenhaDTO.getNota());
         resenhaExistente.setDataEdicao(LocalDateTime.now());
 
@@ -120,7 +131,7 @@ public class ResenhaServiceImpl implements ResenhaService {
 
     private ResenhaViewDTO convertToViewDTO(Resenha resenha) {
         List<AvaliacaoDTO> avaliacoesDTO = resenha.getAvaliacoes().stream()
-                .map(avaliacao -> new AvaliacaoDTO(avaliacao.getPerfil().getId(), avaliacao.getTexto(), avaliacao.getNota()))
+                .map(avaliacao -> new AvaliacaoDTO(avaliacao.getId(),avaliacao.getPerfil().getId(), avaliacao.getTexto(), avaliacao.getNota()))
                 .collect(Collectors.toList());
 
         return new ResenhaViewDTO(

@@ -11,6 +11,7 @@ import prati.projeto.redeSocial.service.ComentarioRespostaService;
 import prati.projeto.redeSocial.service.ComentarioService;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,7 +27,7 @@ public class ComentarioServiceImpl implements ComentarioService {
 
     @Override
     @Transactional
-    public Comentario salvar(ComentarioDTO dto) {
+    public ComentarioDTO salvar(ComentarioDTO dto) {
         Perfil perfil = validarPerfil(dto.getPerfilId());
         Livro livro = validarLivro(dto.getLivroId());
         validarNota(dto.getNota());
@@ -37,8 +38,10 @@ public class ComentarioServiceImpl implements ComentarioService {
         comentario.setPerfil(perfil);
         comentario.setLivro(livro);
         comentario.setNota(dto.getNota());
+        comentario.setRespostas(new ArrayList<>());
 
-        return comentarioRepository.save(comentario);
+        comentario = comentarioRepository.save(comentario);
+        return convertToDTO(comentario);
     }
 
     @Override
@@ -73,6 +76,15 @@ public class ComentarioServiceImpl implements ComentarioService {
         return convertToDTO(comentario);
     }
 
+    @Override
+    @Transactional
+    public void excluirComentario(Integer id) {
+        Comentario comentario = comentarioRepository.findById(id)
+                .orElseThrow(() -> new RegraNegocioException("Comentário não encontrado"));
+
+        comentarioRepository.delete(comentario);
+    }
+
     private Perfil validarPerfil(Integer perfilId) {
         return perfilRepository.findById(perfilId)
                 .orElseThrow(() -> new RegraNegocioException("Perfil não encontrado"));
@@ -103,6 +115,9 @@ public class ComentarioServiceImpl implements ComentarioService {
     }
 
     private List<RespostaDTO> convertRespostasToDTO(List<ComentarioResposta> respostas) {
+        if (respostas == null) {
+            return new ArrayList<>();
+        }
         return respostas.stream()
                 .map(this::convertRespostaToDTO)
                 .collect(Collectors.toList());

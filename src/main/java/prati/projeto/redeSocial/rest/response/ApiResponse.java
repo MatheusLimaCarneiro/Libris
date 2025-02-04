@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Data
 @AllArgsConstructor
@@ -15,5 +16,17 @@ public class ApiResponse<T> {
     private T data;
     private String message;
     private boolean success;
-    private LocalDateTime timestamp = LocalDateTime.now();
+    private String timestamp ;
+
+    public ApiResponse(T data, String message, boolean success) {
+        this.data = data;
+        this.message = message;
+        this.success = success;
+        this.timestamp = formatTimestamp(LocalDateTime.now());
+    }
+
+    private String formatTimestamp(LocalDateTime dateTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return dateTime.format(formatter);
+    }
 }

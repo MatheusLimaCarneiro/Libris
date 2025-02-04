@@ -20,7 +20,7 @@ public interface ComentarioService {
      * @throws RegraNegocioException Se algum dado necessário não for encontrado (ex.: perfil ou livro inexistente)
      *                               ou se a nota não for válida.
      */
-    Comentario salvar(ComentarioDTO dto);
+    ComentarioDTO  salvar(ComentarioDTO dto);
 
     /**
      * Lista todos os comentários presentes no sistema.
@@ -59,4 +59,16 @@ public interface ComentarioService {
      * @throws RegraNegocioException Se o comentário não for encontrado ou se a nota não for válida.
      */
     ComentarioDTO atualizarComentario(Integer id, ComentarioDTO dto);
+
+    /**
+     * Exclui um comentário do sistema.
+     * <p>
+     * Este método remove permanentemente um comentário identificado pelo ID fornecido.
+     * Se o comentário não for encontrado, uma exceção será lançada.
+     * </p>
+     *
+     * @param id ID do comentário a ser excluído.
+     * @throws RegraNegocioException Se o comentário com o ID fornecido não for encontrado.
+     */
+    void excluirComentario(Integer id);
 }

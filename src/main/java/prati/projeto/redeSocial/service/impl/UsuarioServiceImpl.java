@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import prati.projeto.redeSocial.exception.RegraNegocioException;
 import prati.projeto.redeSocial.modal.entity.Usuario;
 import prati.projeto.redeSocial.repository.UsuarioRepository;
+import prati.projeto.redeSocial.rest.dto.UsuarioResumidoDTO;
 import prati.projeto.redeSocial.service.UsuarioService;
 
 @Service
@@ -14,10 +15,13 @@ public class UsuarioServiceImpl implements UsuarioService{
     private final UsuarioRepository usuarioRepository;
 
     @Override
-    public Usuario getUsuarioByEmail(String email) {
-        return usuarioRepository.findById(email)
+    public UsuarioResumidoDTO getUsuarioByEmail(String email) {
+        Usuario usuario = usuarioRepository.findById(email)
                 .orElseThrow(() -> new RegraNegocioException(
-                        "Usuario com email " + email + " não encontrado"));
+                        "Usuário com email " + email + " não encontrado"));
+
+        // Retorna um UsuarioResumidoDTO com as informações do usuário
+        return new UsuarioResumidoDTO(usuario.getUsername(), usuario.getEmail());
     }
 
     @Override

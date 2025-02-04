@@ -1,40 +1,41 @@
 package prati.projeto.redeSocial.service;
 import prati.projeto.redeSocial.modal.entity.Usuario;
+import prati.projeto.redeSocial.rest.dto.UsuarioResumidoDTO;
 
 public interface UsuarioService {
 
     /**
-     * Busca um usuário pelo email.
+     * Recupera as informações resumidas de um usuário pelo seu email.
      *
-     * @param email Email do usuário a ser buscado.
-     * @return Objeto Usuario correspondente ao email informado.
-     * @throws RegraNegocioException se o usuário não for encontrado.
+     * @param email O email do usuário a ser buscado.
+     * @return Um objeto {@link UsuarioResumidoDTO} contendo o username e o email do usuário.
+     * @throws RegraNegocioException Caso o usuário não seja encontrado.
      */
-    Usuario getUsuarioByEmail(String email);
+    UsuarioResumidoDTO getUsuarioByEmail(String email);
 
     /**
-     * Salva um novo usuário no sistema.
+     * Registra um novo usuário no sistema.
      *
-     * @param usuario Objeto Usuario contendo as informações a serem salvas.
-     * @return O objeto Usuario salvo.
-     * @throws RegraNegocioException se o email ou username já estiverem cadastrados.
+     * @param usuario O objeto {@link Usuario} contendo as informações do usuário a ser salvo.
+     * @return O objeto {@link Usuario} salvo, com todas as informações persistidas no banco de dados.
+     * @throws RegraNegocioException Caso o email ou o username já estejam cadastrados.
      */
     Usuario saveUsuario(Usuario usuario);
 
     /**
      * Remove um usuário do sistema.
      *
-     * @param email Email do usuário a ser removido.
-     * @throws RegraNegocioException se o usuário não for encontrado.
+     * @param email O email do usuário a ser removido.
+     * @throws RegraNegocioException Caso o usuário não seja encontrado.
      */
     void deleteUsuario(String email);
 
     /**
      * Atualiza as informações de um usuário existente.
      *
-     * @param email Email do usuário a ser atualizado.
-     * @param usuario Objeto Usuario contendo as novas informações.
-     * @throws RegraNegocioException se o usuário não for encontrado.
+     * @param email O email do usuário a ser atualizado.
+     * @param usuario O objeto {@link Usuario} contendo as novas informações.
+     * @throws RegraNegocioException Caso o usuário não seja encontrado.
      */
     void updateUsuario(String email, Usuario usuario);
 }

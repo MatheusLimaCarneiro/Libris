@@ -3,7 +3,6 @@ package prati.projeto.redeSocial.rest.controller;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import prati.projeto.redeSocial.rest.dto.ResenhaDTO;
 import prati.projeto.redeSocial.rest.dto.ResenhaViewDTO;
@@ -11,6 +10,7 @@ import prati.projeto.redeSocial.rest.response.ApiResponse;
 import prati.projeto.redeSocial.service.ResenhaService;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
@@ -22,15 +22,16 @@ public class ResenhaController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<ApiResponse<Integer>> save(@RequestBody @Valid ResenhaDTO dto) {
+    public ApiResponse<Integer> save(@RequestBody @Valid ResenhaDTO dto) {
         Integer resenhaId = resenhaService.saveResenha(dto);
-        ApiResponse<Integer> response = new ApiResponse<>(resenhaId, "Resenha salva com sucesso", true, LocalDateTime.now());
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return new ApiResponse<>(resenhaId, "Resenha salva com sucesso", true, getFormattedTimestamp());
     }
 
     @GetMapping("/{id}")
-    public ResenhaViewDTO getById(@PathVariable Integer id) {
-        return resenhaService.getResenhaById(id);
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<ResenhaViewDTO> getById(@PathVariable Integer id) {
+        ResenhaViewDTO resenha = resenhaService.getResenhaById(id);
+        return new ApiResponse<>(resenha, "Resenha encontrada", true, getFormattedTimestamp());
     }
 
     @DeleteMapping("/{id}")
@@ -40,20 +41,28 @@ public class ResenhaController {
     }
 
     @PutMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@PathVariable Integer id,
-                       @Valid @RequestBody ResenhaDTO dto) {
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<Void> update(@PathVariable Integer id, @Valid @RequestBody ResenhaDTO dto) {
         resenhaService.updateResenha(id, dto);
+        return new ApiResponse<>(null, "Resenha atualizada com sucesso", true, getFormattedTimestamp());
     }
 
     @GetMapping("/livro/{livroId}")
-    public List<ResenhaViewDTO> findByLivro(@PathVariable Integer livroId) {
-        return resenhaService.findByLivro(livroId);
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<List<ResenhaViewDTO>> findByLivro(@PathVariable Integer livroId) {
+        List<ResenhaViewDTO> resenhas = resenhaService.findByLivro(livroId);
+        return new ApiResponse<>(resenhas, "Resenhas do livro encontradas", true, getFormattedTimestamp());
     }
 
     @GetMapping
-    public List<ResenhaViewDTO> findAll() {
-        return resenhaService.findAllResenhas();
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<List<ResenhaViewDTO>> findAll() {
+        List<ResenhaViewDTO> resenhas = resenhaService.findAllResenhas();
+        return new ApiResponse<>(resenhas, "Lista de todas as resenhas", true, getFormattedTimestamp());
     }
 
+    private String getFormattedTimestamp() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return LocalDateTime.now().format(formatter);
+    }
 }

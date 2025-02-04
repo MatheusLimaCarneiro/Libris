@@ -40,6 +40,6 @@ public class Resenha {
     private LocalDateTime dataEdicao;
     private Double nota;
 
-    @OneToMany(mappedBy = "resenha", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "resenha", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Avaliacao> avaliacoes = new ArrayList<>();
 }
