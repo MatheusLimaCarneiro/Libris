@@ -1,4 +1,5 @@
 package prati.projeto.redeSocial.rest.dto;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,6 +18,10 @@ public class StatusLeituraDTO {
 
     @NotNull(message = "O ID do livro é obrigatório")
     private Integer livroId;
+
+    @NotNull(message = "A pagina do livro é obrigatório")
+    @Min(value = 1, message = "A página deve ser maior ou igual a 1")
+    private Integer pagina;
 
     @NotNull(message = "O status da leitura é obrigatório")
     private StatusLeituraEnum status;

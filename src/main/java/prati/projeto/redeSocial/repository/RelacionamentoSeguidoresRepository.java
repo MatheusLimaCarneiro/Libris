@@ -1,5 +1,7 @@
 package prati.projeto.redeSocial.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,8 +20,8 @@ public interface RelacionamentoSeguidoresRepository extends JpaRepository<Relaci
     Optional<RelacionamentoSeguidores> findBySeguidorIdAndSeguidoId(Integer seguidorId, Integer seguidoId);
 
     @Query("SELECT r FROM RelacionamentoSeguidores r JOIN FETCH r.seguidor JOIN FETCH r.seguidor.usuario WHERE r.seguido.id = :perfilId")
-    List<RelacionamentoSeguidores> findBySeguidoId(@Param("perfilId") Integer perfilId);
+    Page<RelacionamentoSeguidores> findBySeguidoId(@Param("perfilId") Integer perfilId, Pageable pageable);
 
     @Query("SELECT r FROM RelacionamentoSeguidores r JOIN FETCH r.seguido JOIN FETCH r.seguido.usuario WHERE r.seguidor.id = :perfilId")
-    List<RelacionamentoSeguidores> findBySeguidorId(@Param("perfilId") Integer perfilId);
+    Page<RelacionamentoSeguidores> findBySeguidorId(@Param("perfilId") Integer perfilId, Pageable pageable);
 }

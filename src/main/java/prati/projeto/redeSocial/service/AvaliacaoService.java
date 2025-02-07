@@ -1,11 +1,9 @@
 package prati.projeto.redeSocial.service;
 
+import org.springframework.data.domain.Page;
 import prati.projeto.redeSocial.rest.dto.AvaliacaoDTO;
 
-import java.util.List;
-
 public interface AvaliacaoService {
-
 
     /**
      * Adiciona uma nova avaliação a uma resenha.
@@ -22,17 +20,20 @@ public interface AvaliacaoService {
     AvaliacaoDTO adicionarAvaliacao(Integer resenhaId, AvaliacaoDTO avaliacaoDTO);
 
     /**
-     * Lista todas as avaliações associadas a uma resenha.
+     * Lista as avaliações associadas a uma resenha.
      * <p>
-     * Este método recebe o ID da resenha e busca todas as avaliações associadas a ela no banco de dados.
-     * Retorna uma lista de DTOs contendo os dados de cada avaliação.
+     * Este método recebe o ID da resenha e retorna uma página de avaliações associadas a ela.
+     * A página contém as avaliações paginadas, ou seja, você pode especificar o número da página e o tamanho da página.
      * </p>
      *
      * @param resenhaId ID da resenha para a qual as avaliações serão buscadas.
-     * @return Lista de AvaliacaoDTO contendo os dados das avaliações associadas à resenha.
+     * @param page      Número da página a ser retornada.
+     * @param size      Tamanho da página (quantidade de avaliações por página).
+     * @return Uma página de AvaliacaoDTO contendo os dados das avaliações associadas à resenha.
      * @throws RegraNegocioException Se a resenha não for encontrada.
      */
-    List<AvaliacaoDTO> listarAvaliacaoPorResenha(Integer resenhaId);
+    Page<AvaliacaoDTO> listarAvaliacaoPorResenha(Integer resenhaId, int page, int size);
+
 
     /**
      * Atualiza uma avaliação existente.
@@ -60,15 +61,18 @@ public interface AvaliacaoService {
     void deletarAvaliacao(Integer avaliacaoId);
 
     /**
-     * Lista todas as avaliações feitas por um perfil.
+     * Lista as avaliações feitas por um perfil.
      * <p>
-     * Este método recebe o ID do perfil e busca todas as avaliações feitas por ele no banco de dados.
-     * Retorna uma lista de DTOs contendo os dados de cada avaliação.
+     * Este método recebe o ID do perfil e retorna uma página de avaliações feitas por esse perfil.
+     * A página contém as avaliações paginadas, ou seja, você pode especificar o número da página e o tamanho da página.
      * </p>
      *
      * @param perfilId ID do perfil para o qual as avaliações serão buscadas.
-     * @return Lista de AvaliacaoDTO contendo os dados das avaliações feitas pelo perfil.
+     * @param page     Número da página a ser retornada.
+     * @param size     Tamanho da página (quantidade de avaliações por página).
+     * @return Uma página de AvaliacaoDTO contendo os dados das avaliações feitas pelo perfil.
      * @throws RegraNegocioException Se o perfil não for encontrado.
      */
-    List<AvaliacaoDTO> listarAvaliacoesPorPerfil(Integer perfilId);
+    Page<AvaliacaoDTO> listarAvaliacoesPorPerfil(Integer perfilId, int page, int size);
+
 }

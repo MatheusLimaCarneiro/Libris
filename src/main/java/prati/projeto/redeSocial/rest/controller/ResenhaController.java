@@ -2,6 +2,7 @@ package prati.projeto.redeSocial.rest.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import prati.projeto.redeSocial.rest.dto.ResenhaDTO;
@@ -49,16 +50,24 @@ public class ResenhaController {
 
     @GetMapping("/livro/{livroId}")
     @ResponseStatus(HttpStatus.OK)
-    public ApiResponse<List<ResenhaViewDTO>> findByLivro(@PathVariable Integer livroId) {
-        List<ResenhaViewDTO> resenhas = resenhaService.findByLivro(livroId);
-        return new ApiResponse<>(resenhas, "Resenhas do livro encontradas", true, getFormattedTimestamp());
+    public ApiResponse<Page<ResenhaViewDTO>> findByLivro(
+            @PathVariable Integer livroId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Page<ResenhaViewDTO> resenhasPage = resenhaService.findByLivro(livroId, page, size);
+        return new ApiResponse<>(resenhasPage, "Resenhas do livro encontradas", true, getFormattedTimestamp());
     }
 
-    @GetMapping
+    @GetMapping("/listar")
     @ResponseStatus(HttpStatus.OK)
-    public ApiResponse<List<ResenhaViewDTO>> findAll() {
-        List<ResenhaViewDTO> resenhas = resenhaService.findAllResenhas();
-        return new ApiResponse<>(resenhas, "Lista de todas as resenhas", true, getFormattedTimestamp());
+    public ApiResponse<Page<ResenhaViewDTO>> getAllResenha(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Page<ResenhaViewDTO> resenhas = resenhaService.findAllResenhas(page, size);
+        String mensagem = resenhas.isEmpty() ? "Nenhuma resenha encontrada" : "Resenhas encontradas";
+        return new ApiResponse<>(resenhas, mensagem, !resenhas.isEmpty(), getFormattedTimestamp());
     }
 
     private String getFormattedTimestamp() {

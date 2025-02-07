@@ -1,10 +1,8 @@
 package prati.projeto.redeSocial.security;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -13,7 +11,6 @@ import prati.projeto.redeSocial.LivrosApplication;
 import prati.projeto.redeSocial.modal.entity.Usuario;
 import prati.projeto.redeSocial.rest.dto.TokenDTO;
 
-import javax.crypto.SecretKey;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -22,18 +19,15 @@ import java.util.Date;
 
 @Service
 public class JwtService {
+
+    @Autowired
+    private RsaKeyProvider rsaKeyProvider;
+
     @Value("${jwt.expiration}")
     private Duration expiracao;
 
     @Value("${jwt.refresh.expiration}")
     private Duration refreshExpiracao;
-
-    @Value("${jwt.secret}")
-    private String chaveAssinatura;
-
-    private SecretKey getSigningKey() {
-        return Keys.hmacShaKeyFor(chaveAssinatura.getBytes());
-    }
 
     public String gerarToken(Usuario usuario) {
         return criarToken(usuario.getUsername(), expiracao);
@@ -51,7 +45,7 @@ public class JwtService {
         return Jwts.builder()
                 .setSubject(subject)
                 .setExpiration(data)
-                .signWith(getSigningKey())
+                .signWith(rsaKeyProvider.getPrivateKey())
                 .compact();
     }
 
@@ -80,7 +74,7 @@ public class JwtService {
 
     private Claims obterClaims(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
+                .setSigningKey(rsaKeyProvider.getPublicKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
@@ -88,6 +82,16 @@ public class JwtService {
 
     public static void main(String[] args) {
         ConfigurableApplicationContext context = SpringApplication.run(LivrosApplication.class);
+        try {
+            RsaKeyProvider rsaKeyProvider = new RsaKeyProvider();  // Instanciando manualmente para testar
+            System.out.println("Chaves carregadas com sucesso!");
+            System.out.println("Chave Privada: " + rsaKeyProvider.getPrivateKey());
+            System.out.println("Chave Pública: " + rsaKeyProvider.getPublicKey());
+        } catch (Exception e) {
+            System.err.println("Erro ao carregar as chaves: " + e.getMessage());
+            e.printStackTrace();
+        }
+
         JwtService service = context.getBean(JwtService.class);
 
         Usuario usuario = Usuario.builder().username("fulano").build();

@@ -1,8 +1,7 @@
 package prati.projeto.redeSocial.service;
 
+import org.springframework.data.domain.Page;
 import prati.projeto.redeSocial.rest.dto.PerfilResumidoDTO;
-
-import java.util.Set;
 
 public interface RelacionamentoSeguidoresService {
 
@@ -46,10 +45,10 @@ public interface RelacionamentoSeguidoresService {
      * </p>
      *
      * @param perfilId ID do perfil cujos seguidores serão buscados.
-     * @return Um conjunto de {@link PerfilResumidoDTO} representando os seguidores.
+     * @return Uma página de {@link PerfilResumidoDTO} representando os seguidores.
      * @throws RegraNegocioException Se o perfil não for encontrado.
      */
-    Set<PerfilResumidoDTO> buscarSeguidores(Integer perfilId);
+    Page<PerfilResumidoDTO> buscarSeguidores(Integer perfilId, int page, int size);
 
     /**
      * Retorna uma lista de perfis que um perfil está seguindo.
@@ -58,8 +57,8 @@ public interface RelacionamentoSeguidoresService {
      * </p>
      *
      * @param perfilId ID do perfil cujos seguidos serão buscados.
-     * @return Um conjunto de {@link PerfilResumidoDTO} representando os perfis seguidos.
+     * @return Uma página de {@link PerfilResumidoDTO} representando os perfis seguidos.
      * @throws RegraNegocioException Se o perfil não for encontrado.
      */
-    Set<PerfilResumidoDTO> buscarSeguindo(Integer perfilId);
+    Page<PerfilResumidoDTO> buscarSeguindo(Integer perfilId, int page, int size);
 }

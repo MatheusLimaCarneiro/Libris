@@ -1,7 +1,9 @@
 package prati.projeto.redeSocial.service;
 
+import org.springframework.data.domain.Page;
 import prati.projeto.redeSocial.modal.entity.Perfil;
 import prati.projeto.redeSocial.rest.dto.PerfilDTO;
+import prati.projeto.redeSocial.rest.dto.PerfilResumidoDTO;
 
 public interface PerfilService {
 
@@ -13,7 +15,7 @@ public interface PerfilService {
      * </p>
      *
      * @param id ID do perfil a ser buscado.
-     * @return PerfilDTO contendo os dados do perfil, ou null se não encontrado (dependendo da implementação).
+     * @return PerfilDTO contendo os dados do perfil.
      * @throws RegraNegocioException Se o perfil com o ID fornecido não for encontrado.
      */
     PerfilDTO getPerfilById(Integer id);
@@ -56,4 +58,22 @@ public interface PerfilService {
      * @throws RegraNegocioException Se o perfil com o ID fornecido não for encontrado.
      */
     void updatePerfil(Integer id, Perfil perfil);
+
+    /**
+     * Retorna uma lista paginada de perfis.
+     *
+     * @param page Número da página.
+     * @param size Tamanho da página.
+     * @return Página contendo os perfis resumidos.
+     */
+    Page<PerfilResumidoDTO> listarPerfil(int page, int size);
+
+    /**
+     * Busca um perfil pelo seu username.
+     *
+     * @param username Nome de usuário.
+     * @return Um PerfilResumidoDTO.
+     * @throws RegraNegocioException Se o perfil não for encontrado.
+     */
+    PerfilResumidoDTO buscarPorUsername(String username);
 }

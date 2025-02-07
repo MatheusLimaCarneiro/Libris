@@ -1,10 +1,14 @@
 package prati.projeto.redeSocial.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import prati.projeto.redeSocial.exception.LivroException;
 import prati.projeto.redeSocial.modal.entity.Livro;
 import prati.projeto.redeSocial.repository.LivroRepository;
+import prati.projeto.redeSocial.rest.dto.LivroResumidoDTO;
 import prati.projeto.redeSocial.service.LivroService;
 
 import java.util.List;
@@ -59,8 +63,15 @@ public class LivroServiceImpl implements LivroService {
     }
 
     @Override
-    public List<Livro> getAllLivros() {
-        return livroRepository.findAll();
+    public Page<LivroResumidoDTO> getAllLivros(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Livro> livroPage = livroRepository.findAll(pageable);
+
+        return livroPage.map(livro -> new LivroResumidoDTO(
+                livro.getTitulo(),
+                livro.getAutores(),
+                livro.getDataPublicacao().toString()
+        ));
     }
 
     private void validarIsbnDuplicado(String isbn) {

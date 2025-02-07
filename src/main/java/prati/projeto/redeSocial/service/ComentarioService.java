@@ -1,12 +1,9 @@
 package prati.projeto.redeSocial.service;
 
+import org.springframework.data.domain.Page;
 import prati.projeto.redeSocial.rest.dto.ComentarioDTO;
-import prati.projeto.redeSocial.modal.entity.Comentario;
-
-import java.util.List;
 
 public interface ComentarioService {
-
 
     /**
      * Salva um novo comentário no sistema.
@@ -16,22 +13,24 @@ public interface ComentarioService {
      * </p>
      *
      * @param dto Objeto DTO contendo os dados do comentário, como texto, ID do perfil, ID do livro e nota.
-     * @return A entidade Comentario salva com os dados persistidos, incluindo a avaliação e as referências ao perfil e livro.
+     * @return ComentarioDTO contendo os dados do comentário salvo.
      * @throws RegraNegocioException Se algum dado necessário não for encontrado (ex.: perfil ou livro inexistente)
      *                               ou se a nota não for válida.
      */
-    ComentarioDTO  salvar(ComentarioDTO dto);
+    ComentarioDTO salvar(ComentarioDTO dto);
 
     /**
      * Lista todos os comentários presentes no sistema.
      * <p>
-     * Este método retorna uma lista de todos os comentários armazenados no banco de dados,
+     * Este método retorna uma página de todos os comentários armazenados no banco de dados,
      * convertendo cada entidade Comentario para seu respectivo DTO.
      * </p>
      *
-     * @return Lista de objetos ComentarioDTO contendo as informações dos comentários, como ID, texto, perfil, livro e nota.
+     * @param page Número da página a ser retornada.
+     * @param size Quantidade de comentários por página.
+     * @return Página de objetos ComentarioDTO contendo as informações dos comentários.
      */
-    List<ComentarioDTO> listarTodos();
+    Page<ComentarioDTO> listarTodos(int page, int size);
 
     /**
      * Busca um comentário pelo seu ID.
@@ -41,7 +40,7 @@ public interface ComentarioService {
      * </p>
      *
      * @param id ID do comentário a ser buscado.
-     * @return ComentarioDTO contendo os dados do comentário, como texto, nota, data e informações relacionadas.
+     * @return ComentarioDTO contendo os dados do comentário.
      * @throws RegraNegocioException Se o comentário com o ID fornecido não for encontrado.
      */
     ComentarioDTO buscarPorId(Integer id);
@@ -71,4 +70,18 @@ public interface ComentarioService {
      * @throws RegraNegocioException Se o comentário com o ID fornecido não for encontrado.
      */
     void excluirComentario(Integer id);
+
+    /**
+     * Lista todos os comentários de um livro específico.
+     * <p>
+     * Este método retorna uma página de comentários associados a um livro identificado pelo ID do livro,
+     * com base nos parâmetros de paginação fornecidos.
+     * </p>
+     *
+     * @param livroId ID do livro cujos comentários serão listados.
+     * @param page    Número da página a ser retornada.
+     * @param size    Quantidade de comentários por página.
+     * @return Página de objetos ComentarioDTO contendo os comentários relacionados ao livro.
+     */
+    Page<ComentarioDTO> listarPorLivro(Integer livroId, int page, int size);
 }

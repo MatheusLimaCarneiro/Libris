@@ -2,6 +2,7 @@ package prati.projeto.redeSocial.rest.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import prati.projeto.redeSocial.rest.dto.AvaliacaoDTO;
@@ -28,12 +29,19 @@ public class AvaliacaoController {
         return new ApiResponse<>(resultado, "Avaliação adicionada com sucesso.", true, getFormattedTimestamp());
     }
 
-    @GetMapping
+    @GetMapping("/listar")
     @ResponseStatus(HttpStatus.OK)
-    public ApiResponse<List<AvaliacaoDTO>> listarAvaliacoesPorResenha(@PathVariable Integer resenhaId) {
-        List<AvaliacaoDTO> resultado = avaliacaoService.listarAvaliacaoPorResenha(resenhaId);
-        return new ApiResponse<>(resultado, "Avaliações listadas com sucesso.", true, getFormattedTimestamp());
+    public ApiResponse<Page<AvaliacaoDTO>> listarAvaliacoesPorResenha(
+            @PathVariable Integer resenhaId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Page<AvaliacaoDTO> avaliacoes = avaliacaoService.listarAvaliacaoPorResenha(resenhaId, page, size);
+        String mensagem = avaliacoes.isEmpty() ? "Nenhuma avaliação encontrada" : "Avaliações encontradas com sucesso";
+
+        return new ApiResponse<>(avaliacoes, mensagem, !avaliacoes.isEmpty(), getFormattedTimestamp());
     }
+
 
     @PutMapping("/{avaliacaoId}")
     @ResponseStatus(HttpStatus.OK)
@@ -52,8 +60,12 @@ public class AvaliacaoController {
 
     @GetMapping("/perfil/{perfilId}")
     @ResponseStatus(HttpStatus.OK)
-    public ApiResponse<List<AvaliacaoDTO>> listarAvaliacoesPorPerfil(@PathVariable Integer perfilId) {
-        List<AvaliacaoDTO> resultado = avaliacaoService.listarAvaliacoesPorPerfil(perfilId);
+    public ApiResponse<Page<AvaliacaoDTO>> listarAvaliacoesPorPerfil(
+            @PathVariable Integer perfilId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<AvaliacaoDTO> resultado = avaliacaoService.listarAvaliacoesPorPerfil(perfilId, page, size);
         String mensagem = resultado.isEmpty() ? "Nenhuma avaliação encontrada para este perfil." : "Avaliações do perfil listadas com sucesso.";
         return new ApiResponse<>(resultado.isEmpty() ? null : resultado, mensagem, !resultado.isEmpty(), getFormattedTimestamp());
     }

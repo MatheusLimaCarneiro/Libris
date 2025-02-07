@@ -2,6 +2,9 @@ package prati.projeto.redeSocial.service.impl;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import prati.projeto.redeSocial.exception.RegraNegocioException;
 import prati.projeto.redeSocial.modal.entity.Perfil;
@@ -11,8 +14,6 @@ import prati.projeto.redeSocial.repository.RelacionamentoSeguidoresRepository;
 import prati.projeto.redeSocial.rest.dto.PerfilResumidoDTO;
 import prati.projeto.redeSocial.service.RelacionamentoSeguidoresService;
 
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -50,24 +51,24 @@ public class RelacionamentoSeguidoresServiceImpl implements RelacionamentoSeguid
 
     @Override
     public boolean estaSeguindo(Integer seguidorId, Integer seguidoId) {
-        return relacionamentoRepository.findBySeguidorId(seguidorId).stream()
-                .anyMatch(r -> r.getSeguido().getId().equals(seguidoId));
+        return relacionamentoRepository.findBySeguidorIdAndSeguidoId(seguidorId, seguidoId).isPresent();
     }
 
     @Override
-    public Set<PerfilResumidoDTO> buscarSeguidores(Integer perfilId) {
+    public Page<PerfilResumidoDTO> buscarSeguidores(Integer perfilId, int page, int size){
         buscarPerfilPorId(perfilId, "Perfil não encontrado");
-        return relacionamentoRepository.findBySeguidoId(perfilId).stream()
-                .map(relacionamento -> converterParaPerfilResumidoDTO(relacionamento.getSeguidor()))
-                .collect(Collectors.toSet());
+        Pageable pageable = PageRequest.of(page, size);
+        return relacionamentoRepository.findBySeguidoId(perfilId, pageable)
+                .map(relacionamento ->
+                        converterParaPerfilResumidoDTO(relacionamento.getSeguidor()));
     }
 
     @Override
-    public Set<PerfilResumidoDTO> buscarSeguindo(Integer perfilId) {
+    public Page<PerfilResumidoDTO> buscarSeguindo(Integer perfilId, int page, int size) {
         buscarPerfilPorId(perfilId, "Perfil não encontrado");
-        return relacionamentoRepository.findBySeguidorId(perfilId).stream()
-                .map(relacionamento -> converterParaPerfilResumidoDTO(relacionamento.getSeguido()))
-                .collect(Collectors.toSet());
+        Pageable pageable = PageRequest.of(page, size);
+        return relacionamentoRepository.findBySeguidorId(perfilId, pageable)
+                .map(relacionamento -> converterParaPerfilResumidoDTO(relacionamento.getSeguido()));
     }
 
     private void validarSeguirPerfil(Integer seguidorId, Integer seguidoId) {
@@ -94,7 +95,6 @@ public class RelacionamentoSeguidoresServiceImpl implements RelacionamentoSeguid
 
     private PerfilResumidoDTO converterParaPerfilResumidoDTO(Perfil perfil) {
         return new PerfilResumidoDTO(
-                perfil.getId(),
                 perfil.getUrlPerfil(),
                 perfil.getResumoBio(),
                 perfil.getUsuario().getUsername()

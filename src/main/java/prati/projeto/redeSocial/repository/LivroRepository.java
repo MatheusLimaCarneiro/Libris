@@ -1,5 +1,7 @@
 package prati.projeto.redeSocial.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import prati.projeto.redeSocial.modal.entity.Livro;
 
@@ -10,4 +12,5 @@ public interface LivroRepository extends JpaRepository<Livro, Integer> {
     List<Livro> findByTituloContainingIgnoreCase(String titulo);
     List<Livro> findByAutoresContainingIgnoreCase(String autores);
     List<Livro> findByTituloContainingIgnoreCaseAndAutoresContainingIgnoreCase(String titulo, String autores);
+    Page<Livro> findAll(Pageable pageable);
 }

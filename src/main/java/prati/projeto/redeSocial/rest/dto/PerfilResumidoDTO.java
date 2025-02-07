@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PerfilResumidoDTO {
-    private Integer id;
     private String urlPerfil;
     private String resumoBio;
     private String username;

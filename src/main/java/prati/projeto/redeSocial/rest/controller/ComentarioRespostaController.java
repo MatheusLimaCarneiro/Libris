@@ -2,6 +2,7 @@ package prati.projeto.redeSocial.rest.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import prati.projeto.redeSocial.rest.dto.RespostaDTO;
@@ -10,7 +11,6 @@ import prati.projeto.redeSocial.service.ComentarioRespostaService;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 @RestController
 @RequestMapping("/libris/comentarios/{comentarioId}/respostas")
@@ -18,11 +18,6 @@ public class ComentarioRespostaController {
 
     @Autowired
     private ComentarioRespostaService respostaService;
-
-
-    public ComentarioRespostaController(ComentarioRespostaService respostaService) {
-        this.respostaService = respostaService;
-    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -33,11 +28,22 @@ public class ComentarioRespostaController {
         return new ApiResponse<>(resposta, "Resposta adicionada com sucesso", true, getFormattedTimestamp());
     }
 
-    @GetMapping
+    @GetMapping("/{respostaId}")
     @ResponseStatus(HttpStatus.OK)
-    public ApiResponse<List<RespostaDTO>> listarRespostas(@PathVariable Integer comentarioId) {
-        List<RespostaDTO> respostas = respostaService.listarRespostasPorComentario(comentarioId);
-        return new ApiResponse<>(respostas, "Respostas listadas com sucesso", true, getFormattedTimestamp());
+    public ApiResponse<RespostaDTO> buscarRespostaPorId(@PathVariable Integer respostaId) {
+        RespostaDTO resposta = respostaService.buscarRespostaPorId(respostaId);
+        return new ApiResponse<>(resposta, "Resposta encontrada com sucesso", true, getFormattedTimestamp());
+    }
+
+    @GetMapping("/listar")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<Page<RespostaDTO>> listarRespostas(@PathVariable Integer comentarioId,
+                                                          @RequestParam(defaultValue = "0") int page,
+                                                          @RequestParam(defaultValue = "10") int size) {
+
+        Page<RespostaDTO> respostas = respostaService.listarRespostasPorComentario(comentarioId, page, size);
+        String mensagem = respostas.isEmpty() ? "Nenhuma resposta encontrada" : "Respostas encontradas";
+        return new ApiResponse<>(respostas, mensagem, !respostas.isEmpty(), getFormattedTimestamp());
     }
 
     @PutMapping("/{respostaId}")

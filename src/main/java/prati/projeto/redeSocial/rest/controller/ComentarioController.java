@@ -2,6 +2,7 @@ package prati.projeto.redeSocial.rest.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import prati.projeto.redeSocial.rest.dto.ComentarioDTO;
@@ -10,7 +11,7 @@ import prati.projeto.redeSocial.service.ComentarioService;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
+
 
 @RestController
 @RequestMapping("/libris/comentarios")
@@ -33,12 +34,17 @@ public class ComentarioController {
         return new ApiResponse<>(comentarioDTO, "Comentário encontrado", true, getFormattedTimestamp());
     }
 
-    @GetMapping
+    @GetMapping("/listar")
     @ResponseStatus(HttpStatus.OK)
-    public ApiResponse<List<ComentarioDTO>> listarTodos() {
-        List<ComentarioDTO> comentarios = comentarioService.listarTodos();
-        return new ApiResponse<>(comentarios, "Comentários listados com sucesso", true, getFormattedTimestamp());
+    public ApiResponse<Page<ComentarioDTO>> listarTodos(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Page<ComentarioDTO> comentarios = comentarioService.listarTodos(page, size);
+        String mensagem = comentarios.isEmpty() ? "Nenhum comentário encontrado" : "Comentários encontrados";
+        return new ApiResponse<>(comentarios, mensagem, !comentarios.isEmpty(), getFormattedTimestamp());
     }
+
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
@@ -46,6 +52,18 @@ public class ComentarioController {
                                                           @RequestBody @Valid ComentarioDTO dto) {
         ComentarioDTO comentarioDTO = comentarioService.atualizarComentario(id, dto);
         return new ApiResponse<>(comentarioDTO, "Comentário atualizado com sucesso", true, getFormattedTimestamp());
+    }
+
+    @GetMapping("/listar/livro/{livroId}")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<Page<ComentarioDTO>> listarPorLivro(
+            @PathVariable Integer livroId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Page<ComentarioDTO> comentarios = comentarioService.listarPorLivro(livroId, page, size);
+        String mensagem = comentarios.isEmpty() ? "Nenhum comentário encontrado para este livro" : "Comentários encontrados para este livro";
+        return new ApiResponse<>(comentarios, mensagem, !comentarios.isEmpty(), getFormattedTimestamp());
     }
 
     @DeleteMapping("/{id}")

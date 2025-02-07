@@ -2,6 +2,9 @@ package prati.projeto.redeSocial.service.impl;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import prati.projeto.redeSocial.exception.RegraNegocioException;
 import prati.projeto.redeSocial.modal.entity.Perfil;
@@ -18,7 +21,6 @@ import prati.projeto.redeSocial.service.ResenhaService;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,12 +29,13 @@ public class ResenhaServiceImpl implements ResenhaService {
     private final ResenhaRepository resenhaRepository;
     private final PerfilRepository perfilRepository;
     private final LivroRepository livroRepository;
+    private final AvaliacaoServiceImpl avaliacaoService;
 
     @Override
     public ResenhaViewDTO getResenhaById(Integer id) {
         Resenha resenha = resenhaRepository.findById(id)
                 .orElseThrow(() -> new RegraNegocioException("Resenha com ID " + id + " não encontrada"));
-        return convertToViewDTO(resenha);
+        return convertToViewDTO(resenha, 0, 10);
     }
 
     @Override
@@ -85,19 +88,19 @@ public class ResenhaServiceImpl implements ResenhaService {
     }
 
     @Override
-    public List<ResenhaViewDTO> findByLivro(Integer livroId) {
+    public Page<ResenhaViewDTO> findByLivro(Integer livroId, int page, int size) {
         validarLivro(livroId);
-        return resenhaRepository.findByLivroId(livroId).stream()
-                .map(this::convertToViewDTO)
-                .collect(Collectors.toList());
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Resenha> resenhasPage = resenhaRepository.findByLivroId(livroId, pageable);
+        return resenhasPage.map(resenha -> convertToViewDTO(resenha, 0, 10));
     }
 
+
     @Override
-    public List<ResenhaViewDTO> findAllResenhas() {
-        List<Resenha> resenhas = resenhaRepository.findAll();
-        return resenhas.stream()
-                .map(this::convertToViewDTO)
-                .collect(Collectors.toList());
+    public Page<ResenhaViewDTO> findAllResenhas(Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Resenha> resenhasPage = resenhaRepository.findAll(pageable);
+        return resenhasPage.map(resenha -> convertToViewDTO(resenha, 0, 10));
     }
 
     private Perfil validarPerfil(Integer perfilId) {
@@ -129,10 +132,10 @@ public class ResenhaServiceImpl implements ResenhaService {
         return resenha;
     }
 
-    private ResenhaViewDTO convertToViewDTO(Resenha resenha) {
-        List<AvaliacaoDTO> avaliacoesDTO = resenha.getAvaliacoes().stream()
-                .map(avaliacao -> new AvaliacaoDTO(avaliacao.getId(),avaliacao.getPerfil().getId(), avaliacao.getTexto(), avaliacao.getNota()))
-                .collect(Collectors.toList());
+    private ResenhaViewDTO convertToViewDTO(Resenha resenha, int page, int size) {
+        Page<AvaliacaoDTO> avaliacoesPage = avaliacaoService.listarAvaliacaoPorResenha(resenha.getId(), page, size);
+
+        List<AvaliacaoDTO> avaliacoesDTO = avaliacoesPage.getContent();
 
         return new ResenhaViewDTO(
                 resenha.getId(),

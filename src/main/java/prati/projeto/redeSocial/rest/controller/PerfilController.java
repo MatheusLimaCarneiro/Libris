@@ -2,10 +2,12 @@ package prati.projeto.redeSocial.rest.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import prati.projeto.redeSocial.modal.entity.Perfil;
 import prati.projeto.redeSocial.rest.dto.PerfilDTO;
+import prati.projeto.redeSocial.rest.dto.PerfilResumidoDTO;
 import prati.projeto.redeSocial.rest.response.ApiResponse;
 import prati.projeto.redeSocial.service.PerfilService;
 
@@ -46,6 +48,27 @@ public class PerfilController {
         perfilService.updatePerfil(id, perfil);
         return new ApiResponse<>(null, "Perfil atualizado com sucesso", true, getFormattedTimestamp());
     }
+
+    @GetMapping("/listar")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<Page<PerfilResumidoDTO>> getAllPerfil(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Page<PerfilResumidoDTO> perfis = perfilService.listarPerfil(page, size);
+        String mensagem = perfis.isEmpty() ? "Nenhum perfil encontrado" : "Perfis encontrados";
+
+        return new ApiResponse<>(perfis, mensagem, !perfis.isEmpty(), getFormattedTimestamp());
+    }
+
+    @GetMapping("/buscar/{username}")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<PerfilResumidoDTO> buscarPorUsername(@PathVariable String username) {
+        PerfilResumidoDTO perfilResumidoDTO = perfilService.buscarPorUsername(username);
+        String mensagem = perfilResumidoDTO != null ? "Perfil encontrado" : "Perfil não encontrado";
+        return new ApiResponse<>(perfilResumidoDTO, mensagem, perfilResumidoDTO != null, getFormattedTimestamp());
+    }
+
 
     private String getFormattedTimestamp() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");

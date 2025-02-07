@@ -1,6 +1,9 @@
 package prati.projeto.redeSocial.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import prati.projeto.redeSocial.exception.RegraNegocioException;
@@ -45,10 +48,18 @@ public class ComentarioServiceImpl implements ComentarioService {
     }
 
     @Override
-    public List<ComentarioDTO> listarTodos() {
-        return comentarioRepository.findAll().stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+    public Page<ComentarioDTO> listarTodos(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Comentario> comentariosPage = comentarioRepository.findAll(pageable);
+
+        return comentariosPage.map(comentario -> {
+            ComentarioDTO dto = convertToDTO(comentario);
+
+            Page<RespostaDTO> respostasPage = respostaService.listarRespostasPorComentario(comentario.getId(), 0, 10);
+            dto.setRespostas(respostasPage.getContent());
+
+            return dto;
+        });
     }
 
     @Override
@@ -57,7 +68,10 @@ public class ComentarioServiceImpl implements ComentarioService {
                 .orElseThrow(() -> new RegraNegocioException("Comentário não encontrado"));
 
         ComentarioDTO dto = convertToDTO(comentario);
-        dto.setRespostas(respostaService.listarRespostasPorComentario(id));
+
+        Page<RespostaDTO> respostasPage = respostaService.listarRespostasPorComentario(id, 0, 10);
+        dto.setRespostas(respostasPage.getContent());
+
         return dto;
     }
 
@@ -85,6 +99,21 @@ public class ComentarioServiceImpl implements ComentarioService {
         comentarioRepository.delete(comentario);
     }
 
+    @Override
+    public Page<ComentarioDTO> listarPorLivro(Integer livroId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Comentario> comentariosPage = comentarioRepository.findByLivroId(livroId, pageable);
+
+        return comentariosPage.map(comentario -> {
+            ComentarioDTO dto = convertToDTO(comentario);
+
+            Page<RespostaDTO> respostasPage = respostaService.listarRespostasPorComentario(comentario.getId(), 0, 10);
+            dto.setRespostas(respostasPage.getContent());
+
+            return dto;
+        });
+    }
+
     private Perfil validarPerfil(Integer perfilId) {
         return perfilRepository.findById(perfilId)
                 .orElseThrow(() -> new RegraNegocioException("Perfil não encontrado"));
@@ -110,25 +139,6 @@ public class ComentarioServiceImpl implements ComentarioService {
         dto.setNota(comentario.getNota());
         dto.setDataComentario(comentario.getDataComentario());
 
-        dto.setRespostas(convertRespostasToDTO(comentario.getRespostas()));
         return dto;
-    }
-
-    private List<RespostaDTO> convertRespostasToDTO(List<ComentarioResposta> respostas) {
-        if (respostas == null) {
-            return new ArrayList<>();
-        }
-        return respostas.stream()
-                .map(this::convertRespostaToDTO)
-                .collect(Collectors.toList());
-    }
-
-    private RespostaDTO convertRespostaToDTO(ComentarioResposta resposta) {
-        return new RespostaDTO(
-                resposta.getId(),
-                resposta.getPerfil().getId(),
-                resposta.getTexto(),
-                resposta.getDataResposta()
-        );
     }
 }

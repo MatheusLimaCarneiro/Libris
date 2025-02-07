@@ -1,5 +1,8 @@
 package prati.projeto.redeSocial.service;
+
+import org.springframework.data.domain.Page;
 import prati.projeto.redeSocial.modal.entity.Livro;
+import prati.projeto.redeSocial.rest.dto.LivroResumidoDTO;
 
 import java.util.List;
 
@@ -9,7 +12,7 @@ public interface LivroService {
      * Busca um livro pelo ID.
      * <p>
      * Retorna os dados do livro correspondente ao ID fornecido. Caso o livro não seja encontrado,
-     * uma exceção será lançada.
+     * uma exceção do tipo LivroException será lançada.
      * </p>
      *
      * @param id ID do livro a ser buscado.
@@ -22,7 +25,7 @@ public interface LivroService {
      * Salva um novo livro no sistema.
      * <p>
      * O livro será salvo após a validação de que o ISBN fornecido é único. Caso o ISBN já exista,
-     * uma exceção será lançada.
+     * uma exceção do tipo LivroException será lançada.
      * </p>
      *
      * @param livro Entidade Livro contendo os dados a serem persistidos.
@@ -35,7 +38,7 @@ public interface LivroService {
      * Exclui um livro pelo ID.
      * <p>
      * Remove permanentemente um livro do sistema pelo ID fornecido. Se o livro não existir,
-     * uma exceção será lançada.
+     * uma exceção do tipo LivroException será lançada.
      * </p>
      *
      * @param id ID do livro a ser excluído.
@@ -74,10 +77,13 @@ public interface LivroService {
     /**
      * Retorna todos os livros cadastrados no sistema.
      * <p>
-     * Este método busca e retorna uma lista contendo todos os livros armazenados no banco de dados.
+     * Este método busca e retorna uma página contendo os livros armazenados no banco de dados, com base nos parâmetros
+     * de paginação fornecidos.
      * </p>
      *
-     * @return Lista contendo todos os livros cadastrados.
+     * @param page O número da página (começando de 0).
+     * @param size O tamanho da página (quantidade de livros por página).
+     * @return Uma página de objetos LivroResumidoDTO representando todos os livros cadastrados.
      */
-    List<Livro> getAllLivros();
+    Page<LivroResumidoDTO> getAllLivros(int page, int size);
 }

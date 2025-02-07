@@ -1,6 +1,9 @@
 package prati.projeto.redeSocial.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import prati.projeto.redeSocial.exception.RegraNegocioException;
 import prati.projeto.redeSocial.modal.entity.Livro;
@@ -24,11 +27,15 @@ public class StatusLeituraServiceImpl implements StatusLeituraService {
     private final LivroRepository livroRepository;
 
     @Override
-    public StatusLeituraDTO salvarStatus(Integer perfilId, Integer livroId, StatusLeituraEnum statusLeituraEnum) {
+    public StatusLeituraDTO salvarStatus(Integer perfilId, Integer livroId, StatusLeituraEnum statusLeituraEnum, Integer pagina) {
         Perfil perfil = perfilRepository.findById(perfilId)
                 .orElseThrow(() -> new RegraNegocioException("Perfil não encontrado"));
         Livro livro = livroRepository.findById(livroId)
                 .orElseThrow(() -> new RegraNegocioException("Livro não encontrado"));
+
+        if (pagina < 1 || pagina > livro.getNumeroPaginas()) {
+            throw new RegraNegocioException("A página deve estar entre 1 e " + livro.getNumeroPaginas());
+        }
 
         Optional<StatusLeitura> statusExistente = statusLeituraRepository.findByPerfilAndLivro(perfil, livro);
 
@@ -39,6 +46,7 @@ public class StatusLeituraServiceImpl implements StatusLeituraService {
         StatusLeitura novoStatus = new StatusLeitura();
         novoStatus.setPerfil(perfil);
         novoStatus.setLivro(livro);
+        novoStatus.setPagina(pagina);
         novoStatus.setStatusLeitura(statusLeituraEnum);
 
         StatusLeitura salvo = statusLeituraRepository.save(novoStatus);
@@ -46,13 +54,26 @@ public class StatusLeituraServiceImpl implements StatusLeituraService {
     }
 
     @Override
-    public StatusLeituraDTO mudarStatus(Integer id, StatusLeituraEnum novoStatus) {
+    public StatusLeituraDTO mudarStatus(Integer id,Integer pagina, StatusLeituraEnum novoStatus) {
         StatusLeitura statusLeitura = statusLeituraRepository.findById(id)
                 .orElseThrow(() -> new RegraNegocioException("Status de leitura não encontrado"));
+
+        Livro livro = statusLeitura.getLivro();
+        if (pagina < 1 || pagina > livro.getNumeroPaginas()) {
+            throw new RegraNegocioException("A página deve estar entre 1 e " + livro.getNumeroPaginas());
+        }
         statusLeitura.setStatusLeitura(novoStatus);
+        statusLeitura.setPagina(pagina);
 
         StatusLeitura salvo = statusLeituraRepository.save(statusLeitura);
         return convertToDTO(salvo);
+    }
+
+    @Override
+    public Page<StatusLeituraDTO> listarStatus(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<StatusLeitura> statusPage = statusLeituraRepository.findAll(pageable);
+        return statusPage.map(this::convertToDTO);
     }
 
     private StatusLeituraDTO convertToDTO(StatusLeitura statusLeitura) {
@@ -60,6 +81,7 @@ public class StatusLeituraServiceImpl implements StatusLeituraService {
                 statusLeitura.getId(),
                 statusLeitura.getPerfil().getId(),
                 statusLeitura.getLivro().getId(),
+                statusLeitura.getPagina(),
                 statusLeitura.getStatusLeitura()
         );
     }

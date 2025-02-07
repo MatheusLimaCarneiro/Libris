@@ -25,6 +25,8 @@ public class StatusLeitura {
     @JoinColumn(name = "FK_livro", nullable = false)
     private Livro livro;
 
+    private Integer pagina;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private StatusLeituraEnum statusLeitura;

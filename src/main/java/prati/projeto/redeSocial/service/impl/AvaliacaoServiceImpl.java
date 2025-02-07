@@ -1,6 +1,9 @@
 package prati.projeto.redeSocial.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import prati.projeto.redeSocial.exception.RegraNegocioException;
@@ -13,7 +16,6 @@ import prati.projeto.redeSocial.repository.ResenhaRepository;
 import prati.projeto.redeSocial.rest.dto.AvaliacaoDTO;
 import prati.projeto.redeSocial.service.AvaliacaoService;
 
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -61,21 +63,21 @@ public class AvaliacaoServiceImpl implements AvaliacaoService{
     }
 
     @Override
-    public List<AvaliacaoDTO> listarAvaliacoesPorPerfil(Integer perfilId) {
+    public Page<AvaliacaoDTO> listarAvaliacoesPorPerfil(Integer perfilId, int page, int size) {
         validarExistenciaDePerfil(perfilId);
 
-        return avaliacaoRepository.findByPerfilId(perfilId).stream()
-                .map(this::convertToDTO)
-                .toList();
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Avaliacao> avaliacoes = avaliacaoRepository.findByPerfilId(perfilId, pageable);
+
+        return avaliacoes.map(this::convertToDTO);
     }
 
     @Override
-    public List<AvaliacaoDTO> listarAvaliacaoPorResenha(Integer resenhaId) {
+    public Page<AvaliacaoDTO> listarAvaliacaoPorResenha(Integer resenhaId, int page, int size) {
         buscarResenhaPorId(resenhaId);
-
-        return avaliacaoRepository.findByResenhaId(resenhaId).stream()
-                .map(this::convertToDTO)
-                .toList();
+        Pageable pageable = PageRequest.of(page, size);
+        return avaliacaoRepository.findByResenhaId(resenhaId, pageable)
+                .map(this::convertToDTO);
     }
 
     private void validarExistenciaDePerfil(Integer perfilId) {

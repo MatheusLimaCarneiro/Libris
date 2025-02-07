@@ -7,7 +7,6 @@ import lombok.*;
 import org.hibernate.validator.constraints.URL;
 import prati.projeto.redeSocial.modal.enums.GeneroLiterario;
 
-import java.util.Objects;
 import java.util.Set;
 
 @Getter

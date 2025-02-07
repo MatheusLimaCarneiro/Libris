@@ -2,9 +2,11 @@ package prati.projeto.redeSocial.rest.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import prati.projeto.redeSocial.modal.entity.Livro;
+import prati.projeto.redeSocial.rest.dto.LivroResumidoDTO;
 import prati.projeto.redeSocial.rest.response.ApiResponse;
 import prati.projeto.redeSocial.service.LivroService;
 
@@ -60,10 +62,13 @@ public class LivroController {
 
     @GetMapping("/all")
     @ResponseStatus(HttpStatus.OK)
-    public ApiResponse<List<Livro>> getAllLivros() {
-        List<Livro> livros = livroService.getAllLivros();
+    public ApiResponse<Page<LivroResumidoDTO>> getAllLivros(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Page<LivroResumidoDTO> livros = livroService.getAllLivros(page, size);
         String mensagem = livros.isEmpty() ? "Nenhum livro encontrado" : "Livros encontrados";
-        return new ApiResponse<>(livros.isEmpty() ? null : livros, mensagem, !livros.isEmpty(), getFormattedTimestamp());
+        return new ApiResponse<>(livros, mensagem, !livros.isEmpty(), getFormattedTimestamp());
     }
 
     private String getFormattedTimestamp() {
