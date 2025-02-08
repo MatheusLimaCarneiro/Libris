@@ -54,9 +54,13 @@ public class ComentarioRespostaServiceImpl implements ComentarioRespostaService 
 
     @Override
     @Transactional
-    public RespostaDTO atualizarResposta(Integer respostaId, RespostaDTO respostaDTO) {
+    public RespostaDTO atualizarResposta(Integer comentarioId, Integer respostaId, RespostaDTO respostaDTO) {
         ComentarioResposta resposta = respostaRepository.findById(respostaId)
                 .orElseThrow(() -> new RegraNegocioException("Resposta não encontrada"));
+
+        if (!resposta.getComentarioOriginal().getId().equals(comentarioId)) {
+            throw new RegraNegocioException("A resposta não pertence ao comentário informado.");
+        }
 
         resposta.setTexto(respostaDTO.getTexto());
         resposta.setDataResposta(LocalDateTime.now());
@@ -67,16 +71,25 @@ public class ComentarioRespostaServiceImpl implements ComentarioRespostaService 
 
     @Override
     @Transactional
-    public void deletarResposta(Integer respostaId) {
-        respostaRepository.findById(respostaId)
+    public void deletarResposta(Integer comentarioId, Integer respostaId) {
+        ComentarioResposta resposta = respostaRepository.findById(respostaId)
                 .orElseThrow(() -> new RegraNegocioException("Resposta não encontrada"));
+
+        if (!resposta.getComentarioOriginal().getId().equals(comentarioId)) {
+            throw new RegraNegocioException("A resposta não pertence ao comentário informado.");
+        }
+
         respostaRepository.deleteById(respostaId);
     }
 
     @Override
-    public RespostaDTO buscarRespostaPorId(Integer respostaId) {
+    public RespostaDTO buscarRespostaPorId(Integer comentarioId, Integer respostaId) {
         ComentarioResposta resposta = respostaRepository.findById(respostaId)
                 .orElseThrow(() -> new RegraNegocioException("Resposta não encontrada"));
+
+        if (!resposta.getComentarioOriginal().getId().equals(comentarioId)) {
+            throw new RegraNegocioException("A resposta não pertence ao comentário informado.");
+        }
 
         return convertToDTO(resposta);
     }

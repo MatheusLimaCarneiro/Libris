@@ -36,18 +36,15 @@ public interface AvaliacaoService {
 
 
     /**
-     * Atualiza uma avaliação existente.
-     * <p>
-     * Este método recebe o ID da avaliação e um DTO contendo os dados atualizados (texto e nota).
-     * Atualiza a avaliação no banco de dados e retorna os dados da avaliação atualizada.
-     * </p>
+     * Atualiza uma avaliação existente de uma resenha.
      *
-     * @param avaliacaoId  ID da avaliação a ser atualizada.
+     * @param resenhaId   ID da resenha à qual a avaliação pertence.
+     * @param avaliacaoId ID da avaliação a ser atualizada.
      * @param avaliacaoDTO DTO contendo os dados atualizados da avaliação (texto e nota).
      * @return AvaliacaoDTO contendo os dados da avaliação atualizada, incluindo perfil, texto e nota.
-     * @throws RegraNegocioException Se a avaliação não for encontrada.
+     * @throws RegraNegocioException Se a avaliação não for encontrada ou não pertencer à resenha informada.
      */
-    AvaliacaoDTO editarAvaliacao(Integer avaliacaoId, AvaliacaoDTO avaliacaoDTO);
+    AvaliacaoDTO editarAvaliacao(Integer resenhaId, Integer avaliacaoId, AvaliacaoDTO avaliacaoDTO);
 
     /**
      * Deleta uma avaliação.
@@ -55,10 +52,11 @@ public interface AvaliacaoService {
      * Este método recebe o ID da avaliação e a remove do banco de dados.
      * </p>
      *
+     * @param resenhaId   ID da resenha à qual a avaliação pertence.
      * @param avaliacaoId ID da avaliação a ser deletada.
-     * @throws RegraNegocioException Se a avaliação não for encontrada.
+     * @throws RegraNegocioException Se a avaliação não for encontrada ou não pertencer à resenha informada.
      */
-    void deletarAvaliacao(Integer avaliacaoId);
+    void deletarAvaliacao(Integer resenhaId, Integer avaliacaoId);
 
     /**
      * Lista as avaliações feitas por um perfil.

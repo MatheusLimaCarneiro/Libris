@@ -47,8 +47,12 @@ public class AvaliacaoServiceImpl implements AvaliacaoService{
 
 
     @Override
-    public AvaliacaoDTO editarAvaliacao(Integer avaliacaoId, AvaliacaoDTO avaliacaoDTO) {
+    public AvaliacaoDTO editarAvaliacao(Integer resenhaId, Integer avaliacaoId, AvaliacaoDTO avaliacaoDTO) {
         Avaliacao avaliacao = buscarAvaliacaoPorId(avaliacaoId);
+
+        if (!avaliacao.getResenha().getId().equals(resenhaId)) {
+            throw new RegraNegocioException("A avaliação não pertence a essa resenha.");
+        }
 
         avaliacao.setTexto(avaliacaoDTO.getTexto());
         avaliacao.setNota(avaliacaoDTO.getNota());
@@ -57,10 +61,16 @@ public class AvaliacaoServiceImpl implements AvaliacaoService{
 
     @Override
     @Transactional
-    public void deletarAvaliacao(Integer avaliacaoId) {
-        buscarAvaliacaoPorId(avaliacaoId);
-        avaliacaoRepository.deleteById(avaliacaoId);
+    public void deletarAvaliacao(Integer resenhaId, Integer avaliacaoId) {
+        Avaliacao avaliacao = buscarAvaliacaoPorId(avaliacaoId);
+
+        if (!avaliacao.getResenha().getId().equals(resenhaId)) {
+            throw new RegraNegocioException("A avaliação não pertence a essa resenha.");
+        }
+
+        avaliacaoRepository.delete(avaliacao);
     }
+
 
     @Override
     public Page<AvaliacaoDTO> listarAvaliacoesPorPerfil(Integer perfilId, int page, int size) {
