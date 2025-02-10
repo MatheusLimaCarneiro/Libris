@@ -24,14 +24,14 @@ public class ApplicationControllerAdvice {
 
     @ExceptionHandler(RegraNegocioException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiResponse<ApiErrors> handleRegraNegocioException(RegraNegocioException ex) {
+    public ServiceResponse<ApiErrors> handleRegraNegocioException(RegraNegocioException ex) {
         ApiErrors errors = new ApiErrors(ex.getMessage());
-        return new ApiResponse<>(errors, "Erro de regra de negócio", false, getFormattedTimestamp());
+        return new ServiceResponse<>(errors, "Erro de regra de negócio", false, getFormattedTimestamp());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiResponse<ApiErrors> handleMethodNotValidException(MethodArgumentNotValidException ex) {
+    public ServiceResponse<ApiErrors> handleMethodNotValidException(MethodArgumentNotValidException ex) {
         List<String> errorMessages = ex.getBindingResult()
                 .getAllErrors()
                 .stream()
@@ -39,20 +39,20 @@ public class ApplicationControllerAdvice {
                 .collect(Collectors.toList());
 
         ApiErrors errors = new ApiErrors(errorMessages);
-        return new ApiResponse<>(errors, "Erro de validação", false, getFormattedTimestamp());
+        return new ServiceResponse<>(errors, "Erro de validação", false, getFormattedTimestamp());
     }
 
     @ExceptionHandler(TokenInvalidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiResponse<ApiErrors> handleTokenInvalidException(TokenInvalidException ex) {
+    public ServiceResponse<ApiErrors> handleTokenInvalidException(TokenInvalidException ex) {
         ApiErrors errors = new ApiErrors(ex.getMessage());
-        return new ApiResponse<>(errors, "Token inválido", false, getFormattedTimestamp());
+        return new ServiceResponse<>(errors, "Token inválido", false, getFormattedTimestamp());
     }
 
     @ExceptionHandler(LivroException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiResponse<ApiErrors> handleLivroException(LivroException ex) {
+    public ServiceResponse<ApiErrors> handleLivroException(LivroException ex) {
         ApiErrors errors = new ApiErrors(ex.getMessage());
-        return new ApiResponse<>(errors, "Erro de Livro", false, getFormattedTimestamp());
+        return new ServiceResponse<>(errors, "Erro de Livro", false, getFormattedTimestamp());
     }
 }

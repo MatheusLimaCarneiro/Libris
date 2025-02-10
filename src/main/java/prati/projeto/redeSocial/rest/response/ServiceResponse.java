@@ -12,13 +12,13 @@ import java.time.format.DateTimeFormatter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ApiResponse<T> {
+public class ServiceResponse<T> {
     private T data;
     private String message;
     private boolean success;
     private String timestamp ;
 
-    public ApiResponse(T data, String message, boolean success) {
+    public ServiceResponse(T data, String message, boolean success) {
         this.data = data;
         this.message = message;
         this.success = success;

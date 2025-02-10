@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import prati.projeto.redeSocial.rest.dto.PerfilResumidoDTO;
-import prati.projeto.redeSocial.rest.response.ApiResponse;
+import prati.projeto.redeSocial.rest.response.ServiceResponse;
 import prati.projeto.redeSocial.service.RelacionamentoSeguidoresService;
 
 import java.time.LocalDateTime;
@@ -21,11 +21,11 @@ public class RelacionamentoSeguidoresController {
 
     @PostMapping("/seguir/{seguidorId}/{seguidoId}")
     @ResponseStatus(HttpStatus.CREATED)
-    public ApiResponse<Void> seguirPerfil(
+    public ServiceResponse<Void> seguirPerfil(
             @PathVariable @Positive(message = "ID do seguidor deve ser positivo") Integer seguidorId,
             @PathVariable @Positive(message = "ID do seguido deve ser positivo") Integer seguidoId) {
         relacionamentoService.seguirPerfil(seguidorId, seguidoId);
-        return new ApiResponse<>(null, "Perfil seguido com sucesso", true, getFormattedTimestamp());
+        return new ServiceResponse<>(null, "Perfil seguido com sucesso", true, getFormattedTimestamp());
     }
 
     @DeleteMapping("/deixar-de-seguir/{seguidorId}/{seguidoId}")
@@ -38,35 +38,35 @@ public class RelacionamentoSeguidoresController {
 
     @GetMapping("/esta-seguindo/{seguidorId}/{seguidoId}")
     @ResponseStatus(HttpStatus.OK)
-    public ApiResponse<Boolean> estaSeguindo(
+    public ServiceResponse<Boolean> estaSeguindo(
             @PathVariable Integer seguidorId,
             @PathVariable Integer seguidoId) {
         boolean resultado = relacionamentoService.estaSeguindo(seguidorId, seguidoId);
-        return new ApiResponse<>(resultado, "Verificação de seguimento", true, getFormattedTimestamp());
+        return new ServiceResponse<>(resultado, "Verificação de seguimento", true, getFormattedTimestamp());
     }
 
     @GetMapping("/seguidores/{perfilId}")
     @ResponseStatus(HttpStatus.OK)
-    public ApiResponse<Page<PerfilResumidoDTO>> buscarSeguidores(
+    public ServiceResponse<Page<PerfilResumidoDTO>> buscarSeguidores(
             @PathVariable Integer perfilId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
         Page<PerfilResumidoDTO> seguidores = relacionamentoService.buscarSeguidores(perfilId, page, size);
         String mensagem = seguidores.isEmpty() ? "Nenhum seguidor encontrado" : "Seguidores encontrados";
-        return new ApiResponse<>(seguidores, mensagem, !seguidores.isEmpty(), getFormattedTimestamp());
+        return new ServiceResponse<>(seguidores, mensagem, !seguidores.isEmpty(), getFormattedTimestamp());
     }
 
     @GetMapping("/seguindo/{perfilId}")
     @ResponseStatus(HttpStatus.OK)
-    public ApiResponse<Page<PerfilResumidoDTO>> buscarSeguindo(
+    public ServiceResponse<Page<PerfilResumidoDTO>> buscarSeguindo(
             @PathVariable Integer perfilId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
         Page<PerfilResumidoDTO> seguindo = relacionamentoService.buscarSeguindo(perfilId, page, size);
         String mensagem = seguindo.isEmpty() ? "Não está seguindo ninguém" : "Seguindo encontrados";
-        return new ApiResponse<>(seguindo, mensagem, !seguindo.isEmpty(), getFormattedTimestamp());
+        return new ServiceResponse<>(seguindo, mensagem, !seguindo.isEmpty(), getFormattedTimestamp());
     }
 
     private String getFormattedTimestamp() {
