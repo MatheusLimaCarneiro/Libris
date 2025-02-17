@@ -2,12 +2,15 @@ package prati.projeto.redeSocial.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Service;
 import prati.projeto.redeSocial.LivrosApplication;
+import prati.projeto.redeSocial.modal.entity.CustomOAuth2User;
 import prati.projeto.redeSocial.modal.entity.Usuario;
 import prati.projeto.redeSocial.rest.dto.TokenDTO;
 
@@ -23,6 +26,9 @@ public class JwtService {
     @Autowired
     private RsaKeyProvider rsaKeyProvider;
 
+    private static final Logger logger = LoggerFactory.getLogger(JwtService.class);
+
+
     @Value("${jwt.expiration}")
     private Duration expiracao;
 
@@ -31,6 +37,14 @@ public class JwtService {
 
     public String gerarToken(Usuario usuario) {
         return criarToken(usuario.getUsername(), expiracao);
+    }
+
+    public String gerarTokenO2auth(CustomOAuth2User oauth2User) {
+        return criarToken(oauth2User.getUsername(), expiracao);
+    }
+
+    public String gerarRefreshTokenO2auth(CustomOAuth2User oauth2User) {
+        return criarToken(oauth2User.getUsername(), refreshExpiracao);
     }
 
     public String gerarRefreshToken(Usuario usuario) {
@@ -51,8 +65,12 @@ public class JwtService {
 
     public boolean tokenValido(String token) {
         try {
-            return !LocalDateTime.now().isAfter(obterDataExpiracao(token));
+            Claims claims = obterClaims(token);
+            logger.info("Claims do token: " + claims);
+            return !LocalDateTime.now().isAfter(obterDataExpiracao(token)) &&
+                    claims.getSubject() != null;
         } catch (Exception e) {
+            logger.error("Erro ao validar token: " + e.getMessage(), e);
             return false;
         }
     }
