@@ -63,6 +63,18 @@ public class JwtService {
                 .compact();
     }
 
+    public String criarTokenEmail(String subject, Duration duracao) {
+        LocalDateTime dataHoraExpiracao = LocalDateTime.now().plus(duracao);
+        Instant instant = dataHoraExpiracao.atZone(ZoneId.systemDefault()).toInstant();
+        Date data = Date.from(instant);
+
+        return Jwts.builder()
+                .setSubject(subject)
+                .setExpiration(data)
+                .signWith(rsaKeyProvider.getPrivateKey())
+                .compact();
+    }
+
     public boolean tokenValido(String token) {
         try {
             Claims claims = obterClaims(token);
