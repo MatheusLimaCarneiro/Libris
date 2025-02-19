@@ -26,7 +26,7 @@ public class O2authController {
                                                     @RequestParam String refreshToken) {
         logger.info("Token recebido no endpoint /oauth2/success: " + token);
 
-        if (token == null || token.isEmpty()) {
+        if (token == null || token.isEmpty() || refreshToken == null || refreshToken.isEmpty()) {
             logger.error("Token ausente ou vazio.");
             return new ServiceResponse<>(null, "Token ausente ou vazio", false, getFormattedTimestamp());
         }

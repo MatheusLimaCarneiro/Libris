@@ -11,7 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import prati.projeto.redeSocial.exception.TokenInvalidException;
-import prati.projeto.redeSocial.service.CustomUserDetailsService;
+import prati.projeto.redeSocial.service.auth.CustomUserDetailsService;
 
 import java.io.IOException;
 

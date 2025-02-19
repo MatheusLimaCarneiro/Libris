@@ -14,7 +14,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import prati.projeto.redeSocial.modal.entity.CustomOAuth2User;
 import prati.projeto.redeSocial.security.JwtAuthenticationFilter;
 import prati.projeto.redeSocial.security.JwtService;
-import prati.projeto.redeSocial.service.CustomOAuth2UserService;
+import prati.projeto.redeSocial.service.auth.CustomOAuth2UserService;
 
 @EnableWebSecurity
 @Configuration

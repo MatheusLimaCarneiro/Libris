@@ -1,4 +1,4 @@
-package prati.projeto.redeSocial.service;
+package prati.projeto.redeSocial.service.auth;
 
 import lombok.AllArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import prati.projeto.redeSocial.modal.entity.CustomOAuth2User;
 import prati.projeto.redeSocial.modal.entity.Usuario;
 import prati.projeto.redeSocial.repository.UsuarioRepository;
+import prati.projeto.redeSocial.service.UsuarioService;
 
 @AllArgsConstructor
 @Service
@@ -30,6 +31,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService{
             novoUsuario.setUsername(generateUsername(name, email));
             novoUsuario.setSenha(null);
             novoUsuario.setAuthProvider("google");
+            novoUsuario.setAdmin(false);
             return usuarioService.saveUsuario(novoUsuario);
         });
 

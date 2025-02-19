@@ -1,4 +1,4 @@
-package prati.projeto.redeSocial.service;
+package prati.projeto.redeSocial.service.auth;
 
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;

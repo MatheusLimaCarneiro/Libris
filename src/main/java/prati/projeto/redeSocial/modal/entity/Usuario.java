@@ -40,5 +40,10 @@ public class Usuario {
     @Schema(description = "Indica se o usuário é administrador", example = "false")
     private boolean admin = false;
 
+    @Schema(description = "Provedor de autenticação do usuário", example = "google")
     private String authProvider;
+
+    @Column(name = "reset_token", length = 2000)
+    @Schema(description = "Token para redefinição de senha", example = "abc123xyz")
+    private String resetToken;
 }
