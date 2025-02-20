@@ -36,7 +36,11 @@ public class JwtService {
     private Duration refreshExpiracao;
 
     public String gerarToken(Usuario usuario) {
-        return criarToken(usuario.getUsername(), expiracao);
+        return criarToken(usuario.getEmail(), expiracao);
+    }
+
+    public String gerarRefreshToken(Usuario usuario) {
+        return criarToken(usuario.getEmail(), refreshExpiracao);
     }
 
     public String gerarTokenO2auth(CustomOAuth2User oauth2User) {
@@ -45,10 +49,6 @@ public class JwtService {
 
     public String gerarRefreshTokenO2auth(CustomOAuth2User oauth2User) {
         return criarToken(oauth2User.getUsername(), refreshExpiracao);
-    }
-
-    public String gerarRefreshToken(Usuario usuario) {
-        return criarToken(usuario.getUsername(), refreshExpiracao);
     }
 
     private String criarToken(String subject, Duration duracao) {
@@ -94,7 +94,7 @@ public class JwtService {
     public TokenDTO gerarTokensParaUsuario(Usuario usuario) {
         String accessToken = gerarToken(usuario);
         String refreshToken = gerarRefreshToken(usuario);
-        return new TokenDTO(usuario.getUsername(), accessToken, refreshToken);
+        return new TokenDTO(usuario.getEmail(), accessToken, refreshToken);
     }
 
     private LocalDateTime obterDataExpiracao(String token) {
@@ -124,7 +124,7 @@ public class JwtService {
 
         JwtService service = context.getBean(JwtService.class);
 
-        Usuario usuario = Usuario.builder().username("fulano").build();
+        Usuario usuario = Usuario.builder().email("fulano@gmail.com").build();
         String token = service.gerarToken(usuario);
         System.out.println("Token: " + token);
 

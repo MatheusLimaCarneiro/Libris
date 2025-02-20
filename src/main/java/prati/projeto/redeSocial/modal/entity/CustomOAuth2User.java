@@ -25,11 +25,11 @@ public class CustomOAuth2User implements OAuth2User {
 
     @Override
     public String getName() {
-        return usuario != null ? usuario.getUsername() : "unknown";
+        return usuario != null ? usuario.getEmail() : "unknown";
     }
 
     public String getUsername() {
-        return usuario != null ? usuario.getUsername() : "unknown";
+        return usuario != null ? usuario.getEmail() : "unknown";
     }
 
     public Usuario getUsuario() {
