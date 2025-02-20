@@ -12,7 +12,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import prati.projeto.redeSocial.exception.RegraNegocioException;
 import prati.projeto.redeSocial.modal.entity.Usuario;
+import prati.projeto.redeSocial.repository.UsuarioRepository;
 import prati.projeto.redeSocial.rest.dto.CredenciaisDTO;
 import prati.projeto.redeSocial.rest.dto.TokenDTO;
 import prati.projeto.redeSocial.rest.response.ServiceResponse;
@@ -29,6 +31,7 @@ import java.time.format.DateTimeFormatter;
 public class AuthController {
 
     private final UsuarioService usuarioService;
+    private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
@@ -83,9 +86,8 @@ public class AuthController {
 
         authenticationManager.authenticate(authenticationToken);
 
-        Usuario usuario = Usuario.builder()
-                .username(credenciais.getLogin())
-                .build();
+        Usuario usuario = usuarioRepository.findByEmail(credenciais.getLogin())
+                .orElseThrow(() -> new RegraNegocioException("Usuário não encontrado"));
 
         TokenDTO tokenDTO = jwtService.gerarTokensParaUsuario(usuario);
         return new ServiceResponse<>(tokenDTO, "Login bem-sucedido", true, getFormattedTimestamp());
