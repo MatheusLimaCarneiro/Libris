@@ -15,8 +15,6 @@ import prati.projeto.redeSocial.service.ComentarioService;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -138,7 +136,7 @@ public class ComentarioServiceImpl implements ComentarioService {
         dto.setTexto(comentario.getTexto());
         dto.setNota(comentario.getNota());
         dto.setDataComentario(comentario.getDataComentario());
-
+        dto.setQuantidadeCurtidas(comentario.getQuantidadeCurtidas());
         return dto;
     }
 }

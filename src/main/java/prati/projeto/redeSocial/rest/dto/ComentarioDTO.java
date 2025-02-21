@@ -33,5 +33,7 @@ public class ComentarioDTO {
 
     private LocalDateTime dataComentario;
 
+    private Integer quantidadeCurtidas;
+
     private List<RespostaDTO> respostas = new ArrayList<>();
 }
