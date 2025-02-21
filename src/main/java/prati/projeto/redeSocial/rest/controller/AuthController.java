@@ -37,19 +37,19 @@ public class AuthController {
     private final JwtService jwtService;
 
     @Operation(
-        summary = "Registro de Usuário",
-        description = "Registra um novo usuário no sistema.",
-        responses = {
-            @ApiResponse(
-                responseCode = "201",
-                description = "Usuário registrado com sucesso",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = ServiceResponse.class)
-                )
-            ),
-            @ApiResponse(responseCode = "400", description = "Requisição mal formada")
-        }
+            summary = "Registro de Usuário",
+            description = "Registra um novo usuário no sistema.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "201",
+                            description = "Usuário registrado com sucesso",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ServiceResponse.class)
+                            )
+                    ),
+                    @ApiResponse(responseCode = "400", description = "Requisição mal formada")
+            }
     )
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
@@ -61,33 +61,33 @@ public class AuthController {
     }
 
     @Operation(
-        summary = "Login de Usuário",
-        description = "Realiza o login de um usuário e retorna um token JWT.",
-        responses = {
-            @ApiResponse(
-                responseCode = "200",
-                description = "Login bem-sucedido",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = ServiceResponse.class)
-                )
-            ),
-            @ApiResponse(responseCode = "401", description = "Credenciais inválidas")
-        }
+            summary = "Login de Usuário",
+            description = "Realiza o login de um usuário e retorna um token JWT.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Login bem-sucedido",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ServiceResponse.class)
+                            )
+                    ),
+                    @ApiResponse(responseCode = "401", description = "Credenciais inválidas")
+            }
     )
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
     public ServiceResponse<TokenDTO> authenticate(@RequestBody @Valid CredenciaisDTO credenciais) {
         UsernamePasswordAuthenticationToken authenticationToken =
-            new UsernamePasswordAuthenticationToken(
-                credenciais.getLogin(),
-                credenciais.getSenha()
-            );
+                new UsernamePasswordAuthenticationToken(
+                        credenciais.getLogin(),
+                        credenciais.getSenha()
+                );
 
         authenticationManager.authenticate(authenticationToken);
 
         Usuario usuario = usuarioRepository.findByEmail(credenciais.getLogin())
-            .orElseThrow(() -> new RegraNegocioException("Usuário não encontrado"));
+                .orElseThrow(() -> new RegraNegocioException("Usuário não encontrado"));
 
         TokenDTO tokenDTO = jwtService.gerarTokensParaUsuario(usuario);
         return new ServiceResponse<>(tokenDTO, "Login bem-sucedido", true, getFormattedTimestamp());
