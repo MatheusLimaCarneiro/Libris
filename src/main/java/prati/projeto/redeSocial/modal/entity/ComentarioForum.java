@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -31,7 +30,7 @@ public class ComentarioForum {
     private PostForum postForum;
 
     @Column(name = "data_comentario")
-    private LocalDateTime data;
+    private LocalDateTime data = LocalDateTime.now();
 
 //    @OneToMany(mappedBy = "comentarioForum", cascade = CascadeType.ALL, orphanRemoval = true)
 //    private List<RespostaForum> respostas;
