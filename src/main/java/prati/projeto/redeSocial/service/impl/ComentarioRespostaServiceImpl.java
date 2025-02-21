@@ -99,7 +99,8 @@ public class ComentarioRespostaServiceImpl implements ComentarioRespostaService 
                 resposta.getId(),
                 resposta.getPerfil().getId(),
                 resposta.getTexto(),
-                resposta.getDataResposta()
+                resposta.getDataResposta(),
+                resposta.getQuantidadeCurtidas()
         );
     }
 }

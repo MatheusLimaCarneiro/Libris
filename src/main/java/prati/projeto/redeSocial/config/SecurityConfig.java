@@ -36,7 +36,8 @@ public class SecurityConfig {
                         .requestMatchers("/libris/auth/**", "/login/**", "/oauth2/**").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
                         .requestMatchers("/libris/usuario/**", "/libris/perfil/**", "/libris/comentarios/**",
-                                "/libris/resenhas/**", "/libris/status/**", "/libris/relacionamentos/**").hasRole("USER")
+                                "/libris/resenhas/**", "/libris/status/**", "/libris/relacionamentos/**," +
+                                        "libris/curtidas/**").hasRole("USER")
                         .requestMatchers(HttpMethod.GET, "/libris/livro/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers(HttpMethod.POST, "/libris/livro/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/libris/livro/**").hasRole("ADMIN")

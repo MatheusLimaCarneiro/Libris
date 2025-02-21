@@ -24,4 +24,6 @@ public class RespostaDTO {
     private String texto;
 
     private LocalDateTime dataResposta;
+
+    private Integer quantidadeCurtidas;
 }
