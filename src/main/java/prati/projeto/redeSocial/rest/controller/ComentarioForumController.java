@@ -49,6 +49,15 @@ public class ComentarioForumController {
         comentarioForumService.deletarComentario(postId, id);
     }
 
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ServiceResponse<ComentarioForumResponseDTO> buscarComentarioPorId(
+            @PathVariable Integer postId, @PathVariable Integer id) {
+
+        ComentarioForumResponseDTO comentarioDTO = comentarioForumService.buscarComentario(postId, id);
+        return new ServiceResponse<>(comentarioDTO, "Comentário encontrado", true, getFormattedTimestamp());
+    }
+
     private String getFormattedTimestamp() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return LocalDateTime.now().format(formatter);

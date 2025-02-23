@@ -92,6 +92,27 @@ public class ComentarioForumServiceImpl implements ComentarioForumService {
         comentarioForumRepository.deleteById(id);
     }
 
+    @Override
+    public ComentarioForumResponseDTO buscarComentario(Integer postId, Integer comentarioId) {
+        ComentarioForum comentario = comentarioForumRepository.findById(comentarioId)
+                .orElseThrow(() -> new RegraNegocioException("Comentário não encontrado!"));
+
+        if (!comentario.getPostForum().getId().equals(postId)) {
+            throw new RegraNegocioException("O comentário não pertence ao post informado!");
+        }
+
+        Pageable respostasPageable = PageRequest.of(0, 10);
+        Page<RespostaForum> respostasPage = respostaForumRepository.findByComentarioForumId(comentario.getId(), respostasPageable);
+        List<RespostaForumResponseDTO> respostasDTO = respostasPage.getContent().stream()
+                .map(this::converterRespostaParaDTO)
+                .collect(Collectors.toList());
+
+        ComentarioForumResponseDTO dto = converterParaDTO(comentario);
+        dto.setRespostas(respostasDTO);
+
+        return dto;
+    }
+
     private ComentarioForumResponseDTO converterParaDTO(ComentarioForum comentario) {
         ComentarioForumResponseDTO dto = new ComentarioForumResponseDTO();
         dto.setId(comentario.getId());
