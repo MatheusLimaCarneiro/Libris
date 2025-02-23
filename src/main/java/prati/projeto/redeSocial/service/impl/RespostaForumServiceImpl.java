@@ -69,6 +69,18 @@ public class RespostaForumServiceImpl implements RespostaForumService {
         respostaForumRepository.deleteById(id);
     }
 
+    @Override
+    public RespostaForumResponseDTO buscarRespostaForum(Integer comentarioForumId, Integer respostaId) {
+        RespostaForum respostaForum = respostaForumRepository.findById(respostaId)
+                .orElseThrow(() -> new RegraNegocioException("Resposta não encontrada!"));
+
+        if (!respostaForum.getComentarioForum().getId().equals(comentarioForumId)) {
+            throw new RegraNegocioException("A Resposta não pertence ao Comentario informado!");
+        }
+
+        return converterParaDTO(respostaForum);
+    }
+
     private RespostaForumResponseDTO converterParaDTO(RespostaForum respostaForum) {
         RespostaForumResponseDTO dto = new RespostaForumResponseDTO();
         dto.setId(respostaForum.getId());

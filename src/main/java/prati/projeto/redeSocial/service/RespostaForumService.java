@@ -8,4 +8,5 @@ public interface RespostaForumService {
     RespostaForumResponseDTO criarRespostaForum(Integer comentarioForumId, RespostaForumRequestDTO dto);
     Page<RespostaForumResponseDTO>listarPorComentario(Integer cometarioForumId, int page, int size);
     void deletarRespostaForum(Integer cometarioForumId, Integer id);
+    RespostaForumResponseDTO buscarRespostaForum(Integer comentarioForumId, Integer respostaId);
 }

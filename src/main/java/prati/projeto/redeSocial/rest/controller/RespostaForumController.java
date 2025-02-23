@@ -50,6 +50,15 @@ public class RespostaForumController {
         respostaForumService.deletarRespostaForum(comentarioForumId, id);
     }
 
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ServiceResponse<RespostaForumResponseDTO> buscarRespostaPorId(
+            @PathVariable Integer comentarioForumId, @PathVariable Integer id) {
+
+        RespostaForumResponseDTO respostaDTO = respostaForumService.buscarRespostaForum(comentarioForumId, id);
+        return new ServiceResponse<>(respostaDTO, "Resposta encontrada", true, getFormattedTimestamp());
+    }
+
     private String getFormattedTimestamp() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return LocalDateTime.now().format(formatter);
