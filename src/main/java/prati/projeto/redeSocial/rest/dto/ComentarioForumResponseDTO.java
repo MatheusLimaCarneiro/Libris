@@ -10,5 +10,6 @@ public class ComentarioForumResponseDTO {
     private String texto;
     private String nomePerfil;
     private LocalDateTime data;
+    private Integer quantidadeCurtidas;
     private List<RespostaForumResponseDTO> respostas;
 }

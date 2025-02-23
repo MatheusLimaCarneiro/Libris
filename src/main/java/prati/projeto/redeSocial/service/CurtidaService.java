@@ -61,4 +61,8 @@ public interface CurtidaService {
      *                               se o perfil ou resposta não forem encontrados.
      */
     void descurtirResposta(Integer perfilId, Integer respostaId);
+
+    void curtirComentarioForum(Integer perfilId, Integer comentarioForumId);
+
+    void descurtirComentarioForum(Integer perfilId, Integer comentarioForumId);
 }

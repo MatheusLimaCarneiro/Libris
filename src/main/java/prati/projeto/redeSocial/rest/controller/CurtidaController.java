@@ -128,6 +128,58 @@ public class CurtidaController {
         return new ServiceResponse<>(null, "Resposta descurtida com sucesso", true, getFormattedTimestamp());
     }
 
+    @Operation(
+            summary = "Curtir um comentário do fórum",
+            description = "Permite que um perfil curta um comentário específico do fórum. Se o perfil já tiver curtido o comentário, uma exceção será lançada.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "201",
+                            description = "Comentário do fórum curtido com sucesso",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ServiceResponse.class))
+                    ),
+                            @ApiResponse(responseCode = "400", description = "ID do perfil ou comentário inválido"),
+                            @ApiResponse(responseCode = "404", description = "Perfil ou comentário não encontrado"),
+                            @ApiResponse(responseCode = "409", description = "Perfil já curtiu este comentário")
+                            }
+                    )
+
+                    @PostMapping("/comentario-forum/{comentarioForumId}/perfil/{perfilId}")
+                    @ResponseStatus(HttpStatus.CREATED)
+    public ServiceResponse<Void> curtirComentarioForum(
+            @Parameter(description = "ID do perfil que está curtindo o comentário do fórum", example = "1")
+            @PathVariable @Positive(message = "ID do perfil deve ser positivo") Integer perfilId,
+            @Parameter(description = "ID do comentário do fórum que será curtido", example = "10")
+            @PathVariable @Positive(message = "ID do comentário do fórum deve ser positivo") Integer comentarioForumId) {
+        curtidaService.curtirComentarioForum(perfilId, comentarioForumId);
+        return new ServiceResponse<>(null, "Comentário do fórum curtido com sucesso", true, getFormattedTimestamp());
+    }
+
+    @Operation(
+            summary = "Descurtir um comentário do fórum",
+            description = "Permite que um perfil descurta um comentário específico do fórum. Se o perfil não tiver curtido o comentário anteriormente, uma exceção será lançada.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "204",
+                            description = "Comentário do fórum descurtido com sucesso"
+                    ),
+                    @ApiResponse(responseCode = "400", description = "ID do perfil ou comentário inválido"),
+                    @ApiResponse(responseCode = "404", description = "Perfil ou comentário não encontrado"),
+                    @ApiResponse(responseCode = "409", description = "Perfil ainda não curtiu este comentário")
+            }
+    )
+    @DeleteMapping("/comentario-forum/{comentarioForumId}/perfil/{perfilId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public ServiceResponse<Void> descurtirComentarioForum(
+            @Parameter(description = "ID do perfil que está descurtindo o comentário do fórum", example = "1")
+            @PathVariable @Positive(message = "ID do perfil deve ser positivo") Integer perfilId,
+            @Parameter(description = "ID do comentário do fórum que será descurtido", example = "10")
+            @PathVariable @Positive(message = "ID do comentário do fórum deve ser positivo") Integer comentarioForumId) {
+        curtidaService.descurtirComentarioForum(perfilId, comentarioForumId);
+        return new ServiceResponse<>(null, "Comentário do fórum descurtido com sucesso", true, getFormattedTimestamp());
+    }
+
     private String getFormattedTimestamp() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return LocalDateTime.now().format(formatter);

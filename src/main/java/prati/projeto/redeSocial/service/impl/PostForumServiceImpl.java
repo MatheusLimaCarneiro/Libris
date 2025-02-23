@@ -123,6 +123,7 @@ public class PostForumServiceImpl implements PostForumService {
         dto.setId(comentario.getId());
         dto.setNomePerfil(comentario.getPerfil().getUsuario().getUsername());
         dto.setTexto(comentario.getTexto());
+        dto.setQuantidadeCurtidas(comentario.getQuantidadeCurtidas());
         dto.setData(comentario.getData());
 
         Pageable respostasPageable = PageRequest.of(0, 10);

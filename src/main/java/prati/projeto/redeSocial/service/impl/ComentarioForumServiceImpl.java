@@ -119,6 +119,7 @@ public class ComentarioForumServiceImpl implements ComentarioForumService {
         dto.setTexto(comentario.getTexto());
         dto.setNomePerfil(comentario.getPerfil().getUsuario().getUsername());
         dto.setData(comentario.getData());
+        dto.setQuantidadeCurtidas(comentario.getQuantidadeCurtidas());
 
         List<RespostaForumResponseDTO> respostasDTO = comentario.getRespostas().stream()
                 .map(this::converterRespostaParaDTO)

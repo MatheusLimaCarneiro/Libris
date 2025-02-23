@@ -7,7 +7,9 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -33,6 +35,14 @@ public class ComentarioForum {
 
     @Column(name = "data_comentario")
     private LocalDateTime data = LocalDateTime.now();
+
+    @Column(name = "quantidade_curtidas")
+    private Integer quantidadeCurtidas = 0;
+
+    @ElementCollection
+    @CollectionTable(name = "curtidas_comentario_forum", joinColumns = @JoinColumn(name = "comentario_id"))
+    @Column(name = "perfil_id")
+    private Set<Integer> perfisQueCurtiram = new HashSet<>();
 
     @OneToMany(mappedBy = "comentarioForum", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RespostaForum> respostas = new ArrayList<>();}
