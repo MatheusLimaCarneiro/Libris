@@ -13,10 +13,17 @@ import lombok.NoArgsConstructor;
 public class CredenciaisDTO {
 
     @NotEmpty(message = "O campo login é obrigatório.")
-    @Schema(description = "Login do usuário", example = "usuario")
+    @Schema(
+            description = "Login do usuário",
+            example = "usuario"
+    )
     private String login;
 
+
     @NotEmpty(message = "O campo senha é obrigatório.")
-    @Schema(description = "Senha do usuário", example = "senha123")
+    @Schema(
+            description = "Senha do usuário",
+            example = "senha123"
+    )
     private String senha;
 }
