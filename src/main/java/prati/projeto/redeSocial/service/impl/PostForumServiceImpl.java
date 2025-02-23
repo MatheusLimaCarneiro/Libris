@@ -7,23 +7,21 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import prati.projeto.redeSocial.exception.RegraNegocioException;
-import prati.projeto.redeSocial.modal.entity.ComentarioForum;
-import prati.projeto.redeSocial.modal.entity.Livro;
-import prati.projeto.redeSocial.modal.entity.Perfil;
-import prati.projeto.redeSocial.modal.entity.PostForum;
+import prati.projeto.redeSocial.modal.entity.*;
 import prati.projeto.redeSocial.repository.ComentarioForumRepository;
 import prati.projeto.redeSocial.repository.LivroRepository;
 import prati.projeto.redeSocial.repository.PerfilRepository;
 import prati.projeto.redeSocial.repository.PostForumRepository;
+import prati.projeto.redeSocial.repository.RespostaForumRepository;
 import prati.projeto.redeSocial.rest.dto.ComentarioForumResponseDTO;
 import prati.projeto.redeSocial.rest.dto.PostForumRequestDTO;
 import prati.projeto.redeSocial.rest.dto.PostForumResponseDTO;
+import prati.projeto.redeSocial.rest.dto.RespostaForumResponseDTO;
 import prati.projeto.redeSocial.service.PostForumService;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +31,7 @@ public class PostForumServiceImpl implements PostForumService {
     private final PerfilRepository perfilRepository;
     private final LivroRepository livroRepository;
     private final ComentarioForumRepository comentarioForumRepository;
+    private final RespostaForumRepository respostaForumRepository;
 
     @Override
     @Transactional
@@ -112,12 +111,12 @@ public class PostForumServiceImpl implements PostForumService {
         dto.setDataCriacao(post.getDataCriacao());
 
         List<ComentarioForumResponseDTO> comentariosDTO = post.getComentarios().stream()
-            .map(this::converterComentarioParaDTO)
-            .collect(Collectors.toList());
+                .map(this::converterComentarioParaDTO)
+                .collect(Collectors.toList());
         dto.setComentarios(comentariosDTO);
 
         return dto;
-}
+    }
 
     private ComentarioForumResponseDTO converterComentarioParaDTO(ComentarioForum comentario) {
         ComentarioForumResponseDTO dto = new ComentarioForumResponseDTO();
@@ -125,6 +124,24 @@ public class PostForumServiceImpl implements PostForumService {
         dto.setNomePerfil(comentario.getPerfil().getUsuario().getUsername());
         dto.setTexto(comentario.getTexto());
         dto.setData(comentario.getData());
+
+        Pageable respostasPageable = PageRequest.of(0, 10);
+        Page<RespostaForum> respostasPage = respostaForumRepository.findByComentarioForumId(comentario.getId(), respostasPageable);
+
+        List<RespostaForumResponseDTO> respostasDTO = respostasPage.getContent().stream()
+                .map(this::converterRespostaParaDTO)
+                .collect(Collectors.toList());
+        dto.setRespostas(respostasDTO);
+
+        return dto;
+    }
+
+    private RespostaForumResponseDTO converterRespostaParaDTO(RespostaForum resposta) {
+        RespostaForumResponseDTO dto = new RespostaForumResponseDTO();
+        dto.setId(resposta.getId());
+        dto.setTexto(resposta.getTexto());
+        dto.setNomePerfil(resposta.getPerfil().getUsuario().getUsername());
+        dto.setData(resposta.getData());
         return dto;
     }
 }

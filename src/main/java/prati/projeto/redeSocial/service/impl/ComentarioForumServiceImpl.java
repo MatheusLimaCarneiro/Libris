@@ -10,14 +10,20 @@ import prati.projeto.redeSocial.exception.RegraNegocioException;
 import prati.projeto.redeSocial.modal.entity.ComentarioForum;
 import prati.projeto.redeSocial.modal.entity.Perfil;
 import prati.projeto.redeSocial.modal.entity.PostForum;
+import prati.projeto.redeSocial.modal.entity.RespostaForum;
 import prati.projeto.redeSocial.repository.ComentarioForumRepository;
 import prati.projeto.redeSocial.repository.PerfilRepository;
 import prati.projeto.redeSocial.repository.PostForumRepository;
+import prati.projeto.redeSocial.repository.RespostaForumRepository;
 import prati.projeto.redeSocial.rest.dto.ComentarioForumRequestDTO;
 import prati.projeto.redeSocial.rest.dto.ComentarioForumResponseDTO;
+import prati.projeto.redeSocial.rest.dto.RespostaForumResponseDTO;
 import prati.projeto.redeSocial.service.ComentarioForumService;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +32,7 @@ public class ComentarioForumServiceImpl implements ComentarioForumService {
     private final ComentarioForumRepository comentarioForumRepository;
     private final PostForumRepository postForumRepository;
     private final PerfilRepository perfilRepository;
+    private final RespostaForumRepository respostaForumRepository;
 
     @Override
     @Transactional
@@ -41,6 +48,7 @@ public class ComentarioForumServiceImpl implements ComentarioForumService {
         comentario.setPerfil(perfil);
         comentario.setPostForum(post);
         comentario.setData(LocalDateTime.now());
+        comentario.setRespostas(new ArrayList<>());
 
         comentarioForumRepository.save(comentario);
 
@@ -52,10 +60,23 @@ public class ComentarioForumServiceImpl implements ComentarioForumService {
         if (!postForumRepository.existsById(postId)) {
             throw new RegraNegocioException("Post não encontrado com ID: " + postId);
         }
-        Pageable pageable = PageRequest.of(page, size);
-        Page<ComentarioForum> comentariosPage = comentarioForumRepository.findByPostForumId(postId, pageable);
 
-        return comentariosPage.map(this::converterParaDTO);
+        Pageable comentariosPageable = PageRequest.of(page, size);
+        Page<ComentarioForum> comentariosPage = comentarioForumRepository.findByPostForumId(postId, comentariosPageable);
+
+        return comentariosPage.map(comentario -> {
+            ComentarioForumResponseDTO dto = converterParaDTO(comentario);
+
+            Pageable respostasPageable = PageRequest.of(0, 10);
+            Page<RespostaForum> respostasPage = respostaForumRepository.findByComentarioForumId(comentario.getId(), respostasPageable);
+
+            List<RespostaForumResponseDTO> respostasDTO = respostasPage.getContent().stream()
+                    .map(this::converterRespostaParaDTO)
+                    .collect(Collectors.toList());
+            dto.setRespostas(respostasDTO);
+
+            return dto;
+        });
     }
 
     @Override
@@ -77,6 +98,21 @@ public class ComentarioForumServiceImpl implements ComentarioForumService {
         dto.setTexto(comentario.getTexto());
         dto.setNomePerfil(comentario.getPerfil().getUsuario().getUsername());
         dto.setData(comentario.getData());
+
+        List<RespostaForumResponseDTO> respostasDTO = comentario.getRespostas().stream()
+                .map(this::converterRespostaParaDTO)
+                .collect(Collectors.toList());
+        dto.setRespostas(respostasDTO);
+
+        return dto;
+    }
+
+    private RespostaForumResponseDTO converterRespostaParaDTO(RespostaForum resposta) {
+        RespostaForumResponseDTO dto = new RespostaForumResponseDTO();
+        dto.setId(resposta.getId());
+        dto.setTexto(resposta.getTexto());
+        dto.setNomePerfil(resposta.getPerfil().getUsuario().getUsername());
+        dto.setData(resposta.getData());
         return dto;
     }
 }
