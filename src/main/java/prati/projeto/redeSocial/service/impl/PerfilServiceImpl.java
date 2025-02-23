@@ -1,7 +1,9 @@
 package prati.projeto.redeSocial.service.impl;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import prati.projeto.redeSocial.exception.RegraNegocioException;
 import prati.projeto.redeSocial.modal.entity.Perfil;
@@ -9,6 +11,7 @@ import prati.projeto.redeSocial.modal.entity.Usuario;
 import prati.projeto.redeSocial.repository.PerfilRepository;
 import prati.projeto.redeSocial.repository.UsuarioRepository;
 import prati.projeto.redeSocial.rest.dto.PerfilDTO;
+import prati.projeto.redeSocial.rest.dto.PerfilResumidoDTO;
 import prati.projeto.redeSocial.rest.dto.UsuarioResumidoDTO;
 import prati.projeto.redeSocial.service.PerfilService;
 
@@ -28,7 +31,7 @@ public class PerfilServiceImpl implements PerfilService {
     }
 
     @Override
-    public PerfilDTO savePerfil(@Valid Perfil perfil) {
+    public PerfilDTO savePerfil(Perfil perfil) {
         Usuario usuarioCompleto = verificarUsuario(perfil.getUsuario());
 
         if (perfilRepository.existsByUsuarioEmail(usuarioCompleto.getEmail())) {
@@ -44,14 +47,16 @@ public class PerfilServiceImpl implements PerfilService {
     @Override
     public void deletePerfil(Integer id) {
         perfilRepository.findById(id)
-                .ifPresentOrElse(
-                        perfilRepository::delete,
-                        () -> { throw new RegraNegocioException("Perfil não encontrado"); }
-                );
+                .ifPresentOrElse(perfil -> {
+                    perfil.setUsuario(null);
+                    perfilRepository.delete(perfil);
+                }, () -> {
+                    throw new RegraNegocioException("Perfil não encontrado");
+                });
     }
 
     @Override
-    public void updatePerfil(Integer id, @Valid Perfil perfil) {
+    public void updatePerfil(Integer id, Perfil perfil) {
         perfilRepository.findById(id)
                 .map(perfilExistente -> {
                     perfil.setId(perfilExistente.getId());
@@ -62,6 +67,33 @@ public class PerfilServiceImpl implements PerfilService {
                     return perfilRepository.save(perfil);
                 })
                 .orElseThrow(() -> new RegraNegocioException("Perfil não encontrado"));
+    }
+
+    @Override
+    public Page<PerfilResumidoDTO> listarPerfil(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Perfil> perfilPage = perfilRepository.findAll(pageable);
+
+        return perfilPage.map(perfil -> new PerfilResumidoDTO(
+           perfil.getUrlPerfil(),
+                perfil.getResumoBio(),
+                perfil.getUsuario().getUsername()
+        ));
+    }
+
+    @Override
+    public PerfilResumidoDTO buscarPorUsername(String username) {
+        Usuario usuario = usuarioRepository.findByUsername(username)
+                .orElseThrow(() -> new RegraNegocioException("Usuário não encontrado para o username: " + username));
+
+        Perfil perfil = perfilRepository.findByUsuario(usuario)
+                .orElseThrow(() -> new RegraNegocioException("Perfil não encontrado para o usuário: " + username));
+
+        return new PerfilResumidoDTO(
+                perfil.getUrlPerfil(),
+                perfil.getResumoBio(),
+                perfil.getUsuario().getUsername()
+        );
     }
 
     private Usuario verificarUsuario(Usuario usuario) {

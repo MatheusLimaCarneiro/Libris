@@ -1,9 +1,8 @@
 package prati.projeto.redeSocial.service;
 
+import org.springframework.data.domain.Page;
 import prati.projeto.redeSocial.rest.dto.ResenhaDTO;
 import prati.projeto.redeSocial.rest.dto.ResenhaViewDTO;
-
-import java.util.List;
 
 public interface ResenhaService {
 
@@ -12,7 +11,7 @@ public interface ResenhaService {
      *
      * @param id o ID da resenha a ser buscada
      * @return um objeto {@link ResenhaViewDTO} representando a resenha encontrada
-     * @throws org.springframework.web.server.ResponseStatusException se a resenha não for encontrada
+     * @throws RegraNegocioException se a resenha não for encontrada
      */
     ResenhaViewDTO getResenhaById(Integer id);
 
@@ -21,7 +20,7 @@ public interface ResenhaService {
      *
      * @param resenhaDTO um objeto {@link ResenhaDTO} contendo os dados da resenha
      * @return o ID da resenha criada
-     * @throws org.springframework.web.server.ResponseStatusException se o perfil ou livro associado não forem encontrados,
+     * @throws RegraNegocioException se o perfil ou livro associado não forem encontrados,
      *         ou se a nota estiver fora do intervalo permitido (0 a 5)
      */
     Integer saveResenha(ResenhaDTO resenhaDTO);
@@ -30,7 +29,7 @@ public interface ResenhaService {
      * Exclui uma resenha pelo seu ID.
      *
      * @param id o ID da resenha a ser excluída
-     * @throws org.springframework.web.server.ResponseStatusException se a resenha não for encontrada
+     * @throws RegraNegocioException se a resenha não for encontrada
      */
     void deleteResenha(Integer id);
 
@@ -39,7 +38,7 @@ public interface ResenhaService {
      *
      * @param id o ID da resenha a ser atualizada
      * @param resenhaDTO um objeto {@link ResenhaDTO} contendo os novos dados da resenha
-     * @throws org.springframework.web.server.ResponseStatusException se a resenha, o perfil ou o livro não forem encontrados
+     * @throws RegraNegocioException se a resenha, o perfil ou o livro não forem encontrados
      */
     void updateResenha(Integer id, ResenhaDTO resenhaDTO);
 
@@ -48,14 +47,14 @@ public interface ResenhaService {
      *
      * @param livroId o ID do livro cujas resenhas serão buscadas
      * @return uma lista de objetos {@link ResenhaViewDTO} representando as resenhas encontradas
-     * @throws org.springframework.web.server.ResponseStatusException se o livro não for encontrado
+     * @throws RegraNegocioException se o livro não for encontrado
      */
-    List<ResenhaViewDTO> findByLivro(Integer livroId);
+    Page<ResenhaViewDTO> findByLivro(Integer livroId, int page, int size);
 
     /**
      * Busca todas as resenhas de todos os perfis.
      *
      * @return uma lista de objetos {@link ResenhaViewDTO} representando todas as resenhas
      */
-    List<ResenhaViewDTO> findAllResenhas();
+    Page<ResenhaViewDTO> findAllResenhas(Integer page, Integer size);
 }
