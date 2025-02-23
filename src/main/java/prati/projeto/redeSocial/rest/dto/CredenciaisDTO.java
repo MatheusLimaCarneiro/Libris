@@ -23,7 +23,7 @@ public class CredenciaisDTO {
     @NotEmpty(message = "O campo senha é obrigatório.")
     @Schema(
             description = "Senha do usuário",
-            example = "senha123"
+            example = "1a2b3c"
     )
     private String senha;
 }

@@ -37,7 +37,7 @@ public class AvaliacaoDTO {
 
     @Schema(
             description = "Nota da avaliação (deve estar entre 1 e 5)",
-            example = "4.5"
+            example = "4"
     )
     @NotNull(message = "A nota da avaliação é obrigatória.")
     @Min(value = 1, message = "A nota não pode ser menor que 1.")

@@ -8,13 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import prati.projeto.redeSocial.modal.enums.StatusLeituraEnum;
 
-/**
- * DTO que representa o status de leitura de um livro por um usuário.
- * <p>
- * Este objeto encapsula informações sobre o status de leitura, incluindo o perfil do usuário,
- * o livro associado, a página atual e o status da leitura.
- * </p>
- */
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
