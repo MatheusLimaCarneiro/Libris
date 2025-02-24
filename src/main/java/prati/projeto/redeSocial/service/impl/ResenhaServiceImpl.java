@@ -40,7 +40,7 @@ public class ResenhaServiceImpl implements ResenhaService {
 
     @Override
     @Transactional
-    public Integer saveResenha(ResenhaDTO resenhaDTO) {
+    public ResenhaViewDTO saveResenha(ResenhaDTO resenhaDTO) {
         Livro livro = validarLivro(resenhaDTO.getLivroId());
         Perfil perfil = validarPerfil(resenhaDTO.getPerfilId());
         validarNota(resenhaDTO.getNota());
@@ -52,7 +52,7 @@ public class ResenhaServiceImpl implements ResenhaService {
 
         Resenha resenha = criarResenha(resenhaDTO, perfil, livro);
         resenhaRepository.save(resenha);
-        return resenha.getId();
+        return convertToViewDTO(resenha, 0, 10);
     }
 
     @Override

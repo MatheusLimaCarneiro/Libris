@@ -22,8 +22,8 @@ public class ResenhaController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ServiceResponse<Integer> save(@RequestBody @Valid ResenhaDTO dto) {
-        Integer resenhaId = resenhaService.saveResenha(dto);
+    public ServiceResponse<ResenhaViewDTO> save(@RequestBody @Valid ResenhaDTO dto) {
+        ResenhaViewDTO resenhaId = resenhaService.saveResenha(dto);
         return new ServiceResponse<>(resenhaId, "Resenha salva com sucesso", true, getFormattedTimestamp());
     }
 

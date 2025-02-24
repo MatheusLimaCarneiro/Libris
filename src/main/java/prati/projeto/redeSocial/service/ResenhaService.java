@@ -19,11 +19,11 @@ public interface ResenhaService {
      * Salva uma nova resenha.
      *
      * @param resenhaDTO um objeto {@link ResenhaDTO} contendo os dados da resenha
-     * @return o ID da resenha criada
+     * @return um objeto {@link ResenhaViewDTO} representando a resenha
      * @throws RegraNegocioException se o perfil ou livro associado não forem encontrados,
      *         ou se a nota estiver fora do intervalo permitido (0 a 5)
      */
-    Integer saveResenha(ResenhaDTO resenhaDTO);
+    ResenhaViewDTO saveResenha(ResenhaDTO resenhaDTO);
 
     /**
      * Exclui uma resenha pelo seu ID.
