@@ -86,6 +86,7 @@ public class RespostaForumServiceImpl implements RespostaForumService {
         dto.setId(respostaForum.getId());
         dto.setTexto(respostaForum.getTexto());
         dto.setNomePerfil(respostaForum.getPerfil().getUsuario().getUsername());
+        dto.setQuantidadeCurtidas(respostaForum.getQuantidadeCurtidas());
         dto.setData(respostaForum.getData());
         return dto;
     }

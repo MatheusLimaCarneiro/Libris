@@ -142,6 +142,7 @@ public class PostForumServiceImpl implements PostForumService {
         dto.setId(resposta.getId());
         dto.setTexto(resposta.getTexto());
         dto.setNomePerfil(resposta.getPerfil().getUsuario().getUsername());
+        dto.setQuantidadeCurtidas(resposta.getQuantidadeCurtidas());
         dto.setData(resposta.getData());
         return dto;
     }

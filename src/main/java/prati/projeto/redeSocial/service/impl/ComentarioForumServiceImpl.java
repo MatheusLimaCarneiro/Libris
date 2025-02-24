@@ -134,6 +134,7 @@ public class ComentarioForumServiceImpl implements ComentarioForumService {
         dto.setId(resposta.getId());
         dto.setTexto(resposta.getTexto());
         dto.setNomePerfil(resposta.getPerfil().getUsuario().getUsername());
+        dto.setQuantidadeCurtidas(resposta.getQuantidadeCurtidas());
         dto.setData(resposta.getData());
         return dto;
     }

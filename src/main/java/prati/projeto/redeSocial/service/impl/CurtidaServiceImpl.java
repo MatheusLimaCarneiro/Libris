@@ -7,10 +7,8 @@ import prati.projeto.redeSocial.exception.RegraNegocioException;
 import prati.projeto.redeSocial.modal.entity.Comentario;
 import prati.projeto.redeSocial.modal.entity.ComentarioForum;
 import prati.projeto.redeSocial.modal.entity.ComentarioResposta;
-import prati.projeto.redeSocial.repository.ComentarioForumRepository;
-import prati.projeto.redeSocial.repository.ComentarioRepository;
-import prati.projeto.redeSocial.repository.ComentarioRespostaRepository;
-import prati.projeto.redeSocial.repository.PerfilRepository;
+import prati.projeto.redeSocial.modal.entity.RespostaForum;
+import prati.projeto.redeSocial.repository.*;
 import prati.projeto.redeSocial.service.CurtidaService;
 
 @Service
@@ -21,6 +19,7 @@ public class CurtidaServiceImpl implements CurtidaService {
     private final ComentarioRepository comentarioRepository;
     private final ComentarioRespostaRepository respostaRepository;
     private final ComentarioForumRepository comentarioForumRepository;
+    private final RespostaForumRepository respostaForumRepository;
 
     @Override
     @Transactional
@@ -112,6 +111,36 @@ public class CurtidaServiceImpl implements CurtidaService {
         comentarioForumRepository.save(comentarioForum);
     }
 
+    @Override
+    @Transactional
+    public void curtirRespostaForum(Integer perfilId, Integer respostaForumId) {
+        validarPerfil(perfilId);
+        RespostaForum respostaForum = buscarRespostaForum(respostaForumId);
+
+        if (respostaForum.getPerfisQueCurtiram().contains(perfilId)) {
+            throw new RegraNegocioException("Você já curtiu esta resposta.");
+        }
+
+        respostaForum.getPerfisQueCurtiram().add(perfilId);
+        respostaForum.setQuantidadeCurtidas(respostaForum.getQuantidadeCurtidas() + 1);
+        respostaForumRepository.save(respostaForum);
+    }
+
+    @Override
+    @Transactional
+    public void descurtirRespostaForum(Integer perfilId, Integer respostaForumId) {
+        validarPerfil(perfilId);
+        RespostaForum respostaForum = buscarRespostaForum(respostaForumId);
+
+        if (!respostaForum.getPerfisQueCurtiram().contains(perfilId)) {
+            throw new RegraNegocioException("Você ainda não curtiu esta resposta.");
+        }
+
+        respostaForum.getPerfisQueCurtiram().remove(perfilId);
+        respostaForum.setQuantidadeCurtidas(respostaForum.getQuantidadeCurtidas() - 1);
+        respostaForumRepository.save(respostaForum);
+    }
+
     private void validarPerfil(Integer perfilId) {
         perfilRepository.findById(perfilId)
                 .orElseThrow(() -> new RegraNegocioException("Perfil não encontrado"));
@@ -130,5 +159,10 @@ public class CurtidaServiceImpl implements CurtidaService {
     private ComentarioForum buscarComentarioForum(Integer comentarioForumId) {
         return comentarioForumRepository.findById(comentarioForumId)
                 .orElseThrow(() -> new RegraNegocioException("Comentário do fórum não encontrado"));
+    }
+
+    private RespostaForum buscarRespostaForum(Integer respostaForumId) {
+        return respostaForumRepository.findById(respostaForumId)
+                .orElseThrow(() -> new RegraNegocioException("Resposta do fórum não encontrada"));
     }
 }

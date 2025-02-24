@@ -9,5 +9,6 @@ public class RespostaForumResponseDTO {
     private Integer id;
     private String texto;
     private String nomePerfil;
+    private Integer quantidadeCurtidas;
     private LocalDateTime data;
 }

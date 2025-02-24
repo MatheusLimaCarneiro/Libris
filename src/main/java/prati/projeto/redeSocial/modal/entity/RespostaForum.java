@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -28,6 +30,14 @@ public class RespostaForum {
 
     @Column(length = 1000)
     private String texto;
+
+    @Column(name = "quantidade_curtidas")
+    private Integer quantidadeCurtidas = 0;
+
+    @ElementCollection
+    @CollectionTable(name = "curtidas_resposta_forum", joinColumns = @JoinColumn(name = "resposta_id"))
+    @Column(name = "perfil_id")
+    private Set<Integer> perfisQueCurtiram = new HashSet<>();
 
     @Column(name = "data_resposta")
     private LocalDateTime data;
