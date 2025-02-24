@@ -34,4 +34,7 @@ public class ResenhaDTO {
     @Min(value = 1, message = "A nota deve ser no mínimo 1")
     @Max(value = 5, message = "A nota deve ser no máximo 5")
     private Double nota;
+
+    @NotNull(message = "A nota é obrigatória")
+    private boolean spoiler;
 }

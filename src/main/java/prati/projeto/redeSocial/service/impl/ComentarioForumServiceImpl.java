@@ -48,6 +48,7 @@ public class ComentarioForumServiceImpl implements ComentarioForumService {
         comentario.setPerfil(perfil);
         comentario.setPostForum(post);
         comentario.setData(LocalDateTime.now());
+        comentario.setSpoiler(dto.isSpoiler());
         comentario.setRespostas(new ArrayList<>());
 
         comentarioForumRepository.save(comentario);
@@ -119,6 +120,7 @@ public class ComentarioForumServiceImpl implements ComentarioForumService {
         dto.setTexto(comentario.getTexto());
         dto.setNomePerfil(comentario.getPerfil().getUsuario().getUsername());
         dto.setData(comentario.getData());
+        dto.setSpoiler(comentario.isSpoiler());
         dto.setQuantidadeCurtidas(comentario.getQuantidadeCurtidas());
 
         List<RespostaForumResponseDTO> respostasDTO = comentario.getRespostas().stream()

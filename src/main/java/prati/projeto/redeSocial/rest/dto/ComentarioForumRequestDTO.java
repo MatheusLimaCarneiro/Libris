@@ -6,4 +6,5 @@ import lombok.Data;
 public class ComentarioForumRequestDTO {
     private Integer perfilId;
     private String texto;
+    private boolean spoiler;
 }

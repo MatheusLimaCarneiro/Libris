@@ -42,4 +42,10 @@ public class Resenha {
 
     @OneToMany(mappedBy = "resenha", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Avaliacao> avaliacoes = new ArrayList<>();
+
+    @Column(name = "media_resenha")
+    private Integer media = 0;
+
+    @Column(name = " possui_spoiler")
+    private boolean spoiler;
 }

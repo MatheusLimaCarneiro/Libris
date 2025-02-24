@@ -12,4 +12,5 @@ public class ComentarioForumResponseDTO {
     private LocalDateTime data;
     private Integer quantidadeCurtidas;
     private List<RespostaForumResponseDTO> respostas;
+    private boolean spoiler;
 }

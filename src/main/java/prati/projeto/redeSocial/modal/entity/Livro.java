@@ -85,4 +85,8 @@ public class Livro {
     @NotNull(message = "Campo data de publicação é obrigatório")
     @Schema(description = "Data de publicação do livro", example = "1954-07-29")
     private LocalDate dataPublicacao;
+
+    @Column(name = "media_livro")
+    @Schema(description = "Media com base na avaliação do livro")
+    private Integer media = 0;
 }

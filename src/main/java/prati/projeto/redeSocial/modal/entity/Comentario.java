@@ -46,4 +46,7 @@ public class Comentario {
 
     @OneToMany(mappedBy = "comentarioOriginal", cascade = CascadeType.ALL)
     private List<ComentarioResposta> respostas;
+
+    @Column(name = " possui_spoiler")
+    private boolean spoiler;
 }

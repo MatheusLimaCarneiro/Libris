@@ -129,6 +129,7 @@ public class ResenhaServiceImpl implements ResenhaService {
         resenha.setNota(dto.getNota());
         resenha.setDataPublicacao(LocalDateTime.now());
         resenha.setDataEdicao(LocalDateTime.now());
+        resenha.setSpoiler(dto.isSpoiler());
         return resenha;
     }
 
@@ -151,6 +152,8 @@ public class ResenhaServiceImpl implements ResenhaService {
                 resenha.getDataPublicacao().toString(),
                 resenha.getDataEdicao().toString(),
                 resenha.getNota(),
+                resenha.isSpoiler(),
+                resenha.getMedia(),
                 avaliacoesDTO
         );
     }

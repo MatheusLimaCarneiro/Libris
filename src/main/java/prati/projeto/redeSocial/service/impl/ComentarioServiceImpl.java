@@ -39,6 +39,7 @@ public class ComentarioServiceImpl implements ComentarioService {
         comentario.setPerfil(perfil);
         comentario.setLivro(livro);
         comentario.setNota(dto.getNota());
+        comentario.setSpoiler(dto.isSpoiler());
         comentario.setRespostas(new ArrayList<>());
 
         comentario = comentarioRepository.save(comentario);
@@ -137,6 +138,7 @@ public class ComentarioServiceImpl implements ComentarioService {
         dto.setNota(comentario.getNota());
         dto.setDataComentario(comentario.getDataComentario());
         dto.setQuantidadeCurtidas(comentario.getQuantidadeCurtidas());
+        dto.setSpoiler(comentario.isSpoiler());
         return dto;
     }
 }

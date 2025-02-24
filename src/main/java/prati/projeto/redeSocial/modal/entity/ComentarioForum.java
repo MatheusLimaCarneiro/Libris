@@ -45,4 +45,9 @@ public class ComentarioForum {
     private Set<Integer> perfisQueCurtiram = new HashSet<>();
 
     @OneToMany(mappedBy = "comentarioForum", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<RespostaForum> respostas = new ArrayList<>();}
+    private List<RespostaForum> respostas = new ArrayList<>();
+
+    @Column(name = " possui_spoiler")
+    private boolean spoiler;
+
+}

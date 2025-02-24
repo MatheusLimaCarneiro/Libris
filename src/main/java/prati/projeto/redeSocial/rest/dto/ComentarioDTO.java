@@ -36,4 +36,7 @@ public class ComentarioDTO {
     private Integer quantidadeCurtidas;
 
     private List<RespostaDTO> respostas = new ArrayList<>();
+
+    @NotNull(message = "A nota é obrigatória")
+    private boolean spoiler;
 }
