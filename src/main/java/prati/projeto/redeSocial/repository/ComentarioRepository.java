@@ -9,5 +9,5 @@ import java.util.List;
 
 public interface ComentarioRepository extends JpaRepository<Comentario, Integer> {
     Page<Comentario> findAll(Pageable pageable);
-    Page<Comentario> findByLivroId(Integer livroId, Pageable pageable);
+    Page<Comentario> findByGoogleIdLivro(String googleIdLivro, Pageable pageable);
 }

@@ -20,7 +20,7 @@ public class ComentarioDTO {
     private Integer perfilId;
 
     @NotNull(message = "Informe o código do livro")
-    private Integer livroId;
+    private String googleId;
 
     @NotEmpty(message = "Campo de texto é obrigatório")
     @Pattern(regexp = ".*\\S.*", message = "O texto não pode conter apenas espaços.")

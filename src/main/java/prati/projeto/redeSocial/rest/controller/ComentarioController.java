@@ -57,7 +57,7 @@ public class ComentarioController {
     @GetMapping("/listar/livro/{livroId}")
     @ResponseStatus(HttpStatus.OK)
     public ServiceResponse<Page<ComentarioDTO>> listarPorLivro(
-            @PathVariable Integer livroId,
+            @PathVariable String livroId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
