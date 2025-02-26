@@ -29,6 +29,9 @@ public class Resenha {
     @JoinColumn(name = "FK_livro")
     private Livro livro;
 
+    @Column(name = "google_id_livro")
+    private String googleIdLivro;
+
     private String titulo;
     private String autor;
     private String texto;

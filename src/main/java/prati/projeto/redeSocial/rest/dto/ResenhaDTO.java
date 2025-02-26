@@ -13,8 +13,8 @@ public class ResenhaDTO {
     @NotNull(message = " O ID do perfil é obrigatório")
     private Integer perfilId;
 
-    @NotNull(message = "O ID do livro é obrigatório")
-    private Integer livroId;
+    @NotEmpty(message = "O Google ID do livro é obrigatório")
+    private String googleId;
 
     @NotEmpty(message = "O título é obrigatório")
     @Pattern(regexp = ".*\\S.*", message = "O título não pode conter apenas espaços.")

@@ -8,15 +8,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import prati.projeto.redeSocial.exception.RegraNegocioException;
 import prati.projeto.redeSocial.modal.entity.Perfil;
+import prati.projeto.redeSocial.modal.entity.Livro;
+import prati.projeto.redeSocial.modal.entity.Resenha;
 import prati.projeto.redeSocial.repository.PerfilRepository;
+import prati.projeto.redeSocial.repository.LivroRepository;
+import prati.projeto.redeSocial.repository.ResenhaRepository;
 import prati.projeto.redeSocial.rest.dto.AvaliacaoDTO;
 import prati.projeto.redeSocial.rest.dto.LivroResumidoDTO;
 import prati.projeto.redeSocial.rest.dto.ResenhaDTO;
 import prati.projeto.redeSocial.rest.dto.ResenhaViewDTO;
-import prati.projeto.redeSocial.modal.entity.Livro;
-import prati.projeto.redeSocial.modal.entity.Resenha;
-import prati.projeto.redeSocial.repository.LivroRepository;
-import prati.projeto.redeSocial.repository.ResenhaRepository;
 import prati.projeto.redeSocial.service.ResenhaService;
 
 import java.time.LocalDateTime;
@@ -33,89 +33,87 @@ public class ResenhaServiceImpl implements ResenhaService {
 
     @Override
     public ResenhaViewDTO getResenhaById(Integer id) {
-        Resenha resenha = resenhaRepository.findById(id)
-                .orElseThrow(() -> new RegraNegocioException("Resenha com ID " + id + " não encontrada"));
-        return convertToViewDTO(resenha, 0, 10);
+        Resenha resenha = buscarResenhaPorId(id);
+        return converterParaViewDTO(resenha, 0, 10);
     }
 
     @Override
     @Transactional
     public ResenhaViewDTO saveResenha(ResenhaDTO resenhaDTO) {
-        Livro livro = validarLivro(resenhaDTO.getLivroId());
-        Perfil perfil = validarPerfil(resenhaDTO.getPerfilId());
         validarNota(resenhaDTO.getNota());
 
-        Resenha resenhaExistente = resenhaRepository.findByPerfilIdAndLivroId(perfil.getId(), livro.getId());
-        if (resenhaExistente != null) {
-            throw new RegraNegocioException("O perfil já possui uma resenha para este livro.");
-        }
+        Perfil perfil = buscarPerfilPorId(resenhaDTO.getPerfilId());
+        Livro livro = buscarLivroPorGoogleId(resenhaDTO.getGoogleId());
+
+        validarResenhaExistente(perfil.getId(), livro.getId());
 
         Resenha resenha = criarResenha(resenhaDTO, perfil, livro);
         resenhaRepository.save(resenha);
-        return convertToViewDTO(resenha, 0, 10);
+
+        return converterParaViewDTO(resenha, 0, 10);
     }
 
     @Override
     @Transactional
     public void deleteResenha(Integer id) {
-        Resenha resenha = resenhaRepository.findById(id)
-                .orElseThrow(() -> new RegraNegocioException("Resenha não encontrada"));
-
+        Resenha resenha = buscarResenhaPorId(id);
         resenha.getAvaliacoes().clear();
-
         resenhaRepository.delete(resenha);
     }
 
     @Override
     @Transactional
     public void updateResenha(Integer id, ResenhaDTO resenhaDTO) {
-        Resenha resenhaExistente = resenhaRepository.findById(id)
-                .orElseThrow(() -> new RegraNegocioException("Resenha não encontrada"));
+        Resenha resenhaExistente = buscarResenhaPorId(id);
+        Perfil perfil = buscarPerfilPorId(resenhaDTO.getPerfilId());
+        Livro livro = buscarLivroPorGoogleId(resenhaDTO.getGoogleId());
 
-        Perfil perfil = validarPerfil(resenhaDTO.getPerfilId());
-        Livro livro = validarLivro(resenhaDTO.getLivroId());
-        validarNota(resenhaDTO.getNota());
-
-        resenhaExistente.setPerfil(perfil);
-        resenhaExistente.setLivro(livro);
-        resenhaExistente.setTitulo(resenhaDTO.getTitulo());
-        resenhaExistente.setAutor(resenhaDTO.getAutor());
-        resenhaExistente.setTexto(resenhaDTO.getTexto());
-        resenhaExistente.setNota(resenhaDTO.getNota());
-        resenhaExistente.setDataEdicao(LocalDateTime.now());
-
+        atualizarResenhaExistente(resenhaExistente, resenhaDTO, perfil, livro);
         resenhaRepository.save(resenhaExistente);
     }
 
     @Override
-    public Page<ResenhaViewDTO> findByLivro(Integer livroId, int page, int size) {
-        validarLivro(livroId);
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Resenha> resenhasPage = resenhaRepository.findByLivroId(livroId, pageable);
-        return resenhasPage.map(resenha -> convertToViewDTO(resenha, 0, 10));
-    }
+    public Page<ResenhaViewDTO> findByGoogleId(String googleId, int page, int size) {
 
+        buscarLivroPorGoogleId(googleId);
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Resenha> resenhasPage = resenhaRepository.findByGoogleIdLivro(googleId, pageable);
+        return resenhasPage.map(resenha -> converterParaViewDTO(resenha, 0, 10));
+    }
 
     @Override
     public Page<ResenhaViewDTO> findAllResenhas(Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Resenha> resenhasPage = resenhaRepository.findAll(pageable);
-        return resenhasPage.map(resenha -> convertToViewDTO(resenha, 0, 10));
+        return resenhasPage.map(resenha -> converterParaViewDTO(resenha, 0, 10));
     }
 
-    private Perfil validarPerfil(Integer perfilId) {
+
+    private Resenha buscarResenhaPorId(Integer id) {
+        return resenhaRepository.findById(id)
+                .orElseThrow(() -> new RegraNegocioException("Resenha com ID " + id + " não encontrada."));
+    }
+
+    private Perfil buscarPerfilPorId(Integer perfilId) {
         return perfilRepository.findById(perfilId)
-                .orElseThrow(() -> new RegraNegocioException("Perfil não encontrado"));
+                .orElseThrow(() -> new RegraNegocioException("Perfil com ID " + perfilId + " não encontrado."));
     }
 
-    private Livro validarLivro(Integer livroId) {
-        return livroRepository.findById(livroId)
-                .orElseThrow(() -> new RegraNegocioException("Livro não encontrado"));
+    private Livro buscarLivroPorGoogleId(String googleId) {
+        return livroRepository.findByGoogleId(googleId)
+                .orElseThrow(() -> new RegraNegocioException("Livro com Google ID " + googleId + " não encontrado."));
     }
 
     private void validarNota(Double nota) {
-        if (nota < 0 || nota > 5) {
-            throw new RegraNegocioException("A nota deve estar entre 0 e 5");
+        if (nota == null || nota < 0 || nota > 5) {
+            throw new RegraNegocioException("A nota deve ser um valor entre 0 e 5.");
+        }
+    }
+
+    private void validarResenhaExistente(Integer perfilId, Integer livroId) {
+        if (resenhaRepository.findByPerfilIdAndLivroId(perfilId, livroId) != null) {
+            throw new RegraNegocioException("O perfil já possui uma resenha para este livro.");
         }
     }
 
@@ -123,6 +121,7 @@ public class ResenhaServiceImpl implements ResenhaService {
         Resenha resenha = new Resenha();
         resenha.setPerfil(perfil);
         resenha.setLivro(livro);
+        resenha.setGoogleIdLivro(dto.getGoogleId());
         resenha.setTexto(dto.getTexto());
         resenha.setTitulo(dto.getTitulo());
         resenha.setAutor(dto.getAutor());
@@ -133,9 +132,19 @@ public class ResenhaServiceImpl implements ResenhaService {
         return resenha;
     }
 
-    private ResenhaViewDTO convertToViewDTO(Resenha resenha, int page, int size) {
-        Page<AvaliacaoDTO> avaliacoesPage = avaliacaoService.listarAvaliacaoPorResenha(resenha.getId(), page, size);
+    private void atualizarResenhaExistente(Resenha resenha, ResenhaDTO dto, Perfil perfil, Livro livro) {
+        resenha.setPerfil(perfil);
+        resenha.setLivro(livro);
+        resenha.setGoogleIdLivro(dto.getGoogleId());
+        resenha.setTexto(dto.getTexto());
+        resenha.setTitulo(dto.getTitulo());
+        resenha.setAutor(dto.getAutor());
+        resenha.setNota(dto.getNota());
+        resenha.setDataEdicao(LocalDateTime.now());
+    }
 
+    private ResenhaViewDTO converterParaViewDTO(Resenha resenha, int page, int size) {
+        Page<AvaliacaoDTO> avaliacoesPage = avaliacaoService.listarAvaliacaoPorResenha(resenha.getId(), page, size);
         List<AvaliacaoDTO> avaliacoesDTO = avaliacoesPage.getContent();
 
         return new ResenhaViewDTO(
@@ -146,6 +155,7 @@ public class ResenhaServiceImpl implements ResenhaService {
                         resenha.getLivro().getAutores(),
                         resenha.getLivro().getDataPublicacao().toString()
                 ),
+                resenha.getGoogleIdLivro(),
                 resenha.getTitulo(),
                 resenha.getAutor(),
                 resenha.getTexto(),
@@ -158,4 +168,3 @@ public class ResenhaServiceImpl implements ResenhaService {
         );
     }
 }
-

@@ -11,6 +11,7 @@ public class ResenhaViewDTO {
     private Integer id;
     private Integer perfilId;
     private LivroResumidoDTO livro;
+    private String googleId;
     private String titulo;
     private String autor;
     private String texto;
