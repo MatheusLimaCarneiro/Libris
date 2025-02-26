@@ -19,9 +19,12 @@ import java.time.LocalDate;
 public class Livro {
 
     @Id
-    @NotNull(message = "O campo ID é obrigatório.")
     @Schema(description = "ID único do livro", example = "1")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    @Column(unique = true)
+    private String googleId;
 
     @Column(length = 80)
     @NotEmpty(message = "Campo título é obrigatório")

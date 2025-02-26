@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import prati.projeto.redeSocial.modal.entity.Livro;
+import prati.projeto.redeSocial.rest.dto.LivroResponseDTO;
 import prati.projeto.redeSocial.rest.dto.LivroResumidoDTO;
 import prati.projeto.redeSocial.rest.response.ServiceResponse;
 import prati.projeto.redeSocial.service.LivroService;
@@ -56,6 +57,30 @@ public class LivroController {
     }
 
     @Operation(
+            summary = "Buscar livro por Google ID",
+            description = "Retorna as informações detalhadas de um livro com base no seu Google ID.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Livro encontrado",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ServiceResponse.class)
+                            )
+                    ),
+                    @ApiResponse(responseCode = "404", description = "Livro não encontrado")
+            }
+    )
+    @GetMapping("/google/{googleId}")
+    @ResponseStatus(HttpStatus.OK)
+    public ServiceResponse<Livro> getLivroByGoogleId(
+            @Parameter(description = "Google ID do livro", example = "XYZ123")
+            @PathVariable String googleId) {
+        Livro livro = livroService.getLivroByGoogleId(googleId);
+        return new ServiceResponse<>(livro, "Livro encontrado", true, getFormattedTimestamp());
+    }
+
+    @Operation(
             summary = "Criar novo livro",
             description = "Cria um novo livro com os dados fornecidos.",
             responses = {
@@ -72,8 +97,8 @@ public class LivroController {
     )
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ServiceResponse<Livro> saveLivro(@RequestBody @Valid Livro livro) {
-        Livro savedLivro = livroService.saveLivro(livro);
+    public ServiceResponse<Livro> saveLivro(@RequestBody @Valid LivroResponseDTO livroDTO) {
+        Livro savedLivro = livroService.saveLivro(livroDTO);
         return new ServiceResponse<>(savedLivro, "Livro salvo com sucesso", true, getFormattedTimestamp());
     }
 
@@ -113,8 +138,8 @@ public class LivroController {
     public ServiceResponse<Void> updateLivro(
             @Parameter(description = "ID do livro a ser atualizado", example = "1")
             @PathVariable Integer id,
-            @RequestBody @Valid Livro livro) {
-        livroService.updateLivro(id, livro);
+            @RequestBody @Valid LivroResponseDTO livroDTO) {
+        livroService.updateLivro(id, livroDTO);
         return new ServiceResponse<>(null, "Livro atualizado com sucesso", true, getFormattedTimestamp());
     }
 
@@ -130,7 +155,10 @@ public class LivroController {
                                     schema = @Schema(implementation = ServiceResponse.class)
                             )
                     ),
-                    @ApiResponse(responseCode = "404", description = "Nenhum livro encontrado")
+                            @ApiResponse(
+                                    responseCode = "404",
+                                    description = "Nenhum livro encontrado"
+                            )
             }
     )
     @GetMapping("/search")
@@ -156,7 +184,10 @@ public class LivroController {
                                     schema = @Schema(implementation = ServiceResponse.class)
                             )
                     ),
-                    @ApiResponse(responseCode = "204", description = "Nenhum livro encontrado")
+                            @ApiResponse(
+                                    responseCode = "204",
+                                    description = "Nenhum livro encontrado"
+                            )
             }
     )
     @GetMapping("/all")
