@@ -10,4 +10,5 @@ public interface PostForumService {
     Page<PostForumResponseDTO> listarTodos(int page, int size);
     PostForumResponseDTO buscarPorId(Integer id);
     void deletarPost(Integer id);
+    Page<PostForumResponseDTO> filtrarPosts(String tags, String username, String livroNome, int page, int size);
 }

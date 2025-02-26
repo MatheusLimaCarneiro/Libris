@@ -51,6 +51,21 @@ public class PostForumController {
         postForumService.deletarPost(id);
     }
 
+
+    @GetMapping("/filtrar")
+    @ResponseStatus(HttpStatus.OK)
+    public ServiceResponse<Page<PostForumResponseDTO>> filtrarPosts(
+            @RequestParam(required = false) String tags,
+            @RequestParam(required = false) String username,
+            @RequestParam(required = false) String livroNome,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Page<PostForumResponseDTO> posts = postForumService.filtrarPosts(tags, username, livroNome, page, size);
+        String mensagem = posts.isEmpty() ? "Nenhum post encontrado" : "Posts encontrados";
+        return new ServiceResponse<>(posts, mensagem, !posts.isEmpty(), getFormattedTimestamp());
+    }
+
     private String getFormattedTimestamp() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return LocalDateTime.now().format(formatter);

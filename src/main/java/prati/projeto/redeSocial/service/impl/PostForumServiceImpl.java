@@ -100,6 +100,26 @@ public class PostForumServiceImpl implements PostForumService {
         postForumRepository.deleteById(id);
     }
 
+    @Override
+    public Page<PostForumResponseDTO> filtrarPosts(String tags, String username, String livroNome, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<PostForum> postsPage = postForumRepository.filtrarPosts(tags, username, livroNome, pageable);
+
+        return postsPage.map(post -> {
+            PostForumResponseDTO dto = converterParaDTO(post);
+
+            Pageable comentariosPageable = PageRequest.of(0, 10);
+            Page<ComentarioForum> comentariosPage = comentarioForumRepository.findByPostForumId(post.getId(), comentariosPageable);
+
+            List<ComentarioForumResponseDTO> comentariosDTO = comentariosPage.getContent().stream()
+                    .map(this::converterComentarioParaDTO)
+                    .collect(Collectors.toList());
+            dto.setComentarios(comentariosDTO);
+
+            return dto;
+        });
+    }
+
     private PostForumResponseDTO converterParaDTO(PostForum post) {
         PostForumResponseDTO dto = new PostForumResponseDTO();
         dto.setId(post.getId());
