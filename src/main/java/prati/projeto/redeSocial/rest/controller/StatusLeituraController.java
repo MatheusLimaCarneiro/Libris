@@ -33,7 +33,7 @@ public class StatusLeituraController {
     @Operation(summary = "Criar Status de Leitura", description = "Cria um novo status de leitura para um livro.")
     @ApiResponse(responseCode = "201", description = "Status de leitura criado com sucesso.")
     public ServiceResponse<StatusLeituraDTO> criarStatus(@RequestBody @Valid StatusLeituraDTO dto) {
-        StatusLeituraDTO statusCriado = statusLeituraService.salvarStatus(dto.getPerfilId(), dto.getLivroId(), dto.getStatus(), dto.getPagina());
+        StatusLeituraDTO statusCriado = statusLeituraService.salvarStatus(dto.getPerfilId(), dto.getGoogleId(), dto.getStatus(), dto.getPagina());
         return new ServiceResponse<>(statusCriado, "Status de leitura criado com sucesso", true, getFormattedTimestamp());
     }
 

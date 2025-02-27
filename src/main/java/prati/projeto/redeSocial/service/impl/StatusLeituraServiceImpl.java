@@ -27,10 +27,10 @@ public class StatusLeituraServiceImpl implements StatusLeituraService {
     private final LivroRepository livroRepository;
 
     @Override
-    public StatusLeituraDTO salvarStatus(Integer perfilId, Integer livroId, StatusLeituraEnum statusLeituraEnum, Integer pagina) {
+    public StatusLeituraDTO salvarStatus(Integer perfilId, String livroId, StatusLeituraEnum statusLeituraEnum, Integer pagina) {
         Perfil perfil = perfilRepository.findById(perfilId)
                 .orElseThrow(() -> new RegraNegocioException("Perfil não encontrado"));
-        Livro livro = livroRepository.findById(livroId)
+        Livro livro = livroRepository.findByGoogleId(livroId)
                 .orElseThrow(() -> new RegraNegocioException("Livro não encontrado"));
 
         if (pagina < 1 || pagina > livro.getNumeroPaginas()) {
@@ -46,6 +46,7 @@ public class StatusLeituraServiceImpl implements StatusLeituraService {
         StatusLeitura novoStatus = new StatusLeitura();
         novoStatus.setPerfil(perfil);
         novoStatus.setLivro(livro);
+        novoStatus.setGoogleIdLivro(livro.getGoogleId());
         novoStatus.setPagina(pagina);
         novoStatus.setStatusLeitura(statusLeituraEnum);
 
@@ -80,7 +81,7 @@ public class StatusLeituraServiceImpl implements StatusLeituraService {
         return new StatusLeituraDTO(
                 statusLeitura.getId(),
                 statusLeitura.getPerfil().getId(),
-                statusLeitura.getLivro().getId(),
+                statusLeitura.getLivro().getGoogleId(),
                 statusLeitura.getPagina(),
                 statusLeitura.getStatusLeitura()
         );

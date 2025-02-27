@@ -2,6 +2,7 @@ package prati.projeto.redeSocial.rest.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,9 +22,10 @@ public class StatusLeituraDTO {
     @Schema(description = "ID do perfil do usuário", example = "123")
     private Integer perfilId;
 
-    @NotNull(message = "O ID do livro é obrigatório")
-    @Schema(description = "ID do livro associado", example = "456")
-    private Integer livroId;
+    @NotEmpty(message = "O ID do livro é obrigatório")
+    @Schema(description = "ID do livro da api do Google associado", example = "456")
+    private String googleId;
+
 
     @NotNull(message = "A página do livro é obrigatória")
     @Min(value = 1, message = "A página deve ser maior ou igual a 1")
