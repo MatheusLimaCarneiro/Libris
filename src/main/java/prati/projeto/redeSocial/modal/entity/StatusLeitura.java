@@ -32,7 +32,7 @@ public class StatusLeitura {
 
     @Column(name = "google_id_livro")
     @Schema(description = "ID do livro da api do Google associado", example = "456")
-    private String c;
+    private String googleIdLivro;
 
     @Schema(description = "Número da página que o usuário parou de ler", example = "150")
     private Integer pagina;
