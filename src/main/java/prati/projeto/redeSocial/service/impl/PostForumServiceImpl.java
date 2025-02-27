@@ -39,7 +39,7 @@ public class PostForumServiceImpl implements PostForumService {
         Perfil perfil = perfilRepository.findById(dto.getPerfilId())
                 .orElseThrow(() -> new RegraNegocioException("Perfil não encontrado!"));
 
-        Livro livro = livroRepository.findById(dto.getLivroId())
+        Livro livro = livroRepository.findByGoogleId(dto.getGoogleId())
                 .orElseThrow(() -> new RegraNegocioException("Livro não encontrado!"));
 
         PostForum post = new PostForum();
@@ -48,6 +48,8 @@ public class PostForumServiceImpl implements PostForumService {
         post.setPossuiSpoiler(dto.getPossuiSpoiler());
         post.setPerfil(perfil);
         post.setLivro(livro);
+        post.setGoogleIdLivro(livro.getGoogleId());
+        post.setGoogleIdLivro(dto.getGoogleId());
         post.setComentarios(new ArrayList<>());
 
         postForumRepository.save(post);

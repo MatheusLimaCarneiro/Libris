@@ -36,6 +36,9 @@ public class PostForum {
     @JoinColumn(name = "livro_id")
     private Livro livro;
 
+    @Column(name = "google_id_livro")
+    private String googleIdLivro;
+
     @Column(name = "data_post")
     private LocalDateTime dataCriacao = LocalDateTime.now();
 

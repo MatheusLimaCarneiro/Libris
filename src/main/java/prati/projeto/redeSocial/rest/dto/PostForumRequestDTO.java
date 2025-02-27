@@ -1,6 +1,8 @@
 package prati.projeto.redeSocial.rest.dto;
 
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -22,6 +24,6 @@ public class PostForumRequestDTO {
     @NotNull(message = "O ID do perfil é obrigatório.")
     private Integer perfilId;
 
-    @NotNull(message = "O ID do livro é obrigatório.")
-    private Integer livroId;
+    @NotEmpty(message = "Informe o código do livro")
+    private String googleId;
 }
