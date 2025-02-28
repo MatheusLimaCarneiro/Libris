@@ -12,4 +12,5 @@ import java.util.Optional;
 public interface StatusLeituraRepository extends JpaRepository<StatusLeitura, Integer> {
     Optional<StatusLeitura> findByPerfilAndLivro(Perfil perfil, Livro livro);
     Page<StatusLeitura> findAll(Pageable pageable);
+    Page<StatusLeitura>findByPerfil(Perfil perfil, Pageable pageable);
 }

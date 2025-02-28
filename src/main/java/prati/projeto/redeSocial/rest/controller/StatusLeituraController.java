@@ -60,6 +60,25 @@ public class StatusLeituraController {
         return new ServiceResponse<>(status, mensagem, !status.isEmpty(), getFormattedTimestamp());
     }
 
+    @GetMapping("/perfil/{username}")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(
+            summary = "Listar Status de Leitura por Perfil",
+            description = "Retorna uma lista paginada de status de leitura associados ao perfil de um usuário, com base no username."
+    )
+    @ApiResponse(responseCode = "200", description = "Lista de status de leitura retornada com sucesso.")
+    @ApiResponse(responseCode = "404", description = "Usuário ou perfil não encontrado.")
+    public ServiceResponse<Page<StatusLeituraDTO>> listarStatusPorPerfil(
+            @PathVariable @Parameter(description = "Username do usuário associado ao perfil", example = "usuario123") String username,
+            @RequestParam(defaultValue = "0") @Parameter(description = "Número da página", example = "0") int page,
+            @RequestParam(defaultValue = "10") @Parameter(description = "Número de itens por página", example = "10") int size) {
+
+        Page<StatusLeituraDTO> status = statusLeituraService.listarStatusPorPerfil(username, page, size);
+        String mensagem = status.isEmpty() ? "Nenhum status de leitura encontrado para o perfil" : "Status de leitura encontrados para o perfil";
+
+        return new ServiceResponse<>(status, mensagem, !status.isEmpty(), getFormattedTimestamp());
+    }
+
     private String getFormattedTimestamp() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return LocalDateTime.now().format(formatter);

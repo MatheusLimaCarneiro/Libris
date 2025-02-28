@@ -51,4 +51,6 @@ public interface StatusLeituraService {
      */
     Page<StatusLeituraDTO> listarStatus(int page, int size);
 
+    Page<StatusLeituraDTO> listarStatusPorPerfil(String username, int page, int size);
+
 }
