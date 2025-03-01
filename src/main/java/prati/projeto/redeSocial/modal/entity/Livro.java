@@ -19,9 +19,13 @@ import java.time.LocalDate;
 public class Livro {
 
     @Id
-    @NotNull(message = "O campo ID é obrigatório.")
     @Schema(description = "ID único do livro", example = "1")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    @Column(unique = true)
+    @Schema(description = "Google ID do livro", example = "abc123")
+    private String googleId;
 
     @Column(length = 80)
     @NotEmpty(message = "Campo título é obrigatório")
@@ -34,18 +38,19 @@ public class Livro {
     private String subtitulo;
 
     @Column(length = 80)
-    @NotEmpty(message = "Campo autores é obrigatório")
+    @NotBlank(message = "Os autores são obrigatórios")
     @Pattern(regexp = ".*\\S.*", message = "Os autores não podem conter apenas espaços.")
     @Schema(description = "Autores do livro", example = "J.R.R. Tolkien")
     private String autores;
 
     @Column(length = 50)
-    @NotEmpty(message = "Campo editora é obrigatório")
+    @NotBlank(message = "A editora é obrigatória")
     @Pattern(regexp = ".*\\S.*", message = "A editora não pode conter apenas espaços.")
     @Schema(description = "Nome da editora", example = "HarperCollins")
     private String editora;
 
     @Column(length = 200)
+    @Size(max = 200, message = "A sinopse deve ter no máximo 200 caracteres")
     @Schema(description = "Sinopse do livro", example = "Uma aventura épica em uma terra fantástica.")
     private String sinopse;
 
@@ -72,7 +77,7 @@ public class Livro {
     private String categoria;
 
     @Column(length = 500)
-    @URL(message = "Campo URL da capa deve ser uma URL válida")
+    @URL(message = "A URL da capa deve ser uma URL válida")
     @NotEmpty(message = "Campo URL da capa é obrigatório")
     @Schema(description = "URL da capa do livro", example = "https://example.com/capa.jpg")
     private String url_capa;
@@ -82,7 +87,11 @@ public class Livro {
     @Schema(description = "Link para compra do livro", example = "https://example.com/comprar")
     private String linkCompra;
 
-    @NotNull(message = "Campo data de publicação é obrigatório")
+    @NotNull(message = "A data de publicação é obrigatória")
     @Schema(description = "Data de publicação do livro", example = "1954-07-29")
     private LocalDate dataPublicacao;
+
+    @Column(name = "media_livro")
+    @Schema(description = "Média com base na avaliação do livro")
+    private Integer media = 0;
 }

@@ -21,7 +21,7 @@ public interface StatusLeituraService {
      * @throws RegraNegocioException Se o perfil ou livro não forem encontrados, ou se o perfil já tiver um status para o livro.
      * @throws RegraNegocioException Se a página fornecida for inválida (menor que 1 ou maior que o número de páginas do livro).
      */
-    StatusLeituraDTO salvarStatus(Integer perfilId, Integer livroId, StatusLeituraEnum statusLeituraEnum, Integer pagina);
+    StatusLeituraDTO salvarStatus(Integer perfilId, String livroId, StatusLeituraEnum statusLeituraEnum, Integer pagina);
 
     /**
      * Atualiza o status de leitura de um livro para um perfil existente.
@@ -50,5 +50,7 @@ public interface StatusLeituraService {
      * @return Uma página de objetos {@link StatusLeituraDTO}, com os dados dos status de leitura, incluindo o ID, perfil, livro, página e status.
      */
     Page<StatusLeituraDTO> listarStatus(int page, int size);
+
+    Page<StatusLeituraDTO> listarStatusPorPerfil(String username, int page, int size);
 
 }

@@ -6,41 +6,39 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "comentario_resposta")
-public class ComentarioResposta {
+@Table(name = "resposta_forum")
+public class RespostaForum {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "PK_comentario_resposta")
     private Integer id;
-
-    @ManyToOne
-    @JoinColumn(name = "comentario_id")
-    private Comentario comentarioOriginal;
 
     @ManyToOne
     @JoinColumn(name = "perfil_id")
     private Perfil perfil;
 
-    @Column(name = "texto_resposta", length = 500)
+    @ManyToOne
+    @JoinColumn(name = "comentario_forum_id")
+    private ComentarioForum comentarioForum;
+
+    @Column(length = 1000)
     private String texto;
 
     @Column(name = "quantidade_curtidas")
     private Integer quantidadeCurtidas = 0;
 
     @ElementCollection
-    @CollectionTable(name = "curtidas_resposta", joinColumns = @JoinColumn(name = "resposta_id"))
+    @CollectionTable(name = "curtidas_resposta_forum", joinColumns = @JoinColumn(name = "resposta_id"))
     @Column(name = "perfil_id")
     private Set<Integer> perfisQueCurtiram = new HashSet<>();
 
     @Column(name = "data_resposta")
-    private LocalDateTime dataResposta;
+    private LocalDateTime data;
 }

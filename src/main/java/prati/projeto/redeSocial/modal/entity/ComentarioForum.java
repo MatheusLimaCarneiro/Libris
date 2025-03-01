@@ -15,41 +15,39 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "comentario_livro")
-public class Comentario {
+@Table(name = "comentario_forum")
+public class ComentarioForum {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(length = 1000)
+    private String texto;
+
     @ManyToOne
-    @JoinColumn(name = "FK_perfil")
+    @JoinColumn(name = "perfil_id")
     private Perfil perfil;
 
     @ManyToOne
-    @JoinColumn(name = "livro_id")
-    private Livro livro;
+    @JoinColumn(name = "post_forum_id")
+    private PostForum postForum;
 
-    @Column(name = "google_id_livro")
-    private String googleIdLivro;
-
-    private String texto;
-
-    private Double nota;
-
-    private LocalDateTime dataComentario;
-
-    @ElementCollection
-    @CollectionTable(name = "curtidas_comentario", joinColumns = @JoinColumn(name = "comentario_id"))
-    @Column(name = "perfil_id")
-    private Set<Integer> perfisQueCurtiram = new HashSet<>();
+    @Column(name = "data_comentario")
+    private LocalDateTime data = LocalDateTime.now();
 
     @Column(name = "quantidade_curtidas")
     private Integer quantidadeCurtidas = 0;
 
-    @OneToMany(mappedBy = "comentarioOriginal", cascade = CascadeType.ALL)
-    private List<ComentarioResposta> respostas;
+    @ElementCollection
+    @CollectionTable(name = "curtidas_comentario_forum", joinColumns = @JoinColumn(name = "comentario_id"))
+    @Column(name = "perfil_id")
+    private Set<Integer> perfisQueCurtiram = new HashSet<>();
+
+    @OneToMany(mappedBy = "comentarioForum", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RespostaForum> respostas = new ArrayList<>();
 
     @Column(name = " possui_spoiler")
     private boolean spoiler;
+
 }

@@ -22,8 +22,8 @@ public class ResenhaController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ServiceResponse<Integer> save(@RequestBody @Valid ResenhaDTO dto) {
-        Integer resenhaId = resenhaService.saveResenha(dto);
+    public ServiceResponse<ResenhaViewDTO> save(@RequestBody @Valid ResenhaDTO dto) {
+        ResenhaViewDTO resenhaId = resenhaService.saveResenha(dto);
         return new ServiceResponse<>(resenhaId, "Resenha salva com sucesso", true, getFormattedTimestamp());
     }
 
@@ -47,14 +47,14 @@ public class ResenhaController {
         return new ServiceResponse<>(null, "Resenha atualizada com sucesso", true, getFormattedTimestamp());
     }
 
-    @GetMapping("/livro/{livroId}")
+    @GetMapping("/livro/{googleId}")
     @ResponseStatus(HttpStatus.OK)
     public ServiceResponse<Page<ResenhaViewDTO>> findByLivro(
-            @PathVariable Integer livroId,
+            @PathVariable String googleId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        Page<ResenhaViewDTO> resenhasPage = resenhaService.findByLivro(livroId, page, size);
+        Page<ResenhaViewDTO> resenhasPage = resenhaService.findByGoogleId(googleId, page, size);
         return new ServiceResponse<>(resenhasPage, "Resenhas do livro encontradas", true, getFormattedTimestamp());
     }
 

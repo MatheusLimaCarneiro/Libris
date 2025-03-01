@@ -15,8 +15,6 @@ import prati.projeto.redeSocial.service.ComentarioService;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,12 +25,13 @@ public class ComentarioServiceImpl implements ComentarioService {
     private final LivroRepository livroRepository;
     private final ComentarioRespostaService respostaService;
 
-
     @Override
     @Transactional
     public ComentarioDTO salvar(ComentarioDTO dto) {
         Perfil perfil = validarPerfil(dto.getPerfilId());
-        Livro livro = validarLivro(dto.getLivroId());
+        Livro livro = livroRepository.findByGoogleId(dto.getGoogleId())
+                .orElseThrow(() -> new RegraNegocioException("Livro com Google ID " + dto.getGoogleId() + " não encontrado"));
+
         validarNota(dto.getNota());
 
         Comentario comentario = new Comentario();
@@ -40,7 +39,9 @@ public class ComentarioServiceImpl implements ComentarioService {
         comentario.setDataComentario(LocalDateTime.now());
         comentario.setPerfil(perfil);
         comentario.setLivro(livro);
+        comentario.setGoogleIdLivro(dto.getGoogleId());
         comentario.setNota(dto.getNota());
+        comentario.setSpoiler(dto.isSpoiler());
         comentario.setRespostas(new ArrayList<>());
 
         comentario = comentarioRepository.save(comentario);
@@ -81,10 +82,15 @@ public class ComentarioServiceImpl implements ComentarioService {
         Comentario comentario = comentarioRepository.findById(id)
                 .orElseThrow(() -> new RegraNegocioException("Comentário não encontrado"));
 
+        Livro livro = livroRepository.findByGoogleId(dto.getGoogleId())
+                .orElseThrow(() -> new RegraNegocioException("Livro com Google ID " + dto.getGoogleId() + " não encontrado"));
+
         comentario.setTexto(dto.getTexto());
         comentario.setNota(dto.getNota());
         validarNota(dto.getNota());
         comentario.setDataComentario(LocalDateTime.now());
+        comentario.setLivro(livro);
+        comentario.setGoogleIdLivro(dto.getGoogleId());
 
         comentario = comentarioRepository.save(comentario);
         return convertToDTO(comentario);
@@ -100,9 +106,9 @@ public class ComentarioServiceImpl implements ComentarioService {
     }
 
     @Override
-    public Page<ComentarioDTO> listarPorLivro(Integer livroId, int page, int size) {
+    public Page<ComentarioDTO> listarPorLivro(String googleIdLivro, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Comentario> comentariosPage = comentarioRepository.findByLivroId(livroId, pageable);
+        Page<Comentario> comentariosPage = comentarioRepository.findByGoogleIdLivro(googleIdLivro, pageable);
 
         return comentariosPage.map(comentario -> {
             ComentarioDTO dto = convertToDTO(comentario);
@@ -119,11 +125,6 @@ public class ComentarioServiceImpl implements ComentarioService {
                 .orElseThrow(() -> new RegraNegocioException("Perfil não encontrado"));
     }
 
-    private Livro validarLivro(Integer livroId) {
-        return livroRepository.findById(livroId)
-                .orElseThrow(() -> new RegraNegocioException("Livro não encontrado"));
-    }
-
     private void validarNota(Double nota) {
         if (nota == null || nota < 1 || nota > 5) {
             throw new RegraNegocioException("A nota deve ser um valor entre 1 e 5");
@@ -134,11 +135,12 @@ public class ComentarioServiceImpl implements ComentarioService {
         ComentarioDTO dto = new ComentarioDTO();
         dto.setId(comentario.getId());
         dto.setPerfilId(comentario.getPerfil().getId());
-        dto.setLivroId(comentario.getLivro().getId());
+        dto.setGoogleId(comentario.getGoogleIdLivro());
         dto.setTexto(comentario.getTexto());
         dto.setNota(comentario.getNota());
         dto.setDataComentario(comentario.getDataComentario());
-
+        dto.setQuantidadeCurtidas(comentario.getQuantidadeCurtidas());
+        dto.setSpoiler(comentario.isSpoiler());
         return dto;
     }
 }

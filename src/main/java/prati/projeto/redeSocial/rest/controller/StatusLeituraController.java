@@ -33,7 +33,7 @@ public class StatusLeituraController {
     @Operation(summary = "Criar Status de Leitura", description = "Cria um novo status de leitura para um livro.")
     @ApiResponse(responseCode = "201", description = "Status de leitura criado com sucesso.")
     public ServiceResponse<StatusLeituraDTO> criarStatus(@RequestBody @Valid StatusLeituraDTO dto) {
-        StatusLeituraDTO statusCriado = statusLeituraService.salvarStatus(dto.getPerfilId(), dto.getLivroId(), dto.getStatus(), dto.getPagina());
+        StatusLeituraDTO statusCriado = statusLeituraService.salvarStatus(dto.getPerfilId(), dto.getGoogleId(), dto.getStatus(), dto.getPagina());
         return new ServiceResponse<>(statusCriado, "Status de leitura criado com sucesso", true, getFormattedTimestamp());
     }
 
@@ -56,6 +56,25 @@ public class StatusLeituraController {
 
         Page<StatusLeituraDTO> status = statusLeituraService.listarStatus(page, size);
         String mensagem = status.isEmpty() ? "Nenhum status de leitura encontrado" : "Status de leitura encontrados";
+
+        return new ServiceResponse<>(status, mensagem, !status.isEmpty(), getFormattedTimestamp());
+    }
+
+    @GetMapping("/perfil/{username}")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(
+            summary = "Listar Status de Leitura por Perfil",
+            description = "Retorna uma lista paginada de status de leitura associados ao perfil de um usuário, com base no username."
+    )
+    @ApiResponse(responseCode = "200", description = "Lista de status de leitura retornada com sucesso.")
+    @ApiResponse(responseCode = "404", description = "Usuário ou perfil não encontrado.")
+    public ServiceResponse<Page<StatusLeituraDTO>> listarStatusPorPerfil(
+            @PathVariable @Parameter(description = "Username do usuário associado ao perfil", example = "usuario123") String username,
+            @RequestParam(defaultValue = "0") @Parameter(description = "Número da página", example = "0") int page,
+            @RequestParam(defaultValue = "10") @Parameter(description = "Número de itens por página", example = "10") int size) {
+
+        Page<StatusLeituraDTO> status = statusLeituraService.listarStatusPorPerfil(username, page, size);
+        String mensagem = status.isEmpty() ? "Nenhum status de leitura encontrado para o perfil" : "Status de leitura encontrados para o perfil";
 
         return new ServiceResponse<>(status, mensagem, !status.isEmpty(), getFormattedTimestamp());
     }
