@@ -19,6 +19,7 @@ import prati.projeto.redeSocial.rest.dto.ComentarioForumRequestDTO;
 import prati.projeto.redeSocial.rest.dto.ComentarioForumResponseDTO;
 import prati.projeto.redeSocial.rest.dto.RespostaForumResponseDTO;
 import prati.projeto.redeSocial.service.ComentarioForumService;
+import prati.projeto.redeSocial.service.NotificacaoService;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ public class ComentarioForumServiceImpl implements ComentarioForumService {
     private final PostForumRepository postForumRepository;
     private final PerfilRepository perfilRepository;
     private final RespostaForumRepository respostaForumRepository;
+    private final NotificacaoService notificacaoService;
 
     @Override
     @Transactional
@@ -52,6 +54,14 @@ public class ComentarioForumServiceImpl implements ComentarioForumService {
         comentario.setRespostas(new ArrayList<>());
 
         comentarioForumRepository.save(comentario);
+
+        Perfil autorPost = post.getPerfil();
+        notificacaoService.criarNotificacao(
+                autorPost,
+                perfil,
+                perfil.getUsuario().getUsername() + " comentou no seu post do Forum.",
+                "comentario_forum"
+        );
 
         return converterParaDTO(comentario);
     }
