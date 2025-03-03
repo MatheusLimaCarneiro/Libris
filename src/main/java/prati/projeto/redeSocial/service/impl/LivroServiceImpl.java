@@ -67,6 +67,7 @@ public class LivroServiceImpl implements LivroService {
         livroExistente.setCategoria(dto.getCategoria());
         livroExistente.setUrl_capa(dto.getUrl_capa());
         livroExistente.setLinkCompra(dto.getLinkCompra());
+        livroExistente.setFaixaEtaria(dto.getFaixaEtaria());
         livroExistente.setDataPublicacao(dto.getDataPublicacao());
 
         livroRepository.save(livroExistente);
@@ -126,6 +127,7 @@ public class LivroServiceImpl implements LivroService {
         livro.setUrl_capa(dto.getUrl_capa());
         livro.setLinkCompra(dto.getLinkCompra());
         livro.setDataPublicacao(dto.getDataPublicacao());
+        livro.setFaixaEtaria(dto.getFaixaEtaria());
         return livro;
     }
 
