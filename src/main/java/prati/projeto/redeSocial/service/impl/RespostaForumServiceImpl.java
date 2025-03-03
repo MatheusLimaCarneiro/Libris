@@ -14,6 +14,7 @@ import prati.projeto.redeSocial.repository.PerfilRepository;
 import prati.projeto.redeSocial.repository.RespostaForumRepository;
 import prati.projeto.redeSocial.rest.dto.RespostaForumRequestDTO;
 import prati.projeto.redeSocial.rest.dto.RespostaForumResponseDTO;
+import prati.projeto.redeSocial.service.NotificacaoService;
 import prati.projeto.redeSocial.service.RespostaForumService;
 
 import java.time.LocalDateTime;
@@ -25,6 +26,7 @@ public class RespostaForumServiceImpl implements RespostaForumService {
     private final RespostaForumRepository respostaForumRepository;
     private final ComentarioForumRepository comentarioForumRepository;
     private final PerfilRepository perfilRepository;
+    private final NotificacaoService notificacaoService;
 
     @Override
     public RespostaForumResponseDTO criarRespostaForum(Integer comentarioForumId, RespostaForumRequestDTO dto) {
@@ -40,6 +42,14 @@ public class RespostaForumServiceImpl implements RespostaForumService {
         respostaForum.setData(LocalDateTime.now());
 
         respostaForumRepository.save(respostaForum);
+
+        Perfil autorComentario = comentarioForum.getPerfil();
+        notificacaoService.criarNotificacao(
+                autorComentario,
+                perfil,
+                perfil.getUsuario().getUsername() + " respondeu ao seu comentário no fórum.",
+                "resposta_forum"
+        );
 
         return converterParaDTO(respostaForum);
     }

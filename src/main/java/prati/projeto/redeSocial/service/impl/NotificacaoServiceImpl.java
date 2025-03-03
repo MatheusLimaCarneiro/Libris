@@ -28,7 +28,7 @@ public class NotificacaoServiceImpl implements NotificacaoService {
             throw new RegraNegocioException("Remetente não encontrado.");
         }
         if (!perfilRepository.existsById(destinatario.getId())) {
-            throw new RegraNegocioException("Remetente não encontrado.");
+            throw new RegraNegocioException("Destinatario não encontrado.");
         }
 
         Notificacao notificacao = new Notificacao();
