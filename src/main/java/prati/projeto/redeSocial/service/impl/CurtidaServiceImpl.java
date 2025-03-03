@@ -4,12 +4,10 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import prati.projeto.redeSocial.exception.RegraNegocioException;
-import prati.projeto.redeSocial.modal.entity.Comentario;
-import prati.projeto.redeSocial.modal.entity.ComentarioForum;
-import prati.projeto.redeSocial.modal.entity.ComentarioResposta;
-import prati.projeto.redeSocial.modal.entity.RespostaForum;
+import prati.projeto.redeSocial.modal.entity.*;
 import prati.projeto.redeSocial.repository.*;
 import prati.projeto.redeSocial.service.CurtidaService;
+import prati.projeto.redeSocial.service.NotificacaoService;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +18,7 @@ public class CurtidaServiceImpl implements CurtidaService {
     private final ComentarioRespostaRepository respostaRepository;
     private final ComentarioForumRepository comentarioForumRepository;
     private final RespostaForumRepository respostaForumRepository;
+    private final NotificacaoService notificacaoService;
 
     @Override
     @Transactional
@@ -34,6 +33,17 @@ public class CurtidaServiceImpl implements CurtidaService {
         comentario.getPerfisQueCurtiram().add(perfilId);
         comentario.setQuantidadeCurtidas(comentario.getQuantidadeCurtidas() + 1);
         comentarioRepository.save(comentario);
+
+        Perfil autor = comentario.getPerfil();
+        Perfil curtidor = perfilRepository.findById(perfilId)
+                .orElseThrow(() -> new RegraNegocioException("Perfil curtidor não encontrado."));
+
+        notificacaoService.criarNotificacao(
+                autor,
+                curtidor,
+                curtidor.getUsuario().getUsername() + " curtiu seu comentário.",
+                "curtida"
+        );
     }
 
     @Override
@@ -64,6 +74,17 @@ public class CurtidaServiceImpl implements CurtidaService {
         resposta.getPerfisQueCurtiram().add(perfilId);
         resposta.setQuantidadeCurtidas(resposta.getQuantidadeCurtidas() + 1);
         respostaRepository.save(resposta);
+
+        Perfil autor = resposta.getPerfil();
+        Perfil curtidor = perfilRepository.findById(perfilId)
+                .orElseThrow(() -> new RegraNegocioException("Perfil curtidor não encontrado."));
+
+        notificacaoService.criarNotificacao(
+                autor,
+                curtidor,
+                curtidor.getUsuario().getUsername() + " curtiu sua resposta.",
+                "curtida"
+        );
     }
 
     @Override
@@ -94,6 +115,17 @@ public class CurtidaServiceImpl implements CurtidaService {
         comentarioForum.getPerfisQueCurtiram().add(perfilId);
         comentarioForum.setQuantidadeCurtidas(comentarioForum.getQuantidadeCurtidas() + 1);
         comentarioForumRepository.save(comentarioForum);
+
+        Perfil autor = comentarioForum.getPerfil();
+        Perfil curtidor = perfilRepository.findById(perfilId)
+                .orElseThrow(() -> new RegraNegocioException("Perfil curtidor não encontrado."));
+
+        notificacaoService.criarNotificacao(
+                autor,
+                curtidor,
+                curtidor.getUsuario().getUsername() + " curtiu seu comentário no fórum.",
+                "curtida"
+        );
     }
 
     @Override
@@ -124,6 +156,17 @@ public class CurtidaServiceImpl implements CurtidaService {
         respostaForum.getPerfisQueCurtiram().add(perfilId);
         respostaForum.setQuantidadeCurtidas(respostaForum.getQuantidadeCurtidas() + 1);
         respostaForumRepository.save(respostaForum);
+
+        Perfil autor = respostaForum.getPerfil();
+        Perfil curtidor = perfilRepository.findById(perfilId)
+                .orElseThrow(() -> new RegraNegocioException("Perfil curtidor não encontrado."));
+
+        notificacaoService.criarNotificacao(
+                autor,
+                curtidor,
+                curtidor.getUsuario().getUsername() + " curtiu sua resposta no fórum.",
+                "curtida"
+        );
     }
 
     @Override

@@ -15,6 +15,7 @@ import prati.projeto.redeSocial.repository.ComentarioRespostaRepository;
 import prati.projeto.redeSocial.repository.PerfilRepository;
 import prati.projeto.redeSocial.rest.dto.RespostaDTO;
 import prati.projeto.redeSocial.service.ComentarioRespostaService;
+import prati.projeto.redeSocial.service.NotificacaoService;
 
 import java.time.LocalDateTime;
 
@@ -25,6 +26,7 @@ public class ComentarioRespostaServiceImpl implements ComentarioRespostaService 
     private final ComentarioRespostaRepository respostaRepository;
     private final ComentarioRepository comentarioRepository;
     private final PerfilRepository perfilRepository;
+    private final NotificacaoService notificacaoService;
 
     @Override
     @Transactional
@@ -42,6 +44,15 @@ public class ComentarioRespostaServiceImpl implements ComentarioRespostaService 
         resposta.setDataResposta(LocalDateTime.now());
 
         resposta = respostaRepository.save(resposta);
+
+        Perfil autorComentario = comentario.getPerfil();
+        notificacaoService.criarNotificacao(
+                autorComentario,
+                perfil,
+                perfil.getUsuario().getUsername() + " respondeu ao seu comentário.",
+                "resposta"
+        );
+
         return convertToDTO(resposta);
     }
 
