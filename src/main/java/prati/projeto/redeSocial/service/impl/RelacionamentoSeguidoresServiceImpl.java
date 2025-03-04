@@ -11,9 +11,7 @@ import prati.projeto.redeSocial.modal.entity.Perfil;
 import prati.projeto.redeSocial.modal.entity.RelacionamentoSeguidores;
 import prati.projeto.redeSocial.repository.PerfilRepository;
 import prati.projeto.redeSocial.repository.RelacionamentoSeguidoresRepository;
-import prati.projeto.redeSocial.rest.dto.NotificacaoDTO;
 import prati.projeto.redeSocial.rest.dto.PerfilResumidoDTO;
-import prati.projeto.redeSocial.service.NotificacaoService;
 import prati.projeto.redeSocial.service.RelacionamentoSeguidoresService;
 
 
@@ -24,7 +22,6 @@ public class RelacionamentoSeguidoresServiceImpl implements RelacionamentoSeguid
 
     private final RelacionamentoSeguidoresRepository relacionamentoRepository;
     private final PerfilRepository perfilRepository;
-    private final NotificacaoService notificacaoService;
 
     @Override
     @Transactional
@@ -40,25 +37,16 @@ public class RelacionamentoSeguidoresServiceImpl implements RelacionamentoSeguid
         relacionamentoRepository.save(relacionamento);
 
         atualizarContagemSeguidores(seguidor, seguido);
-
-        NotificacaoDTO notificacaoDTO = notificacaoService.criarNotificacao(
-                seguido,
-                seguidor,
-                seguidor.getUsuario().getUsername() + " começou a seguir você.",
-                "seguidor"
-        );
-
-        System.out.println("Notificação criada: " + notificacaoDTO);
     }
 
     @Override
     @Transactional
     public void deixarDeSeguir(Integer seguidorId, Integer seguidoId) {
         relacionamentoRepository.findBySeguidorIdAndSeguidoId(seguidorId, seguidoId)
-                .ifPresent(relacionamento -> {
-                    relacionamentoRepository.delete(relacionamento);
-                    atualizarContagemSeguidores(relacionamento.getSeguidor(), relacionamento.getSeguido());
-                });
+            .ifPresent(relacionamento -> {
+                relacionamentoRepository.delete(relacionamento);
+                atualizarContagemSeguidores(relacionamento.getSeguidor(), relacionamento.getSeguido());
+            });
     }
 
     @Override
@@ -71,8 +59,8 @@ public class RelacionamentoSeguidoresServiceImpl implements RelacionamentoSeguid
         buscarPerfilPorId(perfilId, "Perfil não encontrado");
         Pageable pageable = PageRequest.of(page, size);
         return relacionamentoRepository.findBySeguidoId(perfilId, pageable)
-                .map(relacionamento ->
-                        converterParaPerfilResumidoDTO(relacionamento.getSeguidor()));
+            .map(relacionamento ->
+                converterParaPerfilResumidoDTO(relacionamento.getSeguidor()));
     }
 
     @Override
@@ -80,7 +68,7 @@ public class RelacionamentoSeguidoresServiceImpl implements RelacionamentoSeguid
         buscarPerfilPorId(perfilId, "Perfil não encontrado");
         Pageable pageable = PageRequest.of(page, size);
         return relacionamentoRepository.findBySeguidorId(perfilId, pageable)
-                .map(relacionamento -> converterParaPerfilResumidoDTO(relacionamento.getSeguido()));
+            .map(relacionamento -> converterParaPerfilResumidoDTO(relacionamento.getSeguido()));
     }
 
     private void validarSeguirPerfil(Integer seguidorId, Integer seguidoId) {
@@ -94,7 +82,7 @@ public class RelacionamentoSeguidoresServiceImpl implements RelacionamentoSeguid
 
     private Perfil buscarPerfilPorId(Integer perfilId, String mensagemErro) {
         return perfilRepository.findById(perfilId)
-                .orElseThrow(() -> new RegraNegocioException(mensagemErro));
+            .orElseThrow(() -> new RegraNegocioException(mensagemErro));
     }
 
     private void atualizarContagemSeguidores(Perfil seguidor, Perfil seguido) {
@@ -107,9 +95,10 @@ public class RelacionamentoSeguidoresServiceImpl implements RelacionamentoSeguid
 
     private PerfilResumidoDTO converterParaPerfilResumidoDTO(Perfil perfil) {
         return new PerfilResumidoDTO(
-                perfil.getUrlPerfil(),
-                perfil.getResumoBio(),
-                perfil.getUsuario().getUsername()
+            perfil.getId(),
+            perfil.getUrlPerfil(),
+            perfil.getResumoBio(),
+            perfil.getUsuario().getUsername()
         );
     }
 }

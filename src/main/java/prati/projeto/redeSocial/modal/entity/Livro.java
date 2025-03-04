@@ -38,41 +38,33 @@ public class Livro {
     private String subtitulo;
 
     @Column(length = 80)
-    @NotBlank(message = "Os autores são obrigatórios")
     @Pattern(regexp = ".*\\S.*", message = "Os autores não podem conter apenas espaços.")
     @Schema(description = "Autores do livro", example = "J.R.R. Tolkien")
     private String autores;
 
     @Column(length = 50)
-    @NotBlank(message = "A editora é obrigatória")
     @Pattern(regexp = ".*\\S.*", message = "A editora não pode conter apenas espaços.")
     @Schema(description = "Nome da editora", example = "HarperCollins")
     private String editora;
 
-    @Column(length = 200)
-    @Size(max = 200, message = "A sinopse deve ter no máximo 200 caracteres")
+    @Column(length = 4096)
+    @Size(max = 4096, message = "A sinopse deve ter no máximo 4096 caracteres")
     @Schema(description = "Sinopse do livro", example = "Uma aventura épica em uma terra fantástica.")
     private String sinopse;
 
     @Column(name = "numeroPaginas")
-    @NotNull(message = "Campo número de páginas é obrigatório")
     @Schema(description = "Número de páginas do livro", example = "1200")
     private int numeroPaginas;
 
     @Column(length = 50)
-    @NotEmpty(message = "Campo ISBN é obrigatório")
-    @Size(min = 10, max = 13, message = "O ISBN deve ter entre 10 e 13 caracteres")
-    @Pattern(regexp = "\\d{10}|\\d{13}", message = "O ISBN deve conter apenas números")
     @Schema(description = "ISBN do livro", example = "9780261103573")
     private String isbn;
 
     @Column(length = 20)
-    @NotEmpty(message = "Campo idioma é obrigatório")
     @Schema(description = "Idioma do livro", example = "Português")
     private String idioma;
 
-    @Column(length = 80)
-    @NotEmpty(message = "Campo categoria é obrigatório")
+    @Column(length = 1024)
     @Schema(description = "Categoria do livro", example = "Ficção Fantástica")
     private String categoria;
 
@@ -83,11 +75,9 @@ public class Livro {
     private String url_capa;
 
     @Column(length = 500)
-    @NotEmpty(message = "Campo link de compra é obrigatório")
     @Schema(description = "Link para compra do livro", example = "https://example.com/comprar")
     private String linkCompra;
 
-    @NotNull(message = "A data de publicação é obrigatória")
     @Schema(description = "Data de publicação do livro", example = "1954-07-29")
     private LocalDate dataPublicacao;
 

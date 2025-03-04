@@ -25,8 +25,8 @@ public class PerfilServiceImpl implements PerfilService {
     @Override
     public PerfilDTO getPerfilById(Integer id) {
         Perfil perfil = perfilRepository.findById(id)
-                .orElseThrow(() -> new RegraNegocioException(
-                        "Perfil com ID " + id + " não encontrado"));
+            .orElseThrow(() -> new RegraNegocioException(
+                "Perfil com ID " + id + " não encontrado"));
         return convertToDTO(perfil);
     }
 
@@ -47,26 +47,26 @@ public class PerfilServiceImpl implements PerfilService {
     @Override
     public void deletePerfil(Integer id) {
         perfilRepository.findById(id)
-                .ifPresentOrElse(perfil -> {
-                    perfil.setUsuario(null);
-                    perfilRepository.delete(perfil);
-                }, () -> {
-                    throw new RegraNegocioException("Perfil não encontrado");
-                });
+            .ifPresentOrElse(perfil -> {
+                perfil.setUsuario(null);
+                perfilRepository.delete(perfil);
+            }, () -> {
+                throw new RegraNegocioException("Perfil não encontrado");
+            });
     }
 
     @Override
     public void updatePerfil(Integer id, Perfil perfil) {
         perfilRepository.findById(id)
-                .map(perfilExistente -> {
-                    perfil.setId(perfilExistente.getId());
+            .map(perfilExistente -> {
+                perfil.setId(perfilExistente.getId());
 
-                    Usuario usuarioExistente = perfilExistente.getUsuario();
-                    perfil.setUsuario(usuarioExistente);
+                Usuario usuarioExistente = perfilExistente.getUsuario();
+                perfil.setUsuario(usuarioExistente);
 
-                    return perfilRepository.save(perfil);
-                })
-                .orElseThrow(() -> new RegraNegocioException("Perfil não encontrado"));
+                return perfilRepository.save(perfil);
+            })
+            .orElseThrow(() -> new RegraNegocioException("Perfil não encontrado"));
     }
 
     @Override
@@ -75,24 +75,26 @@ public class PerfilServiceImpl implements PerfilService {
         Page<Perfil> perfilPage = perfilRepository.findAll(pageable);
 
         return perfilPage.map(perfil -> new PerfilResumidoDTO(
-           perfil.getUrlPerfil(),
-                perfil.getResumoBio(),
-                perfil.getUsuario().getUsername()
+            perfil.getId(),
+            perfil.getUrlPerfil(),
+            perfil.getResumoBio(),
+            perfil.getUsuario().getUsername()
         ));
     }
 
     @Override
     public PerfilResumidoDTO buscarPorUsername(String username) {
         Usuario usuario = usuarioRepository.findByUsername(username)
-                .orElseThrow(() -> new RegraNegocioException("Usuário não encontrado para o username: " + username));
+            .orElseThrow(() -> new RegraNegocioException("Usuário não encontrado para o username: " + username));
 
         Perfil perfil = perfilRepository.findByUsuario(usuario)
-                .orElseThrow(() -> new RegraNegocioException("Perfil não encontrado para o usuário: " + username));
+            .orElseThrow(() -> new RegraNegocioException("Perfil não encontrado para o usuário: " + username));
 
         return new PerfilResumidoDTO(
-                perfil.getUrlPerfil(),
-                perfil.getResumoBio(),
-                perfil.getUsuario().getUsername()
+            perfil.getId(),
+            perfil.getUrlPerfil(),
+            perfil.getResumoBio(),
+            perfil.getUsuario().getUsername()
         );
     }
 
@@ -102,8 +104,8 @@ public class PerfilServiceImpl implements PerfilService {
         }
 
         return usuarioRepository.findById(usuario.getEmail())
-                .orElseThrow(() -> new RegraNegocioException(
-                        "Usuário com EMAIL " + usuario.getEmail() + " não encontrado"));
+            .orElseThrow(() -> new RegraNegocioException(
+                "Usuário com EMAIL " + usuario.getEmail() + " não encontrado"));
     }
 
     private PerfilDTO convertToDTO(Perfil perfil) {
@@ -118,8 +120,8 @@ public class PerfilServiceImpl implements PerfilService {
 
         if (perfil.getUsuario() != null) {
             dto.setUsuario(new UsuarioResumidoDTO(
-                    perfil.getUsuario().getUsername(),
-                    perfil.getUsuario().getEmail()
+                perfil.getUsuario().getUsername(),
+                perfil.getUsuario().getEmail()
             ));
         }
 

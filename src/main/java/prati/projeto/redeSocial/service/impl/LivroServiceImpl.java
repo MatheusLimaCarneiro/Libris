@@ -24,15 +24,13 @@ public class LivroServiceImpl implements LivroService {
     @Override
     public Livro getLivroById(Integer id) {
         return livroRepository.findById(id)
-                .orElseThrow(() -> new LivroException("Livro com ID " + id + " não encontrado"));
+            .orElseThrow(() -> new LivroException("Livro com ID " + id + " não encontrado"));
     }
 
     @Override
     public Livro saveLivro(LivroResponseDTO dto) {
 
         validarGoogleIdUnico(dto.getGoogleId());
-
-        validarIsbnDuplicado(dto.getIsbn());
 
         Livro livro = convertToEntity(dto);
 
@@ -51,7 +49,7 @@ public class LivroServiceImpl implements LivroService {
         Livro livroExistente = getLivroById(id);
 
         if (!livroExistente.getIsbn().equals(dto.getIsbn()) &&
-                livroRepository.existsByIsbn(dto.getIsbn())) {
+            livroRepository.existsByIsbn(dto.getIsbn())) {
             throw new LivroException("ISBN já cadastrado");
         }
 
@@ -95,7 +93,7 @@ public class LivroServiceImpl implements LivroService {
     @Override
     public Livro getLivroByGoogleId(String googleId) {
         return livroRepository.findByGoogleId(googleId)
-                .orElseThrow(() -> new LivroException("Livro com Google ID " + googleId + " não encontrado"));
+            .orElseThrow(() -> new LivroException("Livro com Google ID " + googleId + " não encontrado"));
     }
 
     private void validarIsbnDuplicado(String isbn) {
@@ -131,9 +129,9 @@ public class LivroServiceImpl implements LivroService {
 
     private LivroResumidoDTO convertToResumidoDTO(Livro livro) {
         return new LivroResumidoDTO(
-                livro.getTitulo(),
-                livro.getAutores(),
-                livro.getDataPublicacao().toString()
+            livro.getTitulo(),
+            livro.getAutores(),
+            livro.getDataPublicacao().toString()
         );
     }
 }
