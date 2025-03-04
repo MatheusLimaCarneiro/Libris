@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 @Schema(description = "Objeto que representa um perfil resumido com informações essenciais do usuário")
 public class PerfilResumidoDTO {
 
+    private Integer id;
+
     @Schema(
             description = "URL da imagem de perfil do usuário",
             example = "https://example.com/profile.jpg"

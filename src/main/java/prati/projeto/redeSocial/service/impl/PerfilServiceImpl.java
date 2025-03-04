@@ -75,7 +75,8 @@ public class PerfilServiceImpl implements PerfilService {
         Page<Perfil> perfilPage = perfilRepository.findAll(pageable);
 
         return perfilPage.map(perfil -> new PerfilResumidoDTO(
-           perfil.getUrlPerfil(),
+                perfil.getId(),
+                perfil.getUrlPerfil(),
                 perfil.getResumoBio(),
                 perfil.getUsuario().getUsername()
         ));
@@ -90,6 +91,7 @@ public class PerfilServiceImpl implements PerfilService {
                 .orElseThrow(() -> new RegraNegocioException("Perfil não encontrado para o usuário: " + username));
 
         return new PerfilResumidoDTO(
+                perfil.getId(),
                 perfil.getUrlPerfil(),
                 perfil.getResumoBio(),
                 perfil.getUsuario().getUsername()

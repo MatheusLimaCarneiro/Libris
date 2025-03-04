@@ -53,4 +53,6 @@ public interface StatusLeituraService {
 
     Page<StatusLeituraDTO> listarStatusPorPerfil(String username, int page, int size);
 
+    StatusLeituraDTO buscarStatusLeituraPorUsernameELivroId(String username, String googleId);
+
 }

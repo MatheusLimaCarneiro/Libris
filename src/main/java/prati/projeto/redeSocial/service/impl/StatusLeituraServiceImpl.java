@@ -94,10 +94,28 @@ public class StatusLeituraServiceImpl implements StatusLeituraService {
         return statusPage.map(this::convertToDTO);
     }
 
+    @Override
+    public StatusLeituraDTO buscarStatusLeituraPorUsernameELivroId(String username, String googleId) {
+        Usuario usuario = usuarioRepository.findByUsername(username)
+                .orElseThrow(() -> new RegraNegocioException("Usuário não encontrado com o username: " + username));
+
+        Perfil perfil = perfilRepository.findByUsuario(usuario)
+                .orElseThrow(() -> new RegraNegocioException("Perfil não encontrado para o usuário: " + username));
+
+        Livro livro = livroRepository.findByGoogleId(googleId)
+                .orElseThrow(() -> new RegraNegocioException("Livro não encontrado com o Google ID: " + googleId));
+
+        StatusLeitura statusLeitura = statusLeituraRepository.findByPerfilAndLivro(perfil, livro)
+                .orElseThrow(() -> new RegraNegocioException("Status de leitura não encontrado para o perfil e livro especificados"));
+
+        return convertToDTO(statusLeitura);
+    }
+
     private StatusLeituraDTO convertToDTO(StatusLeitura statusLeitura) {
         return new StatusLeituraDTO(
                 statusLeitura.getId(),
                 statusLeitura.getPerfil().getId(),
+                statusLeitura.getPerfil().getUsuario().getUsername(),
                 statusLeitura.getLivro().getGoogleId(),
                 statusLeitura.getPagina(),
                 statusLeitura.getStatusLeitura()

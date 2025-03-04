@@ -22,6 +22,8 @@ public class StatusLeituraDTO {
     @Schema(description = "ID do perfil do usuário", example = "123")
     private Integer perfilId;
 
+    private String username;
+
     @NotEmpty(message = "O ID do livro é obrigatório")
     @Schema(description = "ID do livro da api do Google associado", example = "456")
     private String googleId;

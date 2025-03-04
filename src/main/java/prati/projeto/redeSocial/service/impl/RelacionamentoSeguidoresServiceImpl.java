@@ -107,6 +107,7 @@ public class RelacionamentoSeguidoresServiceImpl implements RelacionamentoSeguid
 
     private PerfilResumidoDTO converterParaPerfilResumidoDTO(Perfil perfil) {
         return new PerfilResumidoDTO(
+                perfil.getId(),
                 perfil.getUrlPerfil(),
                 perfil.getResumoBio(),
                 perfil.getUsuario().getUsername()
