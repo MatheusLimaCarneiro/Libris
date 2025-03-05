@@ -85,5 +85,5 @@ public class Livro {
 
     @Column(name = "media_livro")
     @Schema(description = "Média com base na avaliação do livro")
-    private Integer media = 0;
+    private Double media = 0.0;
 }

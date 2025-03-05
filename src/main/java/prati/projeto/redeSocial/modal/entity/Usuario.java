@@ -45,7 +45,7 @@ public class Usuario {
     private String authProvider;
 
     @Column(name = "reset_token", length = 2000)
-    @Schema(description = "Token para redefinição de senha", example = "abc123xyz")
+    @Schema(description = "Token para redefinição de senha", example = "abc123xyz", hidden = true)
     private String resetToken;
 
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)

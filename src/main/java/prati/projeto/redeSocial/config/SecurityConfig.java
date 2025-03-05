@@ -39,7 +39,7 @@ public class SecurityConfig {
                                 "/libris/resenhas/**", "/libris/status/**", "/libris/relacionamentos/**," +
                                         "libris/curtidas/**", "/libris/posts/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers(HttpMethod.GET, "/libris/livro/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/libris/livro/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/libris/livro/**").hasAnyRole("USER","ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/libris/livro/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/libris/livro/**").hasRole("ADMIN")
                         .anyRequest().authenticated()

@@ -1,5 +1,6 @@
 package prati.projeto.redeSocial.service.impl;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -11,6 +12,7 @@ import prati.projeto.redeSocial.modal.entity.Usuario;
 import prati.projeto.redeSocial.repository.PerfilRepository;
 import prati.projeto.redeSocial.repository.UsuarioRepository;
 import prati.projeto.redeSocial.rest.dto.PerfilDTO;
+import prati.projeto.redeSocial.rest.dto.PerfilRequestDTO;
 import prati.projeto.redeSocial.rest.dto.PerfilResumidoDTO;
 import prati.projeto.redeSocial.rest.dto.UsuarioResumidoDTO;
 import prati.projeto.redeSocial.service.PerfilService;
@@ -31,20 +33,29 @@ public class PerfilServiceImpl implements PerfilService {
     }
 
     @Override
-    public PerfilDTO savePerfil(Perfil perfil) {
-        Usuario usuarioCompleto = verificarUsuario(perfil.getUsuario());
+    @Transactional
+    public PerfilDTO savePerfil(PerfilRequestDTO perfilRequestDTO) {
+        Usuario usuario = usuarioRepository.findById(perfilRequestDTO.getUsuarioEmail())
+                .orElseThrow(() -> new RegraNegocioException("Usuário não encontrado"));
 
-        if (perfilRepository.existsByUsuarioEmail(usuarioCompleto.getEmail())) {
+        if (perfilRepository.existsByUsuarioEmail(usuario.getEmail())) {
             throw new RegraNegocioException("Usuário já possui um perfil");
         }
 
-        perfil.setUsuario(usuarioCompleto);
+        Perfil perfil = new Perfil();
+        perfil.setUrlPerfil(perfilRequestDTO.getUrlPerfil());
+        perfil.setResumoBio(perfilRequestDTO.getResumoBio());
+        perfil.setGenerosFavoritos(perfilRequestDTO.getGenerosFavoritos());
+        perfil.setUrlBackPerfil(perfilRequestDTO.getUrlBackPerfil());
+        perfil.setUsuario(usuario);
 
         Perfil savedPerfil = perfilRepository.save(perfil);
+
         return convertToDTO(savedPerfil);
     }
 
     @Override
+    @Transactional
     public void deletePerfil(Integer id) {
         perfilRepository.findById(id)
                 .ifPresentOrElse(perfil -> {
@@ -56,15 +67,16 @@ public class PerfilServiceImpl implements PerfilService {
     }
 
     @Override
-    public void updatePerfil(Integer id, Perfil perfil) {
+    @Transactional
+    public void updatePerfil(Integer id, PerfilRequestDTO perfilRequestDTO) {
         perfilRepository.findById(id)
                 .map(perfilExistente -> {
-                    perfil.setId(perfilExistente.getId());
+                        perfilExistente.setUrlPerfil(perfilRequestDTO.getUrlPerfil());
+                        perfilExistente.setResumoBio(perfilRequestDTO.getResumoBio());
+                        perfilExistente.setGenerosFavoritos(perfilRequestDTO.getGenerosFavoritos());
+                        perfilExistente.setUrlBackPerfil(perfilRequestDTO.getUrlBackPerfil());
 
-                    Usuario usuarioExistente = perfilExistente.getUsuario();
-                    perfil.setUsuario(usuarioExistente);
-
-                    return perfilRepository.save(perfil);
+                        return perfilRepository.save(perfilExistente);
                 })
                 .orElseThrow(() -> new RegraNegocioException("Perfil não encontrado"));
     }
@@ -96,16 +108,6 @@ public class PerfilServiceImpl implements PerfilService {
                 perfil.getResumoBio(),
                 perfil.getUsuario().getUsername()
         );
-    }
-
-    private Usuario verificarUsuario(Usuario usuario) {
-        if (usuario == null || usuario.getEmail() == null) {
-            throw new RegraNegocioException("Usuário é obrigatório");
-        }
-
-        return usuarioRepository.findById(usuario.getEmail())
-                .orElseThrow(() -> new RegraNegocioException(
-                        "Usuário com EMAIL " + usuario.getEmail() + " não encontrado"));
     }
 
     private PerfilDTO convertToDTO(Perfil perfil) {
