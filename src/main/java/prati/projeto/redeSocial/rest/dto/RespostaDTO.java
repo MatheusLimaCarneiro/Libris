@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -23,7 +22,7 @@ public class RespostaDTO {
     @Pattern(regexp = ".*\\S.*", message = "O texto da resposta não pode conter apenas espaços.")
     private String texto;
 
-    private LocalDateTime dataResposta;
+    private String dataResposta;
 
     private Integer quantidadeCurtidas;
 }

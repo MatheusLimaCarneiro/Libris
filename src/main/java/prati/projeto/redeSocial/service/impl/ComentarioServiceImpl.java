@@ -14,6 +14,7 @@ import prati.projeto.redeSocial.service.ComentarioRespostaService;
 import prati.projeto.redeSocial.service.ComentarioService;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 @Service
@@ -138,7 +139,11 @@ public class ComentarioServiceImpl implements ComentarioService {
         dto.setGoogleId(comentario.getGoogleIdLivro());
         dto.setTexto(comentario.getTexto());
         dto.setNota(comentario.getNota());
-        dto.setDataComentario(comentario.getDataComentario());
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        String dataFormatada = comentario.getDataComentario().format(formatter);
+        dto.setDataComentario(dataFormatada);
+
         dto.setQuantidadeCurtidas(comentario.getQuantidadeCurtidas());
         dto.setSpoiler(comentario.isSpoiler());
         return dto;

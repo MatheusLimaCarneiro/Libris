@@ -1,6 +1,5 @@
 package prati.projeto.redeSocial.rest.dto;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import org.hibernate.validator.constraints.URL;
@@ -39,6 +38,8 @@ public class LivroResponseDTO {
 
     @URL(message = "O link de compra deve ser uma URL válida")
     private String linkCompra;
+
+    private String faixaEtaria;
 
     private LocalDate dataPublicacao;
 }

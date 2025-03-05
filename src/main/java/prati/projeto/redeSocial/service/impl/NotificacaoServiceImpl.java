@@ -14,6 +14,8 @@ import prati.projeto.redeSocial.repository.PerfilRepository;
 import prati.projeto.redeSocial.rest.dto.NotificacaoDTO;
 import prati.projeto.redeSocial.service.NotificacaoService;
 
+import java.time.format.DateTimeFormatter;
+
 @Service
 @RequiredArgsConstructor
 public class NotificacaoServiceImpl implements NotificacaoService {
@@ -115,7 +117,11 @@ public class NotificacaoServiceImpl implements NotificacaoService {
         dto.setId(notificacao.getId());
         dto.setMensagem(notificacao.getMensagem());
         dto.setTipo(notificacao.getTipo());
-        dto.setDataCriacao(notificacao.getDataCriacao());
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        String dataCriacaoFormatada = notificacao.getDataCriacao().format(formatter);
+        dto.setDataCriacao(dataCriacaoFormatada);
+
         dto.setRemetenteId(notificacao.getRemetente().getId());
         dto.setRemetenteUsername(notificacao.getRemetente().getUsuario().getUsername());
         dto.setLida(notificacao.isLida());

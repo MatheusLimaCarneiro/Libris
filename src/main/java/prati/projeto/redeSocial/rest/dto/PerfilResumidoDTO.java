@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @Schema(description = "Objeto que representa um perfil resumido com informações essenciais do usuário")
 public class PerfilResumidoDTO {
 
-    @Schema(description = "ID do perfil", example = "1")
     private Integer id;
 
     @Schema(

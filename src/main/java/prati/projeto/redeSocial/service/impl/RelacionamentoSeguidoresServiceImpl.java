@@ -11,7 +11,9 @@ import prati.projeto.redeSocial.modal.entity.Perfil;
 import prati.projeto.redeSocial.modal.entity.RelacionamentoSeguidores;
 import prati.projeto.redeSocial.repository.PerfilRepository;
 import prati.projeto.redeSocial.repository.RelacionamentoSeguidoresRepository;
+import prati.projeto.redeSocial.rest.dto.NotificacaoDTO;
 import prati.projeto.redeSocial.rest.dto.PerfilResumidoDTO;
+import prati.projeto.redeSocial.service.NotificacaoService;
 import prati.projeto.redeSocial.service.RelacionamentoSeguidoresService;
 
 
@@ -22,6 +24,7 @@ public class RelacionamentoSeguidoresServiceImpl implements RelacionamentoSeguid
 
     private final RelacionamentoSeguidoresRepository relacionamentoRepository;
     private final PerfilRepository perfilRepository;
+    private final NotificacaoService notificacaoService;
 
     @Override
     @Transactional
@@ -37,6 +40,15 @@ public class RelacionamentoSeguidoresServiceImpl implements RelacionamentoSeguid
         relacionamentoRepository.save(relacionamento);
 
         atualizarContagemSeguidores(seguidor, seguido);
+
+        NotificacaoDTO notificacaoDTO = notificacaoService.criarNotificacao(
+                seguido,
+                seguidor,
+                seguidor.getUsuario().getUsername() + " começou a seguir você.",
+                "seguidor"
+        );
+
+        System.out.println("Notificação criada: " + notificacaoDTO);
     }
 
     @Override
@@ -95,10 +107,10 @@ public class RelacionamentoSeguidoresServiceImpl implements RelacionamentoSeguid
 
     private PerfilResumidoDTO converterParaPerfilResumidoDTO(Perfil perfil) {
         return new PerfilResumidoDTO(
-            perfil.getId(),
-            perfil.getUrlPerfil(),
-            perfil.getResumoBio(),
-            perfil.getUsuario().getUsername()
+                perfil.getId(),
+                perfil.getUrlPerfil(),
+                perfil.getResumoBio(),
+                perfil.getUsuario().getUsername()
         );
     }
 }

@@ -18,6 +18,7 @@ import prati.projeto.redeSocial.service.ComentarioRespostaService;
 import prati.projeto.redeSocial.service.NotificacaoService;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Service
 @RequiredArgsConstructor
@@ -106,11 +107,14 @@ public class ComentarioRespostaServiceImpl implements ComentarioRespostaService 
     }
 
     private RespostaDTO convertToDTO(ComentarioResposta resposta) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        String dataFormatada = resposta.getDataResposta().format(formatter);
+
         return new RespostaDTO(
                 resposta.getId(),
                 resposta.getPerfil().getId(),
                 resposta.getTexto(),
-                resposta.getDataResposta(),
+                dataFormatada,
                 resposta.getQuantidadeCurtidas()
         );
     }

@@ -45,6 +45,10 @@ public class FavoritoServiceImpl implements FavoritoService{
 
         validarFavoritoExistente(perfil.getId(), livro.getId());
 
+        if (favoritoRepository.existsByPerfilIdAndLivroId(perfil.getId(), livro.getId())) {
+            throw new RegraNegocioException("Este livro já foi favoritado por este perfil.");
+        }
+
         Favoritos favorito = criarFavorito(perfil, livro, dto.getGoogleId());
         favoritoRepository.save(favorito);
 

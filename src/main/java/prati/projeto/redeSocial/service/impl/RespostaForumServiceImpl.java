@@ -18,6 +18,7 @@ import prati.projeto.redeSocial.service.NotificacaoService;
 import prati.projeto.redeSocial.service.RespostaForumService;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Service
 @RequiredArgsConstructor
@@ -97,7 +98,9 @@ public class RespostaForumServiceImpl implements RespostaForumService {
         dto.setTexto(respostaForum.getTexto());
         dto.setNomePerfil(respostaForum.getPerfil().getUsuario().getUsername());
         dto.setQuantidadeCurtidas(respostaForum.getQuantidadeCurtidas());
-        dto.setData(respostaForum.getData());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        String dataFormatada = respostaForum.getData().format(formatter);
+        dto.setData(dataFormatada);
         return dto;
     }
 }

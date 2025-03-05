@@ -19,6 +19,7 @@ import prati.projeto.redeSocial.rest.dto.PostForumResponseDTO;
 import prati.projeto.redeSocial.rest.dto.RespostaForumResponseDTO;
 import prati.projeto.redeSocial.service.PostForumService;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -130,7 +131,10 @@ public class PostForumServiceImpl implements PostForumService {
         dto.setPossuiSpoiler(post.getPossuiSpoiler());
         dto.setNomePerfil(post.getPerfil().getUsuario().getUsername());
         dto.setTituloLivro(post.getLivro().getTitulo());
-        dto.setDataCriacao(post.getDataCriacao());
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        String dataFormatada = post.getDataCriacao().format(formatter);
+        dto.setDataCriacao(dataFormatada);
 
         List<ComentarioForumResponseDTO> comentariosDTO = post.getComentarios().stream()
                 .map(this::converterComentarioParaDTO)
@@ -146,7 +150,10 @@ public class PostForumServiceImpl implements PostForumService {
         dto.setNomePerfil(comentario.getPerfil().getUsuario().getUsername());
         dto.setTexto(comentario.getTexto());
         dto.setQuantidadeCurtidas(comentario.getQuantidadeCurtidas());
-        dto.setData(comentario.getData());
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        String dataFormatada = comentario.getData().format(formatter);
+        dto.setData(dataFormatada);
 
         Pageable respostasPageable = PageRequest.of(0, 10);
         Page<RespostaForum> respostasPage = respostaForumRepository.findByComentarioForumId(comentario.getId(), respostasPageable);
@@ -165,7 +172,11 @@ public class PostForumServiceImpl implements PostForumService {
         dto.setTexto(resposta.getTexto());
         dto.setNomePerfil(resposta.getPerfil().getUsuario().getUsername());
         dto.setQuantidadeCurtidas(resposta.getQuantidadeCurtidas());
-        dto.setData(resposta.getData());
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        String dataFormatada = resposta.getData().format(formatter);
+        dto.setData(dataFormatada);
+
         return dto;
     }
 }
