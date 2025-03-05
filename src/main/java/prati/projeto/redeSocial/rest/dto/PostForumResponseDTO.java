@@ -2,7 +2,6 @@ package prati.projeto.redeSocial.rest.dto;
 
 import lombok.Getter;
 import lombok.Setter;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -14,6 +13,6 @@ public class PostForumResponseDTO {
     private Boolean possuiSpoiler;
     private String nomePerfil;
     private String tituloLivro;
-    private LocalDateTime dataCriacao;
+    private String dataCriacao;
     private List<ComentarioForumResponseDTO> comentarios;
 }

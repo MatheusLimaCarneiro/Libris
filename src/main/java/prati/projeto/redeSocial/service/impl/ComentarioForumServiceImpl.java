@@ -22,6 +22,7 @@ import prati.projeto.redeSocial.service.ComentarioForumService;
 import prati.projeto.redeSocial.service.NotificacaoService;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -129,7 +130,11 @@ public class ComentarioForumServiceImpl implements ComentarioForumService {
         dto.setId(comentario.getId());
         dto.setTexto(comentario.getTexto());
         dto.setNomePerfil(comentario.getPerfil().getUsuario().getUsername());
-        dto.setData(comentario.getData());
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        String dataFormatada = comentario.getData().format(formatter);
+        dto.setData(dataFormatada);
+
         dto.setSpoiler(comentario.isSpoiler());
         dto.setQuantidadeCurtidas(comentario.getQuantidadeCurtidas());
 
@@ -147,7 +152,11 @@ public class ComentarioForumServiceImpl implements ComentarioForumService {
         dto.setTexto(resposta.getTexto());
         dto.setNomePerfil(resposta.getPerfil().getUsuario().getUsername());
         dto.setQuantidadeCurtidas(resposta.getQuantidadeCurtidas());
-        dto.setData(resposta.getData());
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        String dataFormatada = resposta.getData().format(formatter);
+        dto.setData(dataFormatada);
+
         return dto;
     }
 }

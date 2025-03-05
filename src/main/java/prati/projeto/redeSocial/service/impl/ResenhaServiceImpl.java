@@ -20,6 +20,7 @@ import prati.projeto.redeSocial.rest.dto.ResenhaViewDTO;
 import prati.projeto.redeSocial.service.ResenhaService;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -147,6 +148,10 @@ public class ResenhaServiceImpl implements ResenhaService {
         Page<AvaliacaoDTO> avaliacoesPage = avaliacaoService.listarAvaliacaoPorResenha(resenha.getId(), page, size);
         List<AvaliacaoDTO> avaliacoesDTO = avaliacoesPage.getContent();
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        String dataPublicacaoFormatada = resenha.getDataPublicacao().format(formatter);
+        String dataEdicaoFormatada = resenha.getDataEdicao().format(formatter);
+
         return new ResenhaViewDTO(
                 resenha.getId(),
                 resenha.getPerfil().getId(),
@@ -159,8 +164,8 @@ public class ResenhaServiceImpl implements ResenhaService {
                 resenha.getTitulo(),
                 resenha.getAutor(),
                 resenha.getTexto(),
-                resenha.getDataPublicacao().toString(),
-                resenha.getDataEdicao().toString(),
+                dataPublicacaoFormatada,
+                dataEdicaoFormatada,
                 resenha.getNota(),
                 resenha.isSpoiler(),
                 resenha.getMedia(),
