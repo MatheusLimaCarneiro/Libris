@@ -53,9 +53,10 @@ public class SecurityConfig {
                     CustomOAuth2User oauth2User = (CustomOAuth2User) authentication.getPrincipal();
                     String accessToken = jwtService.gerarTokenO2auth(oauth2User);
                     String refreshToken = jwtService.gerarRefreshTokenO2auth(oauth2User);
-                    response.sendRedirect("/libris/auth/oauth2/success?token=" + accessToken + "&refreshToken=" + refreshToken);
+                    response.sendRedirect("http://localhost:5173/login?token=" + accessToken + "&refreshToken=" + refreshToken);
                 })
             )
+
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()))
             .build();
