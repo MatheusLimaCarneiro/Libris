@@ -23,4 +23,6 @@ public interface NotificacaoRepository extends JpaRepository<Notificacao, Intege
     @Modifying
     @Query("DELETE FROM Notificacao n WHERE n.destinatario.id = :destinatarioId")
     void deletarTodasPorDestinatarioId(@Param("destinatarioId") Integer destinatarioId);
+
+    void deleteByDestinatarioUsuarioUsername(String username);
 }

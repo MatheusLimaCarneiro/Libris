@@ -73,6 +73,14 @@ public class NotificacaoController {
         return new ServiceResponse<>(null, "Todas as notificações foram deletadas", true, getFormattedTimestamp());
     }
 
+    @DeleteMapping("/deletar-todas/username/{username}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public ServiceResponse<Void> deletarTodasNotificacoesPorUsername(@PathVariable String username) {
+        notificacaoService.deletarTodasNotificacoesPorUsername(username);
+        return new ServiceResponse<>(null, "Todas as notificações do usuário " + username + " foram deletadas", true, getFormattedTimestamp()
+        );
+    }
+
     private String getFormattedTimestamp() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return LocalDateTime.now().format(formatter);
