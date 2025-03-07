@@ -1,42 +1,42 @@
 package prati.projeto.redeSocial.rest.dto;
 
-import jakarta.validation.constraints.*;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Schema(description = "DTO para representar um comentário na resposta")
 public class ComentarioDTO {
 
+    @Schema(description = "ID do comentário", example = "1")
     private Integer id;
 
-    @NotNull(message = "Informe o ID do perfil")
+    @Schema(description = "ID do perfil que fez o comentário", example = "1")
     private Integer perfilId;
 
-    @NotNull(message = "Informe o código do livro")
+    @Schema(description = "Google ID do livro associado ao comentário", example = "XYZ123")
     private String googleId;
 
-    @NotEmpty(message = "Campo de texto é obrigatório")
-    @Pattern(regexp = ".*\\S.*", message = "O texto não pode conter apenas espaços.")
+    @Schema(description = "Texto do comentário", example = "BLA BLA BLA")
     private String texto;
 
-    @NotNull(message = "O comentário não pode ser realizado sem nota")
-    @Min(value = 1, message = "A nota deve ser no mínimo 1")
-    @Max(value = 5, message = "A nota deve ser no máximo 5")
+    @Schema(description = "Nota atribuída ao livro (deve estar entre 1 e 5)", example = "4.0")
     private Double nota;
 
+    @Schema(description = "Data e hora do comentário", example = "07/03/2025 14:59")
     private String dataComentario;
 
+    @Schema(description = "Quantidade de curtidas do comentário", example = "0")
     private Integer quantidadeCurtidas;
 
+    @Schema(description = "Indica se o comentário contém spoiler", example = "false")
+    private boolean spoiler;
     private List<RespostaDTO> respostas = new ArrayList<>();
 
-    @NotNull(message = "A nota é obrigatória")
-    private boolean spoiler;
 }

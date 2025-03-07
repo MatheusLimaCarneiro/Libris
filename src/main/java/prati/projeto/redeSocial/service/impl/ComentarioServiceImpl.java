@@ -29,7 +29,7 @@ public class ComentarioServiceImpl implements ComentarioService {
 
     @Override
     @Transactional
-    public ComentarioDTO salvar(ComentarioDTO dto) {
+    public ComentarioDTO salvar(ComentarioRequestDTO dto) {
         Perfil perfil = validarPerfil(dto.getPerfilId());
         Livro livro = livroRepository.findByGoogleId(dto.getGoogleId())
                 .orElseThrow(() -> new RegraNegocioException("Livro com Google ID " + dto.getGoogleId() + " não encontrado"));
@@ -80,19 +80,24 @@ public class ComentarioServiceImpl implements ComentarioService {
 
     @Override
     @Transactional
-    public ComentarioDTO atualizarComentario(Integer id, ComentarioDTO dto) {
+    public ComentarioDTO atualizarComentario(Integer id, ComentarioRequestDTO dto) {
         Comentario comentario = comentarioRepository.findById(id)
                 .orElseThrow(() -> new RegraNegocioException("Comentário não encontrado"));
+
+        Perfil perfil = validarPerfil(dto.getPerfilId());
 
         Livro livro = livroRepository.findByGoogleId(dto.getGoogleId())
                 .orElseThrow(() -> new RegraNegocioException("Livro com Google ID " + dto.getGoogleId() + " não encontrado"));
 
-        comentario.setTexto(dto.getTexto());
-        comentario.setNota(dto.getNota());
         validarNota(dto.getNota());
+
+        comentario.setTexto(dto.getTexto());
         comentario.setDataComentario(LocalDateTime.now());
+        comentario.setPerfil(perfil);
         comentario.setLivro(livro);
         comentario.setGoogleIdLivro(dto.getGoogleId());
+        comentario.setNota(dto.getNota());
+        comentario.setSpoiler(dto.isSpoiler());
 
         comentario = comentarioRepository.save(comentario);
         return convertToDTO(comentario);
