@@ -1,5 +1,10 @@
 package prati.projeto.redeSocial.rest.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -14,11 +19,31 @@ import java.time.format.DateTimeFormatter;
 
 @RestController
 @RequestMapping("/libris/comentarios/{comentarioId}/respostas")
+@Tag(
+        name = "Resposta de Comentário",
+        description = "Endpoints responsáveis pela gestão das respostas aos comentários."
+)
 public class ComentarioRespostaController {
 
     @Autowired
     private ComentarioRespostaService respostaService;
 
+
+    @Operation(
+            summary = "Adicionar resposta",
+            description = "Adiciona uma nova resposta ao comentário especificado e retorna os detalhes da resposta criada.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "201",
+                            description = "Resposta adicionada com sucesso.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ServiceResponse.class)
+                            )
+                    ),
+                    @ApiResponse(responseCode = "400", description = "Dados inválidos para criação da resposta.")
+            }
+    )
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ServiceResponse<RespostaDTO> adicionarResposta(
@@ -28,6 +53,23 @@ public class ComentarioRespostaController {
         return new ServiceResponse<>(resposta, "Resposta adicionada com sucesso", true, getFormattedTimestamp());
     }
 
+
+
+    @Operation(
+            summary = "Buscar resposta por ID",
+            description = "Retorna os detalhes da resposta associada ao comentário com base nos identificadores fornecidos.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Resposta encontrada com sucesso.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ServiceResponse.class)
+                            )
+                    ),
+                    @ApiResponse(responseCode = "404", description = "Resposta ou comentário não encontrado.")
+            }
+    )
     @GetMapping("/{respostaId}")
     @ResponseStatus(HttpStatus.OK)
     public ServiceResponse<RespostaDTO> buscarRespostaPorId(
@@ -37,6 +79,22 @@ public class ComentarioRespostaController {
         return new ServiceResponse<>(resposta, "Resposta encontrada com sucesso", true, getFormattedTimestamp());
     }
 
+
+
+    @Operation(
+            summary = "Listar respostas",
+            description = "Lista todas as respostas associadas ao comentário especificado, com suporte a paginação.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Respostas encontradas.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ServiceResponse.class)
+                            )
+                    )
+            }
+    )
     @GetMapping("/listar")
     @ResponseStatus(HttpStatus.OK)
     public ServiceResponse<Page<RespostaDTO>> listarRespostas(
@@ -49,6 +107,24 @@ public class ComentarioRespostaController {
         return new ServiceResponse<>(respostas, mensagem, !respostas.isEmpty(), getFormattedTimestamp());
     }
 
+
+
+    @Operation(
+            summary = "Atualizar resposta",
+            description = "Atualiza os dados de uma resposta existente associada ao comentário e retorna os detalhes atualizados.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Resposta atualizada com sucesso.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ServiceResponse.class)
+                            )
+                    ),
+                    @ApiResponse(responseCode = "400", description = "Dados inválidos para atualização."),
+                    @ApiResponse(responseCode = "404", description = "Resposta ou comentário não encontrado.")
+            }
+    )
     @PutMapping("/{respostaId}")
     @ResponseStatus(HttpStatus.OK)
     public ServiceResponse<RespostaDTO> atualizarResposta(
@@ -59,6 +135,16 @@ public class ComentarioRespostaController {
         return new ServiceResponse<>(respostaAtualizada, "Resposta atualizada com sucesso", true, getFormattedTimestamp());
     }
 
+
+
+    @Operation(
+            summary = "Deletar resposta",
+            description = "Exclui a resposta associada ao comentário com base nos identificadores fornecidos.",
+            responses = {
+                    @ApiResponse(responseCode = "204", description = "Resposta excluída com sucesso."),
+                    @ApiResponse(responseCode = "404", description = "Resposta ou comentário não encontrado.")
+            }
+    )
     @DeleteMapping("/{respostaId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deletarResposta(
@@ -66,6 +152,8 @@ public class ComentarioRespostaController {
             @PathVariable Integer respostaId) {
         respostaService.deletarResposta(comentarioId, respostaId);
     }
+
+
 
     private String getFormattedTimestamp() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");

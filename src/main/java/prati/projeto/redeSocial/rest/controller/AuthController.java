@@ -27,7 +27,10 @@ import java.time.format.DateTimeFormatter;
 @RestController
 @AllArgsConstructor
 @RequestMapping("libris/auth")
-@Tag(name = "Autenticação", description = "Endpoints relacionados ao registro e login de usuários.")
+@Tag(
+        name = "Autenticação",
+        description = "Endpoints relacionados ao registro e login de usuários."
+)
 public class AuthController {
 
     private final UsuarioService usuarioService;

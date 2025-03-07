@@ -9,7 +9,7 @@ import java.util.Set;
 
 @Data
 @NoArgsConstructor
-@Schema(description = "Objeto que representa os dados completos de um perfil de usuário")
+@Schema(description = "Classe que representa os dados completos de um perfil de usuário")
 public class PerfilDTO {
 
     @Schema(description = "ID do perfil", example = "1")
