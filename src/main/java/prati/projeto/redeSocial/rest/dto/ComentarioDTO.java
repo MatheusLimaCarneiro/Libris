@@ -20,7 +20,7 @@ public class ComentarioDTO {
     private Integer perfilId;
 
     @NotNull(message = "Informe o código do livro")
-    private Integer livroId;
+    private String googleId;
 
     @NotEmpty(message = "Campo de texto é obrigatório")
     @Pattern(regexp = ".*\\S.*", message = "O texto não pode conter apenas espaços.")
@@ -31,7 +31,12 @@ public class ComentarioDTO {
     @Max(value = 5, message = "A nota deve ser no máximo 5")
     private Double nota;
 
-    private LocalDateTime dataComentario;
+    private String dataComentario;
+
+    private Integer quantidadeCurtidas;
 
     private List<RespostaDTO> respostas = new ArrayList<>();
+
+    @NotNull(message = "A nota é obrigatória")
+    private boolean spoiler;
 }

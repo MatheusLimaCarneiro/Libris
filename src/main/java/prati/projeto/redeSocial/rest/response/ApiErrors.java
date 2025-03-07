@@ -1,4 +1,4 @@
-package prati.projeto.redeSocial.rest;
+package prati.projeto.redeSocial.rest.response;
 
 import lombok.Getter;
 import java.util.Arrays;

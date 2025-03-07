@@ -1,4 +1,4 @@
-package prati.projeto.redeSocial.service;
+package prati.projeto.redeSocial.service.auth;
 
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,8 +15,8 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final UsuarioRepository usuarioRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String usename) throws UsernameNotFoundException {
-        Usuario usuario = usuarioRepository.findByUsername(usename)
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
 
         return new CustomUserDetails(usuario);

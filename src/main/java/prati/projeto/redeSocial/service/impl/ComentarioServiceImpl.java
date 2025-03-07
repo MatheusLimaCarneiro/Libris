@@ -1,6 +1,9 @@
 package prati.projeto.redeSocial.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import prati.projeto.redeSocial.exception.RegraNegocioException;
@@ -11,8 +14,8 @@ import prati.projeto.redeSocial.service.ComentarioRespostaService;
 import prati.projeto.redeSocial.service.ComentarioService;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
 @Service
 @RequiredArgsConstructor
@@ -22,13 +25,15 @@ public class ComentarioServiceImpl implements ComentarioService {
     private final PerfilRepository perfilRepository;
     private final LivroRepository livroRepository;
     private final ComentarioRespostaService respostaService;
-
+    private final UsuarioRepository usuarioRepository;
 
     @Override
     @Transactional
-    public Comentario salvar(ComentarioDTO dto) {
+    public ComentarioDTO salvar(ComentarioDTO dto) {
         Perfil perfil = validarPerfil(dto.getPerfilId());
-        Livro livro = validarLivro(dto.getLivroId());
+        Livro livro = livroRepository.findByGoogleId(dto.getGoogleId())
+                .orElseThrow(() -> new RegraNegocioException("Livro com Google ID " + dto.getGoogleId() + " não encontrado"));
+
         validarNota(dto.getNota());
 
         Comentario comentario = new Comentario();
@@ -36,16 +41,28 @@ public class ComentarioServiceImpl implements ComentarioService {
         comentario.setDataComentario(LocalDateTime.now());
         comentario.setPerfil(perfil);
         comentario.setLivro(livro);
+        comentario.setGoogleIdLivro(dto.getGoogleId());
         comentario.setNota(dto.getNota());
+        comentario.setSpoiler(dto.isSpoiler());
+        comentario.setRespostas(new ArrayList<>());
 
-        return comentarioRepository.save(comentario);
+        comentario = comentarioRepository.save(comentario);
+        return convertToDTO(comentario);
     }
 
     @Override
-    public List<ComentarioDTO> listarTodos() {
-        return comentarioRepository.findAll().stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+    public Page<ComentarioDTO> listarTodos(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Comentario> comentariosPage = comentarioRepository.findAll(pageable);
+
+        return comentariosPage.map(comentario -> {
+            ComentarioDTO dto = convertToDTO(comentario);
+
+            Page<RespostaDTO> respostasPage = respostaService.listarRespostasPorComentario(comentario.getId(), 0, 10);
+            dto.setRespostas(respostasPage.getContent());
+
+            return dto;
+        });
     }
 
     @Override
@@ -54,7 +71,10 @@ public class ComentarioServiceImpl implements ComentarioService {
                 .orElseThrow(() -> new RegraNegocioException("Comentário não encontrado"));
 
         ComentarioDTO dto = convertToDTO(comentario);
-        dto.setRespostas(respostaService.listarRespostasPorComentario(id));
+
+        Page<RespostaDTO> respostasPage = respostaService.listarRespostasPorComentario(id, 0, 10);
+        dto.setRespostas(respostasPage.getContent());
+
         return dto;
     }
 
@@ -64,23 +84,70 @@ public class ComentarioServiceImpl implements ComentarioService {
         Comentario comentario = comentarioRepository.findById(id)
                 .orElseThrow(() -> new RegraNegocioException("Comentário não encontrado"));
 
+        Livro livro = livroRepository.findByGoogleId(dto.getGoogleId())
+                .orElseThrow(() -> new RegraNegocioException("Livro com Google ID " + dto.getGoogleId() + " não encontrado"));
+
         comentario.setTexto(dto.getTexto());
         comentario.setNota(dto.getNota());
         validarNota(dto.getNota());
         comentario.setDataComentario(LocalDateTime.now());
+        comentario.setLivro(livro);
+        comentario.setGoogleIdLivro(dto.getGoogleId());
 
         comentario = comentarioRepository.save(comentario);
         return convertToDTO(comentario);
     }
 
+    @Override
+    @Transactional
+    public void excluirComentario(Integer id) {
+        Comentario comentario = comentarioRepository.findById(id)
+                .orElseThrow(() -> new RegraNegocioException("Comentário não encontrado"));
+
+        comentarioRepository.delete(comentario);
+    }
+
+    @Override
+    public Page<ComentarioDTO> listarPorLivro(String googleIdLivro, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Comentario> comentariosPage = comentarioRepository.findByGoogleIdLivro(googleIdLivro, pageable);
+
+        return comentariosPage.map(comentario -> {
+            ComentarioDTO dto = convertToDTO(comentario);
+
+            Page<RespostaDTO> respostasPage = respostaService.listarRespostasPorComentario(comentario.getId(), 0, 10);
+            dto.setRespostas(respostasPage.getContent());
+
+            return dto;
+        });
+    }
+
+    @Override
+    public Page<ComentarioDTO> listarComentariosPorUsername(String username, int page, int size) {
+        Usuario usuario = usuarioRepository.findByUsername(username)
+                .orElseThrow(() -> new RegraNegocioException("Usuário não encontrado com o username: " + username));
+
+        Perfil perfil = usuario.getPerfil();
+        if (perfil == null) {
+            throw new RegraNegocioException("Perfil não encontrado para o usuário: " + username);
+        }
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Comentario> comentariosPage = comentarioRepository.findByPerfil(perfil, pageable);
+
+        return comentariosPage.map(comentario -> {
+            ComentarioDTO dto = convertToDTO(comentario);
+
+            Page<RespostaDTO> respostasPage = respostaService.listarRespostasPorComentario(comentario.getId(), 0, 10);
+            dto.setRespostas(respostasPage.getContent());
+
+            return dto;
+        });
+    }
+
     private Perfil validarPerfil(Integer perfilId) {
         return perfilRepository.findById(perfilId)
                 .orElseThrow(() -> new RegraNegocioException("Perfil não encontrado"));
-    }
-
-    private Livro validarLivro(Integer livroId) {
-        return livroRepository.findById(livroId)
-                .orElseThrow(() -> new RegraNegocioException("Livro não encontrado"));
     }
 
     private void validarNota(Double nota) {
@@ -93,27 +160,16 @@ public class ComentarioServiceImpl implements ComentarioService {
         ComentarioDTO dto = new ComentarioDTO();
         dto.setId(comentario.getId());
         dto.setPerfilId(comentario.getPerfil().getId());
-        dto.setLivroId(comentario.getLivro().getId());
+        dto.setGoogleId(comentario.getGoogleIdLivro());
         dto.setTexto(comentario.getTexto());
         dto.setNota(comentario.getNota());
-        dto.setDataComentario(comentario.getDataComentario());
 
-        dto.setRespostas(convertRespostasToDTO(comentario.getRespostas()));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        String dataFormatada = comentario.getDataComentario().format(formatter);
+        dto.setDataComentario(dataFormatada);
+
+        dto.setQuantidadeCurtidas(comentario.getQuantidadeCurtidas());
+        dto.setSpoiler(comentario.isSpoiler());
         return dto;
-    }
-
-    private List<RespostaDTO> convertRespostasToDTO(List<ComentarioResposta> respostas) {
-        return respostas.stream()
-                .map(this::convertRespostaToDTO)
-                .collect(Collectors.toList());
-    }
-
-    private RespostaDTO convertRespostaToDTO(ComentarioResposta resposta) {
-        return new RespostaDTO(
-                resposta.getId(),
-                resposta.getPerfil().getId(),
-                resposta.getTexto(),
-                resposta.getDataResposta()
-        );
     }
 }

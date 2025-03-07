@@ -2,12 +2,15 @@ package prati.projeto.redeSocial.rest.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import prati.projeto.redeSocial.rest.dto.RespostaDTO;
+import prati.projeto.redeSocial.rest.response.ServiceResponse;
 import prati.projeto.redeSocial.service.ComentarioRespostaService;
 
-import java.util.List;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @RestController
 @RequestMapping("/libris/comentarios/{comentarioId}/respostas")
@@ -18,27 +21,54 @@ public class ComentarioRespostaController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public RespostaDTO adicionarResposta(
+    public ServiceResponse<RespostaDTO> adicionarResposta(
             @PathVariable Integer comentarioId,
             @RequestBody @Valid RespostaDTO respostaDTO) {
-        return respostaService.adicionarResposta(comentarioId, respostaDTO);
+        RespostaDTO resposta = respostaService.adicionarResposta(comentarioId, respostaDTO);
+        return new ServiceResponse<>(resposta, "Resposta adicionada com sucesso", true, getFormattedTimestamp());
     }
 
-    @GetMapping
-    public List<RespostaDTO> listarRespostas(@PathVariable Integer comentarioId) {
-        return respostaService.listarRespostasPorComentario(comentarioId);
+    @GetMapping("/{respostaId}")
+    @ResponseStatus(HttpStatus.OK)
+    public ServiceResponse<RespostaDTO> buscarRespostaPorId(
+            @PathVariable Integer comentarioId,
+            @PathVariable Integer respostaId) {
+        RespostaDTO resposta = respostaService.buscarRespostaPorId(comentarioId, respostaId);
+        return new ServiceResponse<>(resposta, "Resposta encontrada com sucesso", true, getFormattedTimestamp());
+    }
+
+    @GetMapping("/listar")
+    @ResponseStatus(HttpStatus.OK)
+    public ServiceResponse<Page<RespostaDTO>> listarRespostas(
+            @PathVariable Integer comentarioId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Page<RespostaDTO> respostas = respostaService.listarRespostasPorComentario(comentarioId, page, size);
+        String mensagem = respostas.isEmpty() ? "Nenhuma resposta encontrada" : "Respostas encontradas";
+        return new ServiceResponse<>(respostas, mensagem, !respostas.isEmpty(), getFormattedTimestamp());
     }
 
     @PutMapping("/{respostaId}")
-    public RespostaDTO atualizarResposta(
+    @ResponseStatus(HttpStatus.OK)
+    public ServiceResponse<RespostaDTO> atualizarResposta(
+            @PathVariable Integer comentarioId,
             @PathVariable Integer respostaId,
             @RequestBody @Valid RespostaDTO respostaDTO) {
-        return respostaService.atualizarResposta(respostaId, respostaDTO);
+        RespostaDTO respostaAtualizada = respostaService.atualizarResposta(comentarioId, respostaId, respostaDTO);
+        return new ServiceResponse<>(respostaAtualizada, "Resposta atualizada com sucesso", true, getFormattedTimestamp());
     }
 
     @DeleteMapping("/{respostaId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deletarResposta(@PathVariable Integer respostaId) {
-        respostaService.deletarResposta(respostaId);
+    public void deletarResposta(
+            @PathVariable Integer comentarioId,
+            @PathVariable Integer respostaId) {
+        respostaService.deletarResposta(comentarioId, respostaId);
+    }
+
+    private String getFormattedTimestamp() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return LocalDateTime.now().format(formatter);
     }
 }

@@ -2,22 +2,35 @@ package prati.projeto.redeSocial.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import prati.projeto.redeSocial.config.PasswordConfig;
 import prati.projeto.redeSocial.exception.RegraNegocioException;
+import prati.projeto.redeSocial.exception.TokenInvalidException;
 import prati.projeto.redeSocial.modal.entity.Usuario;
 import prati.projeto.redeSocial.repository.UsuarioRepository;
+import prati.projeto.redeSocial.rest.dto.UsuarioResumidoDTO;
+import prati.projeto.redeSocial.security.JwtService;
+import prati.projeto.redeSocial.service.email.EmailService;
 import prati.projeto.redeSocial.service.UsuarioService;
+
+import java.time.Duration;
 
 @Service
 @RequiredArgsConstructor
 public class UsuarioServiceImpl implements UsuarioService{
 
+    private final PasswordConfig passwordConfig;
     private final UsuarioRepository usuarioRepository;
+    private final EmailService emailService;
+    private final JwtService jwtService;
+
 
     @Override
-    public Usuario getUsuarioByEmail(String email) {
-        return usuarioRepository.findById(email)
+    public UsuarioResumidoDTO getUsuarioByEmail(String email) {
+        Usuario usuario = usuarioRepository.findById(email)
                 .orElseThrow(() -> new RegraNegocioException(
-                        "Usuario com email " + email + " não encontrado"));
+                        "Usuário com email " + email + " não encontrado"));
+
+        return new UsuarioResumidoDTO(usuario.getUsername(), usuario.getEmail());
     }
 
     @Override
@@ -42,11 +55,48 @@ public class UsuarioServiceImpl implements UsuarioService{
 
     @Override
     public void updateUsuario(String email, Usuario usuario) {
-        usuarioRepository.findById(email)
-                .map(usuarioExistente -> {
-                    usuario.setEmail(usuarioExistente.getEmail());
-                    return usuarioRepository.save(usuario);
-                })
-                .orElseThrow(() -> new RegraNegocioException("Usuario não encontrado"));
+        Usuario usuarioExistente = usuarioRepository.findById(email)
+                .orElseThrow(() -> new RegraNegocioException("Usuário não encontrado"));
+
+        if (!usuarioExistente.getUsername().equals(usuario.getUsername())) {
+            throw new RegraNegocioException("Alteração de username não permitida.");
+        }
+
+        String senhaCriptografada = passwordConfig.passwordEncoder().encode(usuario.getSenha());
+        usuarioExistente.setSenha(senhaCriptografada);
+
+        usuarioRepository.save(usuarioExistente);
+    }
+
+    @Override
+    public void requestPasswordReset(String email) {
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new RegraNegocioException("Usuário não encontrado"));
+
+        String token = jwtService.criarTokenEmail(email, Duration.ofHours(1));
+
+        usuario.setResetToken(token);
+        usuarioRepository.save(usuario);
+
+        String resetLink = "http://seusite.com/reset-password?token=" + token;
+        String emailText = "Clique no link para redefinir sua senha: " + resetLink;
+        emailService.sendEmail(email, "Redefinição de Senha", emailText);
+    }
+
+    @Override
+    public void resetPassword(String token, String newPassword) {
+        if (!jwtService.tokenValido(token)) {
+            throw new TokenInvalidException("Token inválido ou expirado");
+        }
+
+        String email = jwtService.obterLoginUsuario(token);
+
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new RegraNegocioException("Usuário não encontrado"));
+
+        String senhaCriptografada = passwordConfig.passwordEncoder().encode(newPassword);
+        usuario.setSenha(senhaCriptografada);
+        usuario.setResetToken(null);
+        usuarioRepository.save(usuario);
     }
 }
