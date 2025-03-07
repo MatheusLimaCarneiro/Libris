@@ -34,7 +34,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(HttpMethod.OPTIONS,"/**").permitAll()
                 .requestMatchers("/h2-console/**").permitAll()
-                .requestMatchers("/libris/auth/**", "/login/**", "/oauth2/**").permitAll()
+                .requestMatchers("/libris/auth/**", "/login/**", "/oauth2/**", "/libris/usuario/reset-password/**").permitAll()
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
                 .requestMatchers("/libris/usuario/**", "/libris/perfil/**", "/libris/comentarios/**",
                     "/libris/resenhas/**", "/libris/status/**", "/libris/relacionamentos/**," +
