@@ -9,4 +9,5 @@ public interface ComentarioForumService {
     Page<ComentarioForumResponseDTO> listarPorPost(Integer postId, int page, int size);
     void deletarComentario(Integer postId, Integer id);
     ComentarioForumResponseDTO buscarComentario(Integer postId, Integer comentarioId);
+    Page<ComentarioForumResponseDTO> listarComentariosPorUsername(String username, Integer postId, int page, int size);
 }

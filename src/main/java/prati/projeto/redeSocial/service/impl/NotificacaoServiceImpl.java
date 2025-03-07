@@ -11,6 +11,7 @@ import prati.projeto.redeSocial.modal.entity.Notificacao;
 import prati.projeto.redeSocial.modal.entity.Perfil;
 import prati.projeto.redeSocial.repository.NotificacaoRepository;
 import prati.projeto.redeSocial.repository.PerfilRepository;
+import prati.projeto.redeSocial.repository.UsuarioRepository;
 import prati.projeto.redeSocial.rest.dto.NotificacaoDTO;
 import prati.projeto.redeSocial.service.NotificacaoService;
 
@@ -22,6 +23,7 @@ public class NotificacaoServiceImpl implements NotificacaoService {
 
     private final NotificacaoRepository notificacaoRepository;
     private final PerfilRepository perfilRepository;
+    private final UsuarioRepository usuarioRepository;
 
     @Override
     @Transactional
@@ -104,6 +106,16 @@ public class NotificacaoServiceImpl implements NotificacaoService {
         verificarExistenciaPerfil(perfilId);
 
         notificacaoRepository.deletarTodasPorDestinatarioId(perfilId);
+    }
+
+    @Override
+    @Transactional
+    public void deletarTodasNotificacoesPorUsername(String username) {
+        if (!usuarioRepository.existsByUsername(username)) {
+            throw new RegraNegocioException("Usuário não encontrado.");
+        }
+
+        notificacaoRepository.deleteByDestinatarioUsuarioUsername(username);
     }
 
     private void verificarExistenciaPerfil(Integer perfilId) {

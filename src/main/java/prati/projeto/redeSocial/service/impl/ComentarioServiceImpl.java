@@ -25,6 +25,7 @@ public class ComentarioServiceImpl implements ComentarioService {
     private final PerfilRepository perfilRepository;
     private final LivroRepository livroRepository;
     private final ComentarioRespostaService respostaService;
+    private final UsuarioRepository usuarioRepository;
 
     @Override
     @Transactional
@@ -110,6 +111,29 @@ public class ComentarioServiceImpl implements ComentarioService {
     public Page<ComentarioDTO> listarPorLivro(String googleIdLivro, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Comentario> comentariosPage = comentarioRepository.findByGoogleIdLivro(googleIdLivro, pageable);
+
+        return comentariosPage.map(comentario -> {
+            ComentarioDTO dto = convertToDTO(comentario);
+
+            Page<RespostaDTO> respostasPage = respostaService.listarRespostasPorComentario(comentario.getId(), 0, 10);
+            dto.setRespostas(respostasPage.getContent());
+
+            return dto;
+        });
+    }
+
+    @Override
+    public Page<ComentarioDTO> listarComentariosPorUsername(String username, int page, int size) {
+        Usuario usuario = usuarioRepository.findByUsername(username)
+                .orElseThrow(() -> new RegraNegocioException("Usuário não encontrado com o username: " + username));
+
+        Perfil perfil = usuario.getPerfil();
+        if (perfil == null) {
+            throw new RegraNegocioException("Perfil não encontrado para o usuário: " + username);
+        }
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Comentario> comentariosPage = comentarioRepository.findByPerfil(perfil, pageable);
 
         return comentariosPage.map(comentario -> {
             ComentarioDTO dto = convertToDTO(comentario);

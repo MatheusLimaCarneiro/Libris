@@ -87,4 +87,6 @@ public interface ComentarioService {
      * @throws RegraNegocioException Se o livro com o Google ID fornecido não for encontrado.
      */
     Page<ComentarioDTO> listarPorLivro(String googleId, int page, int size) throws RegraNegocioException;
+
+    Page<ComentarioDTO> listarComentariosPorUsername(String username, int page, int size);
 }
