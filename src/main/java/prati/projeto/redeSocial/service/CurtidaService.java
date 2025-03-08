@@ -69,4 +69,8 @@ public interface CurtidaService {
     void curtirRespostaForum(Integer perfilId, Integer respostaForumId);
 
     void descurtirRespostaForum(Integer perfilId, Integer respostaForumId);
+
+    void curtirPost(Integer perfilId, Integer postId);
+
+    void descurtirPost(Integer perfilId, Integer postId);
 }

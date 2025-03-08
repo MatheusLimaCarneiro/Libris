@@ -6,7 +6,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -44,5 +46,13 @@ public class PostForum {
 
     @OneToMany(mappedBy = "postForum", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ComentarioForum> comentarios;
+
+    @Column(name = "quantidade_curtidas")
+    private Integer quantidadeCurtidas = 0;
+
+    @ElementCollection
+    @CollectionTable(name = "curtidas_post_forum", joinColumns = @JoinColumn(name = "post_id"))
+    @Column(name = "perfil_id")
+    private Set<Integer> perfisQueCurtiram = new HashSet<>();
 
 }

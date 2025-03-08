@@ -3,6 +3,7 @@ package prati.projeto.redeSocial.service;
 import org.springframework.data.domain.Page;
 import prati.projeto.redeSocial.exception.RegraNegocioException;
 import prati.projeto.redeSocial.rest.dto.ComentarioDTO;
+import prati.projeto.redeSocial.rest.dto.ComentarioRequestDTO;
 
 public interface ComentarioService {
 
@@ -18,7 +19,7 @@ public interface ComentarioService {
      * @throws RegraNegocioException Se algum dado necessário não for encontrado (ex.: perfil ou livro inexistente)
      *                               ou se a nota não for válida.
      */
-    ComentarioDTO salvar(ComentarioDTO dto) throws RegraNegocioException;
+    ComentarioDTO salvar(ComentarioRequestDTO dto);
 
     /**
      * Lista todos os comentários presentes no sistema.
@@ -44,7 +45,7 @@ public interface ComentarioService {
      * @return ComentarioDTO contendo os dados do comentário.
      * @throws RegraNegocioException Se o comentário com o ID fornecido não for encontrado.
      */
-    ComentarioDTO buscarPorId(Integer id) throws RegraNegocioException;
+    ComentarioDTO buscarPorId(Integer id);
 
     /**
      * Atualiza um comentário existente, permitindo a modificação de texto e nota.
@@ -59,7 +60,7 @@ public interface ComentarioService {
      * @throws RegraNegocioException Se o comentário não for encontrado, se o livro não for encontrado pelo Google ID
      *                               ou se a nota não for válida.
      */
-    ComentarioDTO atualizarComentario(Integer id, ComentarioDTO dto) throws RegraNegocioException;
+    ComentarioDTO atualizarComentario(Integer id, ComentarioRequestDTO dto);
 
     /**
      * Exclui um comentário do sistema.
@@ -71,7 +72,7 @@ public interface ComentarioService {
      * @param id ID do comentário a ser excluído.
      * @throws RegraNegocioException Se o comentário com o ID fornecido não for encontrado.
      */
-    void excluirComentario(Integer id) throws RegraNegocioException;
+    void excluirComentario(Integer id);
 
     /**
      * Lista todos os comentários de um livro específico.
@@ -86,7 +87,20 @@ public interface ComentarioService {
      * @return Página de objetos ComentarioDTO contendo os comentários relacionados ao livro.
      * @throws RegraNegocioException Se o livro com o Google ID fornecido não for encontrado.
      */
-    Page<ComentarioDTO> listarPorLivro(String googleId, int page, int size) throws RegraNegocioException;
+    Page<ComentarioDTO> listarPorLivro(String googleId, int page, int size);
 
+    /**
+     * Lista todos os comentários feitos por um usuário específico, identificado pelo username.
+     * <p>
+     * Este método retorna uma página de comentários associados ao perfil do usuário,
+     * com base nos parâmetros de paginação fornecidos.
+     * </p>
+     *
+     * @param username Nome de usuário (username) do perfil cujos comentários serão listados.
+     * @param page     Número da página a ser retornada.
+     * @param size     Quantidade de comentários por página.
+     * @return Página de objetos ComentarioDTO contendo os comentários relacionados ao perfil do usuário.
+     * @throws RegraNegocioException Se o usuário ou perfil não for encontrado.
+     */
     Page<ComentarioDTO> listarComentariosPorUsername(String username, int page, int size);
 }

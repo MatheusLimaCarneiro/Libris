@@ -28,11 +28,10 @@ public class LivroServiceImpl implements LivroService {
     }
 
     @Override
+    @Transactional
     public Livro saveLivro(LivroResponseDTO dto) {
 
         validarGoogleIdUnico(dto.getGoogleId());
-
-        validarIsbnDuplicado(dto.getIsbn());
 
         Livro livro = convertToEntity(dto);
 
@@ -40,6 +39,7 @@ public class LivroServiceImpl implements LivroService {
     }
 
     @Override
+    @Transactional
     public void deleteLivro(Integer id) {
         Livro livro = getLivroById(id);
         livroRepository.delete(livro);
@@ -50,9 +50,8 @@ public class LivroServiceImpl implements LivroService {
     public void updateLivro(Integer id, LivroResponseDTO dto) {
         Livro livroExistente = getLivroById(id);
 
-        if (!livroExistente.getIsbn().equals(dto.getIsbn()) &&
-                livroRepository.existsByIsbn(dto.getIsbn())) {
-            throw new LivroException("ISBN já cadastrado");
+        if (!livroExistente.getGoogleId().equals(dto.getGoogleId())) {
+            validarGoogleIdUnico(dto.getGoogleId());
         }
 
         livroExistente.setGoogleId(dto.getGoogleId());
@@ -65,7 +64,7 @@ public class LivroServiceImpl implements LivroService {
         livroExistente.setIsbn(dto.getIsbn());
         livroExistente.setIdioma(dto.getIdioma());
         livroExistente.setCategoria(dto.getCategoria());
-        livroExistente.setUrl_capa(dto.getUrl_capa());
+        livroExistente.setUrlCapa(dto.getUrlCapa());
         livroExistente.setLinkCompra(dto.getLinkCompra());
         livroExistente.setFaixaEtaria(dto.getFaixaEtaria());
         livroExistente.setDataPublicacao(dto.getDataPublicacao());
@@ -99,18 +98,11 @@ public class LivroServiceImpl implements LivroService {
                 .orElseThrow(() -> new LivroException("Livro com Google ID " + googleId + " não encontrado"));
     }
 
-    private void validarIsbnDuplicado(String isbn) {
-        if (livroRepository.existsByIsbn(isbn)) {
-            throw new LivroException("ISBN já cadastrado");
-        }
-    }
-
     public void validarGoogleIdUnico(String googleId) {
         if (livroRepository.existsByGoogleId(googleId)) {
             throw new LivroException("Google ID já cadastrado!");
         }
     }
-
 
     private Livro convertToEntity(LivroResponseDTO dto) {
         Livro livro = new Livro();
@@ -124,7 +116,7 @@ public class LivroServiceImpl implements LivroService {
         livro.setIsbn(dto.getIsbn());
         livro.setIdioma(dto.getIdioma());
         livro.setCategoria(dto.getCategoria());
-        livro.setUrl_capa(dto.getUrl_capa());
+        livro.setUrlCapa(dto.getUrlCapa());
         livro.setLinkCompra(dto.getLinkCompra());
         livro.setDataPublicacao(dto.getDataPublicacao());
         livro.setFaixaEtaria(dto.getFaixaEtaria());

@@ -18,6 +18,7 @@ public class CurtidaServiceImpl implements CurtidaService {
     private final ComentarioRespostaRepository respostaRepository;
     private final ComentarioForumRepository comentarioForumRepository;
     private final RespostaForumRepository respostaForumRepository;
+    private final PostForumRepository postForumRepository;
     private final NotificacaoService notificacaoService;
 
     @Override
@@ -184,6 +185,45 @@ public class CurtidaServiceImpl implements CurtidaService {
         respostaForumRepository.save(respostaForum);
     }
 
+    @Override
+    public void curtirPost(Integer perfilId, Integer postId) {
+        validarPerfil(perfilId);
+        PostForum post = buscarPost(postId);
+
+        if (post.getPerfisQueCurtiram().contains(perfilId)) {
+            throw new RegraNegocioException("Você já curtiu este post.");
+        }
+
+        post.getPerfisQueCurtiram().add(perfilId);
+        post.setQuantidadeCurtidas(post.getQuantidadeCurtidas() + 1);
+        postForumRepository.save(post);
+
+        Perfil autor = post.getPerfil();
+        Perfil curtidor = perfilRepository.findById(perfilId)
+                .orElseThrow(() -> new RegraNegocioException("Perfil curtidor não encontrado."));
+
+        notificacaoService.criarNotificacao(
+                autor,
+                curtidor,
+                curtidor.getUsuario().getUsername() + " curtiu seu post.",
+                "curtida"
+        );
+    }
+
+    @Override
+    public void descurtirPost(Integer perfilId, Integer postId) {
+        validarPerfil(perfilId);
+        PostForum post = buscarPost(postId);
+
+        if (!post.getPerfisQueCurtiram().contains(perfilId)) {
+            throw new RegraNegocioException("Você ainda não curtiu este post.");
+        }
+
+        post.getPerfisQueCurtiram().remove(perfilId);
+        post.setQuantidadeCurtidas(post.getQuantidadeCurtidas() - 1);
+        postForumRepository.save(post);
+    }
+
     private void validarPerfil(Integer perfilId) {
         perfilRepository.findById(perfilId)
                 .orElseThrow(() -> new RegraNegocioException("Perfil não encontrado"));
@@ -207,5 +247,10 @@ public class CurtidaServiceImpl implements CurtidaService {
     private RespostaForum buscarRespostaForum(Integer respostaForumId) {
         return respostaForumRepository.findById(respostaForumId)
                 .orElseThrow(() -> new RegraNegocioException("Resposta do fórum não encontrada"));
+    }
+
+    private PostForum buscarPost(Integer postId) {
+        return postForumRepository.findById(postId)
+                .orElseThrow(() -> new RegraNegocioException("Post não encontrado"));
     }
 }

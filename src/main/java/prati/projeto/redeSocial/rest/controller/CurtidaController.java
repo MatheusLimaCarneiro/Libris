@@ -129,6 +129,58 @@ public class CurtidaController {
     }
 
     @Operation(
+            summary = "Curtir um post",
+            description = "Permite que um perfil curta um post específico. Se o perfil já tiver curtido o post, uma exceção será lançada.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "201",
+                            description = "Post curtido com sucesso",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ServiceResponse.class)
+                            )
+                    ),
+                    @ApiResponse(responseCode = "400", description = "ID do perfil ou post inválido"),
+                    @ApiResponse(responseCode = "404", description = "Perfil ou post não encontrado"),
+                    @ApiResponse(responseCode = "409", description = "Perfil já curtiu este post")
+            }
+    )
+    @PostMapping("/post/{postId}/perfil/{perfilId}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ServiceResponse<Void> curtirPost(
+            @Parameter(description = "ID do perfil que está curtindo o post", example = "1")
+            @PathVariable @Positive(message = "ID do perfil deve ser positivo") Integer perfilId,
+            @Parameter(description = "ID do post que será curtido", example = "10")
+            @PathVariable @Positive(message = "ID do post deve ser positivo") Integer postId) {
+        curtidaService.curtirPost(perfilId, postId);
+        return new ServiceResponse<>(null, "Post curtido com sucesso", true, getFormattedTimestamp());
+    }
+
+    @Operation(
+            summary = "Descurtir um post",
+            description = "Permite que um perfil descurta um post específico. Se o perfil não tiver curtido o post anteriormente, uma exceção será lançada.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "204",
+                            description = "Post descurtido com sucesso"
+                    ),
+                    @ApiResponse(responseCode = "400", description = "ID do perfil ou post inválido"),
+                    @ApiResponse(responseCode = "404", description = "Perfil ou post não encontrado"),
+                    @ApiResponse(responseCode = "409", description = "Perfil ainda não curtiu este post")
+            }
+    )
+    @DeleteMapping("/post/{postId}/perfil/{perfilId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public ServiceResponse<Void> descurtirPost(
+            @Parameter(description = "ID do perfil que está descurtindo o post", example = "1")
+            @PathVariable @Positive(message = "ID do perfil deve ser positivo") Integer perfilId,
+            @Parameter(description = "ID do post que será descurtido", example = "10")
+            @PathVariable @Positive(message = "ID do post deve ser positivo") Integer postId) {
+        curtidaService.descurtirPost(perfilId, postId);
+        return new ServiceResponse<>(null, "Post descurtido com sucesso", true, getFormattedTimestamp());
+    }
+
+    @Operation(
             summary = "Curtir um comentário do fórum",
             description = "Permite que um perfil curta um comentário específico do fórum. Se o perfil já tiver curtido o comentário, uma exceção será lançada.",
             responses = {
