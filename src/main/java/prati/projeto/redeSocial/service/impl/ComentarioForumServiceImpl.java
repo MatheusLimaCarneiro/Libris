@@ -35,6 +35,7 @@ public class ComentarioForumServiceImpl implements ComentarioForumService {
     private final PerfilRepository perfilRepository;
     private final RespostaForumRepository respostaForumRepository;
     private final NotificacaoService notificacaoService;
+    private final AtividadePerfilServiceImpl atividadePerfilServiceImpl;
 
     @Override
     @Transactional
@@ -52,6 +53,9 @@ public class ComentarioForumServiceImpl implements ComentarioForumService {
         comentario.setData(LocalDateTime.now());
         comentario.setSpoiler(dto.isSpoiler());
         comentario.setRespostas(new ArrayList<>());
+
+        //Rastreia atividade
+        atividadePerfilServiceImpl.registrarAtividade(comentario.getPerfil());
 
         comentarioForumRepository.save(comentario);
 

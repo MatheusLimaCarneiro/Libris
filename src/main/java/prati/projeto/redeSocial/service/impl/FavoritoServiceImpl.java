@@ -31,6 +31,9 @@ public class FavoritoServiceImpl implements FavoritoService{
     private final LivroRepository livroRepository;
     private final UsuarioRepository usuarioRepository;
 
+    //modifiquei
+    private final AtividadePerfilServiceImpl atividadePerfilService;
+
     @Override
     public FavoritoResponseDTO getFavoritoById(Integer id) {
         Favoritos favorito = buscarFavoritoPorId(id);
@@ -47,6 +50,8 @@ public class FavoritoServiceImpl implements FavoritoService{
 
         Favoritos favorito = criarFavorito(perfil, livro, dto.getGoogleId());
         favoritoRepository.save(favorito);
+        //Rastreia atividade
+        atividadePerfilService.registrarAtividade(favorito.getPerfil());
 
         return converterParaDTO(favorito);
     }

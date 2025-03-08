@@ -29,6 +29,9 @@ public class StatusLeituraServiceImpl implements StatusLeituraService {
     private final LivroRepository livroRepository;
     private final UsuarioRepository usuarioRepository;
 
+    //modifiquei
+    private final AtividadePerfilServiceImpl atividadePerfilServiceImpl;
+
     @Override
     public StatusLeituraDTO salvarStatus(Integer perfilId, String livroId, StatusLeituraEnum statusLeituraEnum, Integer pagina) {
         Perfil perfil = perfilRepository.findById(perfilId)
@@ -54,6 +57,10 @@ public class StatusLeituraServiceImpl implements StatusLeituraService {
         novoStatus.setStatusLeitura(statusLeituraEnum);
 
         StatusLeitura salvo = statusLeituraRepository.save(novoStatus);
+
+        //Rastreia atividade
+        atividadePerfilServiceImpl.registrarAtividade(perfil);
+
         return convertToDTO(salvo);
     }
 

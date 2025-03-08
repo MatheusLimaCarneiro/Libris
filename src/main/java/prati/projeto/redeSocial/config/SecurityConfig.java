@@ -33,12 +33,13 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(HttpMethod.OPTIONS,"/**").permitAll()
+                    .requestMatchers("/atividades").permitAll()
                 .requestMatchers("/h2-console/**").permitAll()
                 .requestMatchers("/libris/auth/**", "/login/**", "/oauth2/**").permitAll()
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
                 .requestMatchers("/libris/usuario/**", "/libris/perfil/**", "/libris/comentarios/**",
                     "/libris/resenhas/**", "/libris/status/**", "/libris/relacionamentos/**," +
-                        "libris/curtidas/**", "/libris/posts/**").hasAnyRole("USER", "ADMIN")
+                        "libris/curtidas/**", "/libris/posts/**", "/libris/atividade").hasAnyRole("USER", "ADMIN")
                 .requestMatchers(HttpMethod.GET, "/libris/livro/**").hasAnyRole("USER", "ADMIN")
                 .requestMatchers(HttpMethod.POST, "/libris/livro/**").hasAnyRole("USER", "ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/libris/livro/**").hasRole("ADMIN")
