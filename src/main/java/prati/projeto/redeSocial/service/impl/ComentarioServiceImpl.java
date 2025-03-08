@@ -30,6 +30,7 @@ public class ComentarioServiceImpl implements ComentarioService {
     private final UsuarioRepository usuarioRepository;
 
     @Override
+    @CacheEvict(value = "comentariosPorLivro", key = "{#dto.googleId, 0, 10}")
     @Transactional
     public ComentarioDTO salvar(ComentarioRequestDTO dto) {
         Perfil perfil = validarPerfil(dto.getPerfilId());
@@ -82,7 +83,7 @@ public class ComentarioServiceImpl implements ComentarioService {
     }
 
     @Override
-    @CacheEvict(value = {"comentarios", "comentariosPorLivro", "comentariosPorUsername"}, allEntries = true)
+    @CacheEvict(value = {"comentarios", "comentariosPorLivro", "comentariosPorUsername"}, key = "{#dto.googleId, 0, 10}")
     @Transactional
     public ComentarioDTO atualizarComentario(Integer id, ComentarioRequestDTO dto) {
         Comentario comentario = comentarioRepository.findById(id)
@@ -108,7 +109,7 @@ public class ComentarioServiceImpl implements ComentarioService {
     }
 
     @Override
-    @CacheEvict(value = {"comentarios", "comentariosPorLivro", "comentariosPorUsername"}, allEntries = true)
+    @CacheEvict(value = {"comentarios", "comentariosPorLivro", "comentariosPorUsername"}, key = "{#comentario.googleIdLivro, 0, 10}")
     @Transactional
     public void excluirComentario(Integer id) {
         Comentario comentario = comentarioRepository.findById(id)
