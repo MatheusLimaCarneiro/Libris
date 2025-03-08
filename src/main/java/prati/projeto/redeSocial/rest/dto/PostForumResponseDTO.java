@@ -14,5 +14,6 @@ public class PostForumResponseDTO {
     private String nomePerfil;
     private String tituloLivro;
     private String dataCriacao;
+    private Integer curtidas;
     private List<ComentarioForumResponseDTO> comentarios;
 }

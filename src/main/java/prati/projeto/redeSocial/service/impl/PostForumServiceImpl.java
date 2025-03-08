@@ -50,7 +50,6 @@ public class PostForumServiceImpl implements PostForumService {
         post.setPerfil(perfil);
         post.setLivro(livro);
         post.setGoogleIdLivro(livro.getGoogleId());
-        post.setGoogleIdLivro(dto.getGoogleId());
         post.setComentarios(new ArrayList<>());
 
         postForumRepository.save(post);
@@ -131,6 +130,7 @@ public class PostForumServiceImpl implements PostForumService {
         dto.setPossuiSpoiler(post.getPossuiSpoiler());
         dto.setNomePerfil(post.getPerfil().getUsuario().getUsername());
         dto.setTituloLivro(post.getLivro().getTitulo());
+        dto.setCurtidas(post.getQuantidadeCurtidas());
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
         String dataFormatada = post.getDataCriacao().format(formatter);
