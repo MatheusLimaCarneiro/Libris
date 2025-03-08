@@ -1,6 +1,5 @@
 package prati.projeto.redeSocial.rest.dto;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import org.hibernate.validator.constraints.URL;
@@ -25,6 +24,7 @@ public class LivroResponseDTO {
     @Size(max = 4096, message = "A sinopse deve ter no máximo 4096 caracteres")
     private String sinopse;
 
+    @Positive(message = "O número de páginas deve ser um valor positivo")
     private int numeroPaginas;
 
     private String isbn;
@@ -35,7 +35,7 @@ public class LivroResponseDTO {
 
     @NotBlank(message = "A URL da capa é obrigatória")
     @URL(message = "A URL da capa deve ser uma URL válida")
-    private String url_capa;
+    private String urlCapa;
 
     @URL(message = "O link de compra deve ser uma URL válida")
     private String linkCompra;

@@ -27,13 +27,13 @@ public class Livro {
     @Schema(description = "Google ID do livro", example = "abc123")
     private String googleId;
 
-    @Column(length = 80)
+    @Column(length = 256)
     @NotEmpty(message = "Campo título é obrigatório")
     @Pattern(regexp = ".*\\S.*", message = "O título não pode conter apenas espaços.")
     @Schema(description = "Título do livro", example = "O Senhor dos Anéis")
     private String titulo;
 
-    @Column(length = 80)
+    @Column(length = 256)
     @Schema(description = "Subtítulo do livro", example = "A Sociedade do Anel")
     private String subtitulo;
 
@@ -68,11 +68,11 @@ public class Livro {
     @Schema(description = "Categoria do livro", example = "Ficção Fantástica")
     private String categoria;
 
-    @Column(length = 500)
+    @Column(name = "url_capa", length = 500)
     @URL(message = "A URL da capa deve ser uma URL válida")
     @NotEmpty(message = "Campo URL da capa é obrigatório")
     @Schema(description = "URL da capa do livro", example = "https://example.com/capa.jpg")
-    private String url_capa;
+    private String urlCapa;
 
     @Column(length = 500)
     @Schema(description = "Link para compra do livro", example = "https://example.com/comprar")
@@ -81,6 +81,7 @@ public class Livro {
     @Schema(description = "Data de publicação do livro", example = "1954-07-29")
     private LocalDate dataPublicacao;
 
+    @Schema(description = "Faixa etária recomendada para o livro", example = "12+")
     private String faixaEtaria;
 
     @Column(name = "media_livro")
