@@ -31,7 +31,7 @@ public class ComentarioDTO {
     @Max(value = 5, message = "A nota deve ser no máximo 5")
     private Double nota;
 
-    private LocalDateTime dataComentario;
+    private String dataComentario;
 
     private Integer quantidadeCurtidas;
 

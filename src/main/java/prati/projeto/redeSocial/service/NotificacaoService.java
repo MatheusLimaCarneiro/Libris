@@ -19,4 +19,6 @@ public interface NotificacaoService {
     void marcarTodasComoLida(Integer perfilId);
 
     void deletarTodasNotificacoes(Integer perfilId);
+
+    void deletarTodasNotificacoesPorUsername(String username);
 }

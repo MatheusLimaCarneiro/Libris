@@ -30,7 +30,7 @@ public class Favoritos {
     @Schema(description = "Livro favoritado")
     private Livro livro;
 
-    @Column(unique = true)
+    @Column
     @Schema(description = "Google ID do livro", example = "abc123")
     private String googleId;
 

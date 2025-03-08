@@ -7,14 +7,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import prati.projeto.redeSocial.exception.RegraNegocioException;
-import prati.projeto.redeSocial.modal.entity.ComentarioForum;
-import prati.projeto.redeSocial.modal.entity.Perfil;
-import prati.projeto.redeSocial.modal.entity.PostForum;
-import prati.projeto.redeSocial.modal.entity.RespostaForum;
-import prati.projeto.redeSocial.repository.ComentarioForumRepository;
-import prati.projeto.redeSocial.repository.PerfilRepository;
-import prati.projeto.redeSocial.repository.PostForumRepository;
-import prati.projeto.redeSocial.repository.RespostaForumRepository;
+import prati.projeto.redeSocial.modal.entity.*;
+import prati.projeto.redeSocial.repository.*;
 import prati.projeto.redeSocial.rest.dto.ComentarioForumRequestDTO;
 import prati.projeto.redeSocial.rest.dto.ComentarioForumResponseDTO;
 import prati.projeto.redeSocial.rest.dto.RespostaForumResponseDTO;
@@ -22,6 +16,7 @@ import prati.projeto.redeSocial.service.ComentarioForumService;
 import prati.projeto.redeSocial.service.NotificacaoService;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,7 +30,7 @@ public class ComentarioForumServiceImpl implements ComentarioForumService {
     private final PerfilRepository perfilRepository;
     private final RespostaForumRepository respostaForumRepository;
     private final NotificacaoService notificacaoService;
-    private final AtividadePerfilServiceImpl atividadePerfilServiceImpl;
+    private final UsuarioRepository usuarioRepository;
 
     @Override
     @Transactional
@@ -53,9 +48,6 @@ public class ComentarioForumServiceImpl implements ComentarioForumService {
         comentario.setData(LocalDateTime.now());
         comentario.setSpoiler(dto.isSpoiler());
         comentario.setRespostas(new ArrayList<>());
-
-        //Rastreia atividade
-        atividadePerfilServiceImpl.registrarAtividade(comentario.getPerfil());
 
         comentarioForumRepository.save(comentario);
 
@@ -128,12 +120,48 @@ public class ComentarioForumServiceImpl implements ComentarioForumService {
         return dto;
     }
 
+    @Override
+    public Page<ComentarioForumResponseDTO> listarComentariosPorUsername(String username, Integer postId, int page, int size) {
+        Usuario usuario = usuarioRepository.findByUsername(username)
+                .orElseThrow(() -> new RegraNegocioException("Usuário não encontrado com o username: " + username));
+
+        Perfil perfil = usuario.getPerfil();
+        if (perfil == null) {
+            throw new RegraNegocioException("Perfil não encontrado para o usuário: " + username);
+        }
+
+        if (!postForumRepository.existsById(postId)) {
+            throw new RegraNegocioException("Post não encontrado com ID: " + postId);
+        }
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ComentarioForum> comentariosPage = comentarioForumRepository.findByPerfil(perfil, pageable);
+
+        return comentariosPage.map(comentario -> {
+            ComentarioForumResponseDTO dto = converterParaDTO(comentario);
+
+            Pageable respostasPageable = PageRequest.of(0, 10);
+            Page<RespostaForum> respostasPage = respostaForumRepository.findByComentarioForumId(comentario.getId(), respostasPageable);
+
+            List<RespostaForumResponseDTO> respostasDTO = respostasPage.getContent().stream()
+                    .map(this::converterRespostaParaDTO)
+                    .collect(Collectors.toList());
+            dto.setRespostas(respostasDTO);
+
+            return dto;
+        });
+    }
+
     private ComentarioForumResponseDTO converterParaDTO(ComentarioForum comentario) {
         ComentarioForumResponseDTO dto = new ComentarioForumResponseDTO();
         dto.setId(comentario.getId());
         dto.setTexto(comentario.getTexto());
         dto.setNomePerfil(comentario.getPerfil().getUsuario().getUsername());
-        dto.setData(comentario.getData());
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        String dataFormatada = comentario.getData().format(formatter);
+        dto.setData(dataFormatada);
+
         dto.setSpoiler(comentario.isSpoiler());
         dto.setQuantidadeCurtidas(comentario.getQuantidadeCurtidas());
 
@@ -151,7 +179,11 @@ public class ComentarioForumServiceImpl implements ComentarioForumService {
         dto.setTexto(resposta.getTexto());
         dto.setNomePerfil(resposta.getPerfil().getUsuario().getUsername());
         dto.setQuantidadeCurtidas(resposta.getQuantidadeCurtidas());
-        dto.setData(resposta.getData());
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        String dataFormatada = resposta.getData().format(formatter);
+        dto.setData(dataFormatada);
+
         return dto;
     }
 }

@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import prati.projeto.redeSocial.modal.entity.Perfil;
 import prati.projeto.redeSocial.rest.dto.PerfilDTO;
+import prati.projeto.redeSocial.rest.dto.PerfilRequestDTO;
 import prati.projeto.redeSocial.rest.dto.PerfilResumidoDTO;
 import prati.projeto.redeSocial.rest.response.ServiceResponse;
 import prati.projeto.redeSocial.service.PerfilService;
@@ -72,7 +72,7 @@ public class PerfilController {
     )
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ServiceResponse<PerfilDTO> savePerfil(@RequestBody @Valid Perfil perfil) {
+    public ServiceResponse<PerfilDTO> savePerfil(@RequestBody @Valid PerfilRequestDTO perfil) {
         PerfilDTO perfilDTO = perfilService.savePerfil(perfil);
         return new ServiceResponse<>(perfilDTO, "Perfil salvo com sucesso", true, getFormattedTimestamp());
     }
@@ -113,7 +113,7 @@ public class PerfilController {
     @ResponseStatus(HttpStatus.OK)
     public ServiceResponse<Void> updatePerfil(
             @Parameter(description = "ID do perfil", example = "1") @PathVariable Integer id,
-            @RequestBody @Valid Perfil perfil) {
+            @RequestBody @Valid PerfilRequestDTO perfil) {
         perfilService.updatePerfil(id, perfil);
         return new ServiceResponse<>(null, "Perfil atualizado com sucesso", true, getFormattedTimestamp());
     }

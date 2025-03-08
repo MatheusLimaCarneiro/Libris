@@ -11,8 +11,11 @@ import prati.projeto.redeSocial.modal.entity.Notificacao;
 import prati.projeto.redeSocial.modal.entity.Perfil;
 import prati.projeto.redeSocial.repository.NotificacaoRepository;
 import prati.projeto.redeSocial.repository.PerfilRepository;
+import prati.projeto.redeSocial.repository.UsuarioRepository;
 import prati.projeto.redeSocial.rest.dto.NotificacaoDTO;
 import prati.projeto.redeSocial.service.NotificacaoService;
+
+import java.time.format.DateTimeFormatter;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +23,7 @@ public class NotificacaoServiceImpl implements NotificacaoService {
 
     private final NotificacaoRepository notificacaoRepository;
     private final PerfilRepository perfilRepository;
+    private final UsuarioRepository usuarioRepository;
 
     @Override
     @Transactional
@@ -104,6 +108,16 @@ public class NotificacaoServiceImpl implements NotificacaoService {
         notificacaoRepository.deletarTodasPorDestinatarioId(perfilId);
     }
 
+    @Override
+    @Transactional
+    public void deletarTodasNotificacoesPorUsername(String username) {
+        if (!usuarioRepository.existsByUsername(username)) {
+            throw new RegraNegocioException("Usuário não encontrado.");
+        }
+
+        notificacaoRepository.deleteByDestinatarioUsuarioUsername(username);
+    }
+
     private void verificarExistenciaPerfil(Integer perfilId) {
         if (!perfilRepository.existsById(perfilId)) {
             throw new RegraNegocioException("Perfil não encontrado.");
@@ -115,7 +129,11 @@ public class NotificacaoServiceImpl implements NotificacaoService {
         dto.setId(notificacao.getId());
         dto.setMensagem(notificacao.getMensagem());
         dto.setTipo(notificacao.getTipo());
-        dto.setDataCriacao(notificacao.getDataCriacao());
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        String dataCriacaoFormatada = notificacao.getDataCriacao().format(formatter);
+        dto.setDataCriacao(dataCriacaoFormatada);
+
         dto.setRemetenteId(notificacao.getRemetente().getId());
         dto.setRemetenteUsername(notificacao.getRemetente().getUsuario().getUsername());
         dto.setLida(notificacao.isLida());

@@ -14,6 +14,7 @@ import prati.projeto.redeSocial.service.ComentarioRespostaService;
 import prati.projeto.redeSocial.service.ComentarioService;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 @Service
@@ -24,6 +25,7 @@ public class ComentarioServiceImpl implements ComentarioService {
     private final PerfilRepository perfilRepository;
     private final LivroRepository livroRepository;
     private final ComentarioRespostaService respostaService;
+    private final UsuarioRepository usuarioRepository;
 
     private final AtividadePerfilServiceImpl atividadePerfilService;
 
@@ -125,6 +127,29 @@ public class ComentarioServiceImpl implements ComentarioService {
         });
     }
 
+    @Override
+    public Page<ComentarioDTO> listarComentariosPorUsername(String username, int page, int size) {
+        Usuario usuario = usuarioRepository.findByUsername(username)
+                .orElseThrow(() -> new RegraNegocioException("Usuário não encontrado com o username: " + username));
+
+        Perfil perfil = usuario.getPerfil();
+        if (perfil == null) {
+            throw new RegraNegocioException("Perfil não encontrado para o usuário: " + username);
+        }
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Comentario> comentariosPage = comentarioRepository.findByPerfil(perfil, pageable);
+
+        return comentariosPage.map(comentario -> {
+            ComentarioDTO dto = convertToDTO(comentario);
+
+            Page<RespostaDTO> respostasPage = respostaService.listarRespostasPorComentario(comentario.getId(), 0, 10);
+            dto.setRespostas(respostasPage.getContent());
+
+            return dto;
+        });
+    }
+
     private Perfil validarPerfil(Integer perfilId) {
         return perfilRepository.findById(perfilId)
                 .orElseThrow(() -> new RegraNegocioException("Perfil não encontrado"));
@@ -143,7 +168,11 @@ public class ComentarioServiceImpl implements ComentarioService {
         dto.setGoogleId(comentario.getGoogleIdLivro());
         dto.setTexto(comentario.getTexto());
         dto.setNota(comentario.getNota());
-        dto.setDataComentario(comentario.getDataComentario());
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        String dataFormatada = comentario.getDataComentario().format(formatter);
+        dto.setDataComentario(dataFormatada);
+
         dto.setQuantidadeCurtidas(comentario.getQuantidadeCurtidas());
         dto.setSpoiler(comentario.isSpoiler());
         return dto;

@@ -66,6 +66,18 @@ public class ComentarioController {
         return new ServiceResponse<>(comentarios, mensagem, !comentarios.isEmpty(), getFormattedTimestamp());
     }
 
+    @GetMapping("/listar/usuario/{username}")
+    @ResponseStatus(HttpStatus.OK)
+    public ServiceResponse<Page<ComentarioDTO>> listarPorUsername(
+            @PathVariable String username,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Page<ComentarioDTO> comentarios = comentarioService.listarComentariosPorUsername(username, page, size);
+        String mensagem = comentarios.isEmpty() ? "Nenhum comentário encontrado para este usuário" : "Comentários encontrados para este usuário";
+        return new ServiceResponse<>(comentarios, mensagem, !comentarios.isEmpty(), getFormattedTimestamp());
+    }
+
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void excluirComentario(@PathVariable Integer id) {

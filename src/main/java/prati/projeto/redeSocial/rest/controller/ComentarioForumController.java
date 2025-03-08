@@ -58,6 +58,19 @@ public class ComentarioForumController {
         return new ServiceResponse<>(comentarioDTO, "Comentário encontrado", true, getFormattedTimestamp());
     }
 
+    @GetMapping("/usuario/{username}")
+    @ResponseStatus(HttpStatus.OK)
+    public ServiceResponse<Page<ComentarioForumResponseDTO>> listarComentariosPorUsername(
+            @PathVariable Integer postId,
+            @PathVariable String username,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Page<ComentarioForumResponseDTO> comentariosPage = comentarioForumService.listarComentariosPorUsername(username, postId, page, size);
+        String mensagem = comentariosPage.isEmpty() ? "Nenhum comentário encontrado para este usuário" : "Comentários encontrados para este usuário";
+        return new ServiceResponse<>(comentariosPage, mensagem, !comentariosPage.isEmpty(), getFormattedTimestamp());
+    }
+
     private String getFormattedTimestamp() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return LocalDateTime.now().format(formatter);

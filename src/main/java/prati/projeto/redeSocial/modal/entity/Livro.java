@@ -81,7 +81,9 @@ public class Livro {
     @Schema(description = "Data de publicação do livro", example = "1954-07-29")
     private LocalDate dataPublicacao;
 
+    private String faixaEtaria;
+
     @Column(name = "media_livro")
     @Schema(description = "Média com base na avaliação do livro")
-    private Integer media = 0;
+    private Double media = 0.0;
 }
