@@ -4,12 +4,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import prati.projeto.redeSocial.rest.dto.ComentarioDTO;
+import prati.projeto.redeSocial.rest.dto.ComentarioRequestDTO;
 import prati.projeto.redeSocial.rest.response.ServiceResponse;
 import prati.projeto.redeSocial.service.ComentarioService;
 
@@ -19,6 +21,10 @@ import java.time.format.DateTimeFormatter;
 
 @RestController
 @RequestMapping("/libris/comentarios")
+@Tag(
+        name = "Comentários",
+        description = "Endpoints responsáveis pela gestão de comentários."
+)
 public class ComentarioController {
 
     @Autowired
@@ -41,7 +47,7 @@ public class ComentarioController {
     )
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ServiceResponse<ComentarioDTO> saveComentario(@RequestBody @Valid ComentarioDTO dto) {
+    public ServiceResponse<ComentarioDTO> saveComentario(@RequestBody @Valid ComentarioRequestDTO dto) {
         ComentarioDTO comentarioDTO = comentarioService.salvar(dto);
         return new ServiceResponse<>(comentarioDTO, "Comentário criado com sucesso", true, getFormattedTimestamp());
     }
@@ -112,7 +118,7 @@ public class ComentarioController {
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ServiceResponse<ComentarioDTO> atualizarComentario(@PathVariable Integer id,
-                                                              @RequestBody @Valid ComentarioDTO dto) {
+                                                              @RequestBody @Valid ComentarioRequestDTO dto) {
         ComentarioDTO comentarioDTO = comentarioService.atualizarComentario(id, dto);
         return new ServiceResponse<>(comentarioDTO, "Comentário atualizado com sucesso", true, getFormattedTimestamp());
     }

@@ -1,6 +1,8 @@
 package prati.projeto.redeSocial.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,8 +30,9 @@ public class ComentarioServiceImpl implements ComentarioService {
     private final UsuarioRepository usuarioRepository;
 
     @Override
+    @CacheEvict(value = "comentariosPorLivro", key = "{#dto.googleId, 0, 10}")
     @Transactional
-    public ComentarioDTO salvar(ComentarioDTO dto) {
+    public ComentarioDTO salvar(ComentarioRequestDTO dto) {
         Perfil perfil = validarPerfil(dto.getPerfilId());
         Livro livro = livroRepository.findByGoogleId(dto.getGoogleId())
                 .orElseThrow(() -> new RegraNegocioException("Livro com Google ID " + dto.getGoogleId() + " não encontrado"));
@@ -50,6 +53,7 @@ public class ComentarioServiceImpl implements ComentarioService {
         return convertToDTO(comentario);
     }
 
+    @Cacheable(value = "comentarios", key = "{#page, #size}")
     @Override
     public Page<ComentarioDTO> listarTodos(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -79,26 +83,33 @@ public class ComentarioServiceImpl implements ComentarioService {
     }
 
     @Override
+    @CacheEvict(value = {"comentarios", "comentariosPorLivro", "comentariosPorUsername"}, key = "{#dto.googleId, 0, 10}")
     @Transactional
-    public ComentarioDTO atualizarComentario(Integer id, ComentarioDTO dto) {
+    public ComentarioDTO atualizarComentario(Integer id, ComentarioRequestDTO dto) {
         Comentario comentario = comentarioRepository.findById(id)
                 .orElseThrow(() -> new RegraNegocioException("Comentário não encontrado"));
+
+        Perfil perfil = validarPerfil(dto.getPerfilId());
 
         Livro livro = livroRepository.findByGoogleId(dto.getGoogleId())
                 .orElseThrow(() -> new RegraNegocioException("Livro com Google ID " + dto.getGoogleId() + " não encontrado"));
 
-        comentario.setTexto(dto.getTexto());
-        comentario.setNota(dto.getNota());
         validarNota(dto.getNota());
+
+        comentario.setTexto(dto.getTexto());
         comentario.setDataComentario(LocalDateTime.now());
+        comentario.setPerfil(perfil);
         comentario.setLivro(livro);
         comentario.setGoogleIdLivro(dto.getGoogleId());
+        comentario.setNota(dto.getNota());
+        comentario.setSpoiler(dto.isSpoiler());
 
         comentario = comentarioRepository.save(comentario);
         return convertToDTO(comentario);
     }
 
     @Override
+    @CacheEvict(value = {"comentarios", "comentariosPorLivro", "comentariosPorUsername"}, key = "{#comentario.googleIdLivro, 0, 10}")
     @Transactional
     public void excluirComentario(Integer id) {
         Comentario comentario = comentarioRepository.findById(id)
@@ -108,6 +119,7 @@ public class ComentarioServiceImpl implements ComentarioService {
     }
 
     @Override
+    @Cacheable(value = "comentariosPorLivro", key = "{#googleIdLivro, #page, #size}")
     public Page<ComentarioDTO> listarPorLivro(String googleIdLivro, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Comentario> comentariosPage = comentarioRepository.findByGoogleIdLivro(googleIdLivro, pageable);
@@ -123,6 +135,7 @@ public class ComentarioServiceImpl implements ComentarioService {
     }
 
     @Override
+    @Cacheable(value = "comentariosPorUsername", key = "{#username, #page, #size}")
     public Page<ComentarioDTO> listarComentariosPorUsername(String username, int page, int size) {
         Usuario usuario = usuarioRepository.findByUsername(username)
                 .orElseThrow(() -> new RegraNegocioException("Usuário não encontrado com o username: " + username));

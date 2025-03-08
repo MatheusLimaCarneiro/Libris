@@ -1,6 +1,9 @@
 package prati.projeto.redeSocial.service.impl;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,6 +33,8 @@ public class StatusLeituraServiceImpl implements StatusLeituraService {
     private final UsuarioRepository usuarioRepository;
 
     @Override
+    @CacheEvict(value = {"statusPerfil", "statusLivroPerfil"}, allEntries = true)
+    @Transactional
     public StatusLeituraDTO salvarStatus(Integer perfilId, String livroId, StatusLeituraEnum statusLeituraEnum, Integer pagina) {
         Perfil perfil = perfilRepository.findById(perfilId)
                 .orElseThrow(() -> new RegraNegocioException("Perfil não encontrado"));
@@ -58,6 +63,8 @@ public class StatusLeituraServiceImpl implements StatusLeituraService {
     }
 
     @Override
+    @CacheEvict(value = {"statusPerfil", "statusLivroPerfil"}, allEntries = true)
+    @Transactional
     public StatusLeituraDTO mudarStatus(Integer id,Integer pagina, StatusLeituraEnum novoStatus) {
         StatusLeitura statusLeitura = statusLeituraRepository.findById(id)
                 .orElseThrow(() -> new RegraNegocioException("Status de leitura não encontrado"));
@@ -81,6 +88,7 @@ public class StatusLeituraServiceImpl implements StatusLeituraService {
     }
 
     @Override
+    @Cacheable(value = "statusPerfil", key = "#username + '-' + #page + '-' + #size")
     public Page<StatusLeituraDTO> listarStatusPorPerfil(String username, int page, int size) {
         Usuario usuario = usuarioRepository.findByUsername(username)
                 .orElseThrow(() -> new RegraNegocioException("Usuário não encontrado com o username: " + username));
@@ -95,6 +103,7 @@ public class StatusLeituraServiceImpl implements StatusLeituraService {
     }
 
     @Override
+    @Cacheable(value = "statusLivroPerfil", key = "#username + '-' + #googleId")
     public StatusLeituraDTO buscarStatusLeituraPorUsernameELivroId(String username, String googleId) {
         Usuario usuario = usuarioRepository.findByUsername(username)
                 .orElseThrow(() -> new RegraNegocioException("Usuário não encontrado com o username: " + username));

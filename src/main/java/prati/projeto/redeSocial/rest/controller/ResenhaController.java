@@ -128,11 +128,11 @@ public class ResenhaController {
     @GetMapping("/livro/{livroId}")
     @ResponseStatus(HttpStatus.OK)
     public ServiceResponse<Page<ResenhaViewDTO>> findByLivro(
-            @PathVariable String googleId,
+            @PathVariable String livroId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        Page<ResenhaViewDTO> resenhasPage = resenhaService.findByGoogleId(googleId, page, size);
+        Page<ResenhaViewDTO> resenhasPage = resenhaService.findByGoogleId(livroId, page, size);
         return new ServiceResponse<>(resenhasPage, "Resenhas do livro encontradas", true, getFormattedTimestamp());
     }
 

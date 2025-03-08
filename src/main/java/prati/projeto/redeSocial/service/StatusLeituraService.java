@@ -9,14 +9,14 @@ public interface StatusLeituraService {
     /**
      * Salva o status de leitura de um livro para um perfil.
      * <p>
-     * Este método permite associar um perfil a um livro, atribuindo a ele um status de leitura específico, como LIDO, PAUSADO, LENDO ou ABANDONADO.
+     * Este método permite associar um perfil a um livro, atribuindo a ele um status de leitura específico: LIDO, LENDO ou ABANDONADO.
      * Caso o perfil já tenha um status associado ao livro, uma exceção será lançada.
      * </p>
      *
-     * @param perfilId      ID do perfil que está lendo o livro.
-     * @param livroId       ID do livro para o qual o status de leitura será atribuído.
-     * @param statusLeituraEnum O status de leitura do livro (LIDO, PAUSADO, LENDO, ABANDONADO).
-     * @param pagina        A página atual do livro que o perfil está lendo.
+     * @param perfilId          ID do perfil que está lendo o livro.
+     * @param livroId           ID do livro para o qual o status de leitura será atribuído.
+     * @param statusLeituraEnum O status de leitura do livro (LIDO, LENDO, ABANDONADO).
+     * @param pagina            A página atual do livro que o perfil está lendo.
      * @return O DTO StatusLeituraDTO com os dados persistidos do status de leitura, incluindo o ID, ID do perfil, ID do livro e o status.
      * @throws RegraNegocioException Se o perfil ou livro não forem encontrados, ou se o perfil já tiver um status para o livro.
      * @throws RegraNegocioException Se a página fornecida for inválida (menor que 1 ou maior que o número de páginas do livro).
@@ -30,9 +30,9 @@ public interface StatusLeituraService {
      * A página e o novo status serão atualizados na entidade StatusLeitura.
      * </p>
      *
-     * @param id           ID do status de leitura a ser atualizado.
-     * @param pagina       A página atual do livro que o perfil está lendo.
-     * @param novoStatus   O novo status de leitura para o livro (LIDO, PAUSADO, LENDO, ABANDONADO).
+     * @param id         ID do status de leitura a ser atualizado.
+     * @param pagina     A página atual do livro que o perfil está lendo.
+     * @param novoStatus O novo status de leitura para o livro (LIDO, LENDO, ABANDONADO).
      * @return O DTO StatusLeituraDTO com os dados atualizados do status de leitura, incluindo o ID, ID do perfil, ID do livro, a página e o novo status.
      * @throws RegraNegocioException Se o status de leitura não for encontrado.
      * @throws RegraNegocioException Se a página fornecida for inválida (menor que 1 ou maior que o número de páginas do livro).
@@ -51,8 +51,30 @@ public interface StatusLeituraService {
      */
     Page<StatusLeituraDTO> listarStatus(int page, int size);
 
+    /**
+     * Lista os status de leitura de livros para um perfil específico.
+     * <p>
+     * Este método retorna uma lista paginada de todos os status de leitura associados a um perfil específico.
+     * </p>
+     *
+     * @param username Nome de usuário do perfil.
+     * @param page     Número da página para paginar a lista de status de leitura.
+     * @param size     Número de elementos por página.
+     * @return Uma página de objetos {@link StatusLeituraDTO}, com os dados dos status de leitura, incluindo o ID, perfil, livro, página e status.
+     * @throws RegraNegocioException Se o usuário ou perfil não forem encontrados.
+     */
     Page<StatusLeituraDTO> listarStatusPorPerfil(String username, int page, int size);
 
+    /**
+     * Busca o status de leitura de um livro específico para um perfil.
+     * <p>
+     * Este método retorna o status de leitura de um livro específico associado a um perfil.
+     * </p>
+     *
+     * @param username Nome de usuário do perfil.
+     * @param googleId ID do livro no Google Books.
+     * @return O DTO StatusLeituraDTO com os dados do status de leitura, incluindo o ID, perfil, livro, página e status.
+     * @throws RegraNegocioException Se o usuário, perfil, livro ou status de leitura não forem encontrados.
+     */
     StatusLeituraDTO buscarStatusLeituraPorUsernameELivroId(String username, String googleId);
-
 }
