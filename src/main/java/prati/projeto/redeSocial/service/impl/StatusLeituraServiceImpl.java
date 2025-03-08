@@ -32,6 +32,9 @@ public class StatusLeituraServiceImpl implements StatusLeituraService {
     private final LivroRepository livroRepository;
     private final UsuarioRepository usuarioRepository;
 
+    //modifiquei
+    private final AtividadePerfilServiceImpl atividadePerfilServiceImpl;
+
     @Override
     @CacheEvict(value = {"statusPerfil", "statusLivroPerfil"}, allEntries = true)
     @Transactional
@@ -59,6 +62,10 @@ public class StatusLeituraServiceImpl implements StatusLeituraService {
         novoStatus.setStatusLeitura(statusLeituraEnum);
 
         StatusLeitura salvo = statusLeituraRepository.save(novoStatus);
+
+        //Rastreia atividade
+        atividadePerfilServiceImpl.registrarAtividade(perfil);
+
         return convertToDTO(salvo);
     }
 

@@ -78,7 +78,7 @@ public class UsuarioServiceImpl implements UsuarioService{
         usuario.setResetToken(token);
         usuarioRepository.save(usuario);
 
-        String resetLink = "http://seusite.com/reset-password?token=" + token;
+        String resetLink = "http://localhost:5173/reset-password?token=" + token;
         String emailText = "Clique no link para redefinir sua senha: " + resetLink;
         emailService.sendEmail(email, "Redefinição de Senha", emailText);
     }

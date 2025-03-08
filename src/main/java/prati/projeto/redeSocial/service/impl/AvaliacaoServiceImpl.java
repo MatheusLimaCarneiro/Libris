@@ -25,6 +25,9 @@ public class AvaliacaoServiceImpl implements AvaliacaoService{
     private final ResenhaRepository resenhaRepository;
     private final PerfilRepository perfilRepository;
 
+    //modifiquei
+    private final AtividadePerfilServiceImpl atividadePerfilServiceImpl;
+
     @Override
     @Transactional
     public AvaliacaoDTO adicionarAvaliacao(Integer resenhaId, AvaliacaoDTO avaliacaoDTO) {
@@ -41,6 +44,9 @@ public class AvaliacaoServiceImpl implements AvaliacaoService{
         avaliacao.setResenha(resenha);
         avaliacao.setTexto(avaliacaoDTO.getTexto());
         avaliacao.setNota(avaliacaoDTO.getNota());
+
+        //Rastreia atividade
+        atividadePerfilServiceImpl.registrarAtividade(avaliacao.getPerfil());
 
         return convertToDTO(avaliacaoRepository.save(avaliacao));
     }

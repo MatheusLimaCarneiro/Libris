@@ -27,8 +27,8 @@ public class PerfilServiceImpl implements PerfilService {
     @Override
     public PerfilDTO getPerfilById(Integer id) {
         Perfil perfil = perfilRepository.findById(id)
-                .orElseThrow(() -> new RegraNegocioException(
-                        "Perfil com ID " + id + " não encontrado"));
+            .orElseThrow(() -> new RegraNegocioException(
+                "Perfil com ID " + id + " não encontrado"));
         return convertToDTO(perfil);
     }
 
@@ -58,12 +58,12 @@ public class PerfilServiceImpl implements PerfilService {
     @Transactional
     public void deletePerfil(Integer id) {
         perfilRepository.findById(id)
-                .ifPresentOrElse(perfil -> {
-                    perfil.setUsuario(null);
-                    perfilRepository.delete(perfil);
-                }, () -> {
-                    throw new RegraNegocioException("Perfil não encontrado");
-                });
+            .ifPresentOrElse(perfil -> {
+                perfil.setUsuario(null);
+                perfilRepository.delete(perfil);
+            }, () -> {
+                throw new RegraNegocioException("Perfil não encontrado");
+            });
     }
 
     @Override
@@ -110,6 +110,16 @@ public class PerfilServiceImpl implements PerfilService {
         );
     }
 
+    private Usuario verificarUsuario(Usuario usuario) {
+        if (usuario == null || usuario.getEmail() == null) {
+            throw new RegraNegocioException("Usuário é obrigatório");
+        }
+
+        return usuarioRepository.findById(usuario.getEmail())
+                .orElseThrow(() -> new RegraNegocioException(
+                        "Usuário com EMAIL " + usuario.getEmail() + " não encontrado"));
+    }
+
     private PerfilDTO convertToDTO(Perfil perfil) {
         PerfilDTO dto = new PerfilDTO();
         dto.setId(perfil.getId());
@@ -122,8 +132,8 @@ public class PerfilServiceImpl implements PerfilService {
 
         if (perfil.getUsuario() != null) {
             dto.setUsuario(new UsuarioResumidoDTO(
-                    perfil.getUsuario().getUsername(),
-                    perfil.getUsuario().getEmail()
+                perfil.getUsuario().getUsername(),
+                perfil.getUsuario().getEmail()
             ));
         }
 

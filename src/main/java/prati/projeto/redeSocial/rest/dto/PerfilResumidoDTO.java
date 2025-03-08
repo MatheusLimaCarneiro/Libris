@@ -14,20 +14,20 @@ public class PerfilResumidoDTO {
     private Integer id;
 
     @Schema(
-            description = "URL da imagem de perfil do usuário",
-            example = "https://example.com/profile.jpg"
+        description = "URL da imagem de perfil do usuário",
+        example = "https://example.com/profile.jpg"
     )
     private String urlPerfil;
 
     @Schema(
-            description = "Resumo da bio do usuário, até 120 caracteres",
-            example = "Leitor ávido de ficção científica e fantasia."
+        description = "Resumo da bio do usuário, até 120 caracteres",
+        example = "Leitor ávido de ficção científica e fantasia."
     )
     private String resumoBio;
 
     @Schema(
-            description = "Nome de usuário do perfil",
-            example = "usuario"
+        description = "Nome de usuário do perfil",
+        example = "usuario"
     )
     private String username;
 }
