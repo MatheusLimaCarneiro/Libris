@@ -19,6 +19,6 @@ public class ResenhaViewDTO {
     private String dataEdicao;
     private Double nota;
     private boolean spoiler;
-    private Integer media;
+    private Double media;
     private List<AvaliacaoDTO> avaliacoes;
 }
