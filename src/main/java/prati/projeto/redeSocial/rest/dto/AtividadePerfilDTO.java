@@ -11,5 +11,5 @@ import java.time.LocalDate;
 public class AtividadePerfilDTO {
     private LocalDate data;
     private Integer quantidade;
-
+    private String username;
 }

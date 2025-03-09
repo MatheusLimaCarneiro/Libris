@@ -31,8 +31,6 @@ public class StatusLeituraServiceImpl implements StatusLeituraService {
     private final PerfilRepository perfilRepository;
     private final LivroRepository livroRepository;
     private final UsuarioRepository usuarioRepository;
-
-    //modifiquei
     private final AtividadePerfilServiceImpl atividadePerfilServiceImpl;
 
     @Override
@@ -63,7 +61,6 @@ public class StatusLeituraServiceImpl implements StatusLeituraService {
 
         StatusLeitura salvo = statusLeituraRepository.save(novoStatus);
 
-        //Rastreia atividade
         atividadePerfilServiceImpl.registrarAtividade(perfil);
 
         return convertToDTO(salvo);

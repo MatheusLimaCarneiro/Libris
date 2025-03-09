@@ -5,8 +5,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 
-@Getter
-@Setter
+@Data
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -25,6 +24,4 @@ public class AtividadePerfil {
 
     @Column(nullable = false)
     private Integer contador = 1;
-
-
 }

@@ -53,7 +53,6 @@ public class ResenhaServiceImpl implements ResenhaService {
         Resenha resenha = criarResenha(resenhaDTO, perfil, livro);
         resenhaRepository.save(resenha);
 
-        //Rastreia atividade
         atividadePerfilServiceImpl.registrarAtividade(resenha.getPerfil());
 
         return converterParaViewDTO(resenha, 0, 10);

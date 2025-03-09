@@ -110,16 +110,6 @@ public class PerfilServiceImpl implements PerfilService {
         );
     }
 
-    private Usuario verificarUsuario(Usuario usuario) {
-        if (usuario == null || usuario.getEmail() == null) {
-            throw new RegraNegocioException("Usuário é obrigatório");
-        }
-
-        return usuarioRepository.findById(usuario.getEmail())
-                .orElseThrow(() -> new RegraNegocioException(
-                        "Usuário com EMAIL " + usuario.getEmail() + " não encontrado"));
-    }
-
     private PerfilDTO convertToDTO(Perfil perfil) {
         PerfilDTO dto = new PerfilDTO();
         dto.setId(perfil.getId());
