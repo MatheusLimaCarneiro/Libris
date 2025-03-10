@@ -99,4 +99,22 @@ public class UsuarioServiceImpl implements UsuarioService{
         usuario.setResetToken(null);
         usuarioRepository.save(usuario);
     }
+
+    @Override
+    public void changePassword(String email, String oldPassword, String newPassword) {
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new RegraNegocioException("Usuário não encontrado"));
+
+        // Verificar se a senha atual está correta
+        if (!passwordConfig.passwordEncoder().matches(oldPassword, usuario.getSenha())) {
+            throw new RegraNegocioException("Senha atual incorreta");
+        }
+
+        // Criptografar a nova senha
+        String senhaCriptografada = passwordConfig.passwordEncoder().encode(newPassword);
+        usuario.setSenha(senhaCriptografada);
+
+        // Salvar a nova senha
+        usuarioRepository.save(usuario);
+    }
 }
