@@ -30,8 +30,6 @@ public class FavoritoServiceImpl implements FavoritoService{
     private final PerfilRepository perfilRepository;
     private final LivroRepository livroRepository;
     private final UsuarioRepository usuarioRepository;
-
-    //modifiquei
     private final AtividadePerfilServiceImpl atividadePerfilService;
 
     @Override

@@ -18,7 +18,7 @@ public class ServiceResponse<T> {
     @Schema(description = "Dados da resposta")
     private T data;
 
-    @Schema(description = "Mensagem descritiva da resposta", example = "Comentário criado com sucesso")
+    @Schema(description = "Mensagem descritiva da resposta", example = "Operação realizada com sucesso")
     private String message;
 
     @Schema(description = "Indica se a operação foi bem-sucedida", example = "true")
