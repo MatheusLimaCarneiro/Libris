@@ -2,12 +2,15 @@ package prati.projeto.redeSocial.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Service;
 import prati.projeto.redeSocial.LivrosApplication;
+import prati.projeto.redeSocial.modal.entity.CustomOAuth2User;
 import prati.projeto.redeSocial.modal.entity.Usuario;
 import prati.projeto.redeSocial.rest.dto.TokenDTO;
 
@@ -23,6 +26,9 @@ public class JwtService {
     @Autowired
     private RsaKeyProvider rsaKeyProvider;
 
+    private static final Logger logger = LoggerFactory.getLogger(JwtService.class);
+
+
     @Value("${jwt.expiration}")
     private Duration expiracao;
 
@@ -30,11 +36,19 @@ public class JwtService {
     private Duration refreshExpiracao;
 
     public String gerarToken(Usuario usuario) {
-        return criarToken(usuario.getUsername(), expiracao);
+        return criarToken(usuario.getEmail(), expiracao);
     }
 
     public String gerarRefreshToken(Usuario usuario) {
-        return criarToken(usuario.getUsername(), refreshExpiracao);
+        return criarToken(usuario.getEmail(), refreshExpiracao);
+    }
+
+    public String gerarTokenO2auth(CustomOAuth2User oauth2User) {
+        return criarToken(oauth2User.getUsername(), expiracao);
+    }
+
+    public String gerarRefreshTokenO2auth(CustomOAuth2User oauth2User) {
+        return criarToken(oauth2User.getUsername(), refreshExpiracao);
     }
 
     private String criarToken(String subject, Duration duracao) {
@@ -49,10 +63,26 @@ public class JwtService {
                 .compact();
     }
 
+    public String criarTokenEmail(String subject, Duration duracao) {
+        LocalDateTime dataHoraExpiracao = LocalDateTime.now().plus(duracao);
+        Instant instant = dataHoraExpiracao.atZone(ZoneId.systemDefault()).toInstant();
+        Date data = Date.from(instant);
+
+        return Jwts.builder()
+                .setSubject(subject)
+                .setExpiration(data)
+                .signWith(rsaKeyProvider.getPrivateKey())
+                .compact();
+    }
+
     public boolean tokenValido(String token) {
         try {
-            return !LocalDateTime.now().isAfter(obterDataExpiracao(token));
+            Claims claims = obterClaims(token);
+            logger.info("Claims do token: " + claims);
+            return !LocalDateTime.now().isAfter(obterDataExpiracao(token)) &&
+                    claims.getSubject() != null;
         } catch (Exception e) {
+            logger.error("Erro ao validar token: " + e.getMessage(), e);
             return false;
         }
     }
@@ -64,7 +94,7 @@ public class JwtService {
     public TokenDTO gerarTokensParaUsuario(Usuario usuario) {
         String accessToken = gerarToken(usuario);
         String refreshToken = gerarRefreshToken(usuario);
-        return new TokenDTO(usuario.getUsername(), accessToken, refreshToken);
+        return new TokenDTO(usuario.getEmail(), accessToken, refreshToken);
     }
 
     private LocalDateTime obterDataExpiracao(String token) {
@@ -94,7 +124,7 @@ public class JwtService {
 
         JwtService service = context.getBean(JwtService.class);
 
-        Usuario usuario = Usuario.builder().username("fulano").build();
+        Usuario usuario = Usuario.builder().email("fulano@gmail.com").build();
         String token = service.gerarToken(usuario);
         System.out.println("Token: " + token);
 

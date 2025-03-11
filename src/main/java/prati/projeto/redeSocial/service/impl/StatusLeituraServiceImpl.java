@@ -1,6 +1,9 @@
 package prati.projeto.redeSocial.service.impl;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -9,10 +12,12 @@ import prati.projeto.redeSocial.exception.RegraNegocioException;
 import prati.projeto.redeSocial.modal.entity.Livro;
 import prati.projeto.redeSocial.modal.entity.Perfil;
 import prati.projeto.redeSocial.modal.entity.StatusLeitura;
+import prati.projeto.redeSocial.modal.entity.Usuario;
 import prati.projeto.redeSocial.modal.enums.StatusLeituraEnum;
 import prati.projeto.redeSocial.repository.LivroRepository;
 import prati.projeto.redeSocial.repository.PerfilRepository;
 import prati.projeto.redeSocial.repository.StatusLeituraRepository;
+import prati.projeto.redeSocial.repository.UsuarioRepository;
 import prati.projeto.redeSocial.rest.dto.StatusLeituraDTO;
 import prati.projeto.redeSocial.service.StatusLeituraService;
 
@@ -25,12 +30,16 @@ public class StatusLeituraServiceImpl implements StatusLeituraService {
     private final StatusLeituraRepository statusLeituraRepository;
     private final PerfilRepository perfilRepository;
     private final LivroRepository livroRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final AtividadePerfilServiceImpl atividadePerfilServiceImpl;
 
     @Override
-    public StatusLeituraDTO salvarStatus(Integer perfilId, Integer livroId, StatusLeituraEnum statusLeituraEnum, Integer pagina) {
+    @CacheEvict(value = {"statusPerfil", "statusLivroPerfil"}, allEntries = true)
+    @Transactional
+    public StatusLeituraDTO salvarStatus(Integer perfilId, String livroId, StatusLeituraEnum statusLeituraEnum, Integer pagina) {
         Perfil perfil = perfilRepository.findById(perfilId)
                 .orElseThrow(() -> new RegraNegocioException("Perfil não encontrado"));
-        Livro livro = livroRepository.findById(livroId)
+        Livro livro = livroRepository.findByGoogleId(livroId)
                 .orElseThrow(() -> new RegraNegocioException("Livro não encontrado"));
 
         if (pagina < 1 || pagina > livro.getNumeroPaginas()) {
@@ -46,14 +55,20 @@ public class StatusLeituraServiceImpl implements StatusLeituraService {
         StatusLeitura novoStatus = new StatusLeitura();
         novoStatus.setPerfil(perfil);
         novoStatus.setLivro(livro);
+        novoStatus.setGoogleIdLivro(livro.getGoogleId());
         novoStatus.setPagina(pagina);
         novoStatus.setStatusLeitura(statusLeituraEnum);
 
         StatusLeitura salvo = statusLeituraRepository.save(novoStatus);
+
+        atividadePerfilServiceImpl.registrarAtividade(perfil);
+
         return convertToDTO(salvo);
     }
 
     @Override
+    @CacheEvict(value = {"statusPerfil", "statusLivroPerfil"}, allEntries = true)
+    @Transactional
     public StatusLeituraDTO mudarStatus(Integer id,Integer pagina, StatusLeituraEnum novoStatus) {
         StatusLeitura statusLeitura = statusLeituraRepository.findById(id)
                 .orElseThrow(() -> new RegraNegocioException("Status de leitura não encontrado"));
@@ -76,11 +91,45 @@ public class StatusLeituraServiceImpl implements StatusLeituraService {
         return statusPage.map(this::convertToDTO);
     }
 
+    @Override
+    @Cacheable(value = "statusPerfil", key = "#username + '-' + #page + '-' + #size")
+    public Page<StatusLeituraDTO> listarStatusPorPerfil(String username, int page, int size) {
+        Usuario usuario = usuarioRepository.findByUsername(username)
+                .orElseThrow(() -> new RegraNegocioException("Usuário não encontrado com o username: " + username));
+
+        Perfil perfil = perfilRepository.findByUsuario(usuario)
+                .orElseThrow(() -> new RegraNegocioException("Perfil não encontrado para o usuário: " + username));
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<StatusLeitura> statusPage = statusLeituraRepository.findByPerfil(perfil, pageable);
+
+        return statusPage.map(this::convertToDTO);
+    }
+
+    @Override
+    @Cacheable(value = "statusLivroPerfil", key = "#username + '-' + #googleId")
+    public StatusLeituraDTO buscarStatusLeituraPorUsernameELivroId(String username, String googleId) {
+        Usuario usuario = usuarioRepository.findByUsername(username)
+                .orElseThrow(() -> new RegraNegocioException("Usuário não encontrado com o username: " + username));
+
+        Perfil perfil = perfilRepository.findByUsuario(usuario)
+                .orElseThrow(() -> new RegraNegocioException("Perfil não encontrado para o usuário: " + username));
+
+        Livro livro = livroRepository.findByGoogleId(googleId)
+                .orElseThrow(() -> new RegraNegocioException("Livro não encontrado com o Google ID: " + googleId));
+
+        StatusLeitura statusLeitura = statusLeituraRepository.findByPerfilAndLivro(perfil, livro)
+                .orElseThrow(() -> new RegraNegocioException("Status de leitura não encontrado para o perfil e livro especificados"));
+
+        return convertToDTO(statusLeitura);
+    }
+
     private StatusLeituraDTO convertToDTO(StatusLeitura statusLeitura) {
         return new StatusLeituraDTO(
                 statusLeitura.getId(),
                 statusLeitura.getPerfil().getId(),
-                statusLeitura.getLivro().getId(),
+                statusLeitura.getPerfil().getUsuario().getUsername(),
+                statusLeitura.getLivro().getGoogleId(),
                 statusLeitura.getPagina(),
                 statusLeitura.getStatusLeitura()
         );

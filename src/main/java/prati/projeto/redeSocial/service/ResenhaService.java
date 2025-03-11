@@ -16,14 +16,14 @@ public interface ResenhaService {
     ResenhaViewDTO getResenhaById(Integer id);
 
     /**
-     * Salva uma nova resenha.
+     * Salva uma nova resenha no sistema.
      *
      * @param resenhaDTO um objeto {@link ResenhaDTO} contendo os dados da resenha
-     * @return o ID da resenha criada
+     * @return um objeto {@link ResenhaViewDTO} representando a resenha salva
      * @throws RegraNegocioException se o perfil ou livro associado não forem encontrados,
      *         ou se a nota estiver fora do intervalo permitido (0 a 5)
      */
-    Integer saveResenha(ResenhaDTO resenhaDTO);
+    ResenhaViewDTO saveResenha(ResenhaDTO resenhaDTO);
 
     /**
      * Exclui uma resenha pelo seu ID.
@@ -34,7 +34,7 @@ public interface ResenhaService {
     void deleteResenha(Integer id);
 
     /**
-     * Atualiza uma resenha existente.
+     * Atualiza uma resenha existente com base nos novos dados fornecidos.
      *
      * @param id o ID da resenha a ser atualizada
      * @param resenhaDTO um objeto {@link ResenhaDTO} contendo os novos dados da resenha
@@ -43,18 +43,22 @@ public interface ResenhaService {
     void updateResenha(Integer id, ResenhaDTO resenhaDTO);
 
     /**
-     * Busca todas as resenhas associadas a um determinado livro.
+     * Busca todas as resenhas associadas a um livro, identificado pelo seu Google ID.
      *
-     * @param livroId o ID do livro cujas resenhas serão buscadas
-     * @return uma lista de objetos {@link ResenhaViewDTO} representando as resenhas encontradas
+     * @param googleId o Google ID do livro cujas resenhas serão buscadas
+     * @param page o número da página a ser retornada (inicia em 0)
+     * @param size o número de resenhas por página
+     * @return uma página de objetos {@link ResenhaViewDTO} representando as resenhas encontradas
      * @throws RegraNegocioException se o livro não for encontrado
      */
-    Page<ResenhaViewDTO> findByLivro(Integer livroId, int page, int size);
+    Page<ResenhaViewDTO> findByGoogleId(String googleId, int page, int size);
 
     /**
-     * Busca todas as resenhas de todos os perfis.
+     * Busca todas as resenhas de todos os perfis, paginadas.
      *
-     * @return uma lista de objetos {@link ResenhaViewDTO} representando todas as resenhas
+     * @param page o número da página a ser retornada (inicia em 0)
+     * @param size o número de resenhas por página
+     * @return uma página de objetos {@link ResenhaViewDTO} representando todas as resenhas
      */
     Page<ResenhaViewDTO> findAllResenhas(Integer page, Integer size);
 }

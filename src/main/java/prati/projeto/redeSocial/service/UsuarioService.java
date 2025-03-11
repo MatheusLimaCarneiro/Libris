@@ -43,4 +43,32 @@ public interface UsuarioService {
      * @throws RegraNegocioException Caso o usuário não seja encontrado ou tente alterar o nome de usuário.
      */
     void updateUsuario(String email, Usuario usuario);
+
+    /**
+     * Gera e envia um token para redefinição de senha ao email do usuário.
+     *
+     * @param email O email do usuário que solicitou a redefinição de senha.
+     * @throws RegraNegocioException Caso o usuário não seja encontrado no sistema.
+     */
+    void requestPasswordReset(String email);
+
+    /**
+     * Redefine a senha do usuário com base em um token de redefinição válido.
+     *
+     * @param token O token gerado para a redefinição de senha.
+     * @param newPassword A nova senha escolhida pelo usuário.
+     * @throws TokenInvalidException Caso o token seja inválido ou tenha expirado.
+     * @throws RegraNegocioException Caso o usuário correspondente ao token não seja encontrado.
+     */
+    void resetPassword(String token, String newPassword);
+
+    /**
+     * Altera a senha de um usuário autenticado.
+     *
+     * @param email O email do usuário.
+     * @param oldPassword A senha atual do usuário.
+     * @param newPassword A nova senha escolhida pelo usuário.
+     * @throws RegraNegocioException Caso a senha atual seja inválida.
+     */
+    void changePassword(String email, String oldPassword, String newPassword);
 }

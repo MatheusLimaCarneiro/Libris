@@ -1,7 +1,9 @@
 package prati.projeto.redeSocial.service;
 
 import org.springframework.data.domain.Page;
+import prati.projeto.redeSocial.exception.RegraNegocioException;
 import prati.projeto.redeSocial.rest.dto.ComentarioDTO;
+import prati.projeto.redeSocial.rest.dto.ComentarioRequestDTO;
 
 public interface ComentarioService {
 
@@ -9,15 +11,15 @@ public interface ComentarioService {
      * Salva um novo comentário no sistema.
      * <p>
      * Este método recebe os dados do comentário em formato DTO, realiza as validações necessárias,
-     * converte os objetos para entidades e persiste no banco de dados.
+     * converte os objetos para entidades e persiste no banco de dados. O livro é referenciado pelo Google ID.
      * </p>
      *
-     * @param dto Objeto DTO contendo os dados do comentário, como texto, ID do perfil, ID do livro e nota.
+     * @param dto Objeto DTO contendo os dados do comentário, como texto, ID do perfil, Google ID do livro e nota.
      * @return ComentarioDTO contendo os dados do comentário salvo.
      * @throws RegraNegocioException Se algum dado necessário não for encontrado (ex.: perfil ou livro inexistente)
      *                               ou se a nota não for válida.
      */
-    ComentarioDTO salvar(ComentarioDTO dto);
+    ComentarioDTO salvar(ComentarioRequestDTO dto);
 
     /**
      * Lista todos os comentários presentes no sistema.
@@ -49,15 +51,16 @@ public interface ComentarioService {
      * Atualiza um comentário existente, permitindo a modificação de texto e nota.
      * <p>
      * O método atualiza apenas os campos editáveis do comentário, preservando suas associações com o perfil e o livro.
-     * As validações necessárias são realizadas antes de persistir as alterações.
+     * As validações necessárias são realizadas antes de persistir as alterações. O livro é referenciado pelo Google ID.
      * </p>
      *
      * @param id  ID do comentário a ser atualizado.
      * @param dto Objeto DTO contendo os novos dados do comentário, como texto e nota.
      * @return ComentarioDTO atualizado com os novos dados.
-     * @throws RegraNegocioException Se o comentário não for encontrado ou se a nota não for válida.
+     * @throws RegraNegocioException Se o comentário não for encontrado, se o livro não for encontrado pelo Google ID
+     *                               ou se a nota não for válida.
      */
-    ComentarioDTO atualizarComentario(Integer id, ComentarioDTO dto);
+    ComentarioDTO atualizarComentario(Integer id, ComentarioRequestDTO dto);
 
     /**
      * Exclui um comentário do sistema.
@@ -74,14 +77,30 @@ public interface ComentarioService {
     /**
      * Lista todos os comentários de um livro específico.
      * <p>
-     * Este método retorna uma página de comentários associados a um livro identificado pelo ID do livro,
+     * Este método retorna uma página de comentários associados a um livro identificado pelo Google ID,
      * com base nos parâmetros de paginação fornecidos.
      * </p>
      *
-     * @param livroId ID do livro cujos comentários serão listados.
-     * @param page    Número da página a ser retornada.
-     * @param size    Quantidade de comentários por página.
+     * @param googleId Google ID do livro cujos comentários serão listados.
+     * @param page     Número da página a ser retornada.
+     * @param size     Quantidade de comentários por página.
      * @return Página de objetos ComentarioDTO contendo os comentários relacionados ao livro.
+     * @throws RegraNegocioException Se o livro com o Google ID fornecido não for encontrado.
      */
-    Page<ComentarioDTO> listarPorLivro(Integer livroId, int page, int size);
+    Page<ComentarioDTO> listarPorLivro(String googleId, int page, int size);
+
+    /**
+     * Lista todos os comentários feitos por um usuário específico, identificado pelo username.
+     * <p>
+     * Este método retorna uma página de comentários associados ao perfil do usuário,
+     * com base nos parâmetros de paginação fornecidos.
+     * </p>
+     *
+     * @param username Nome de usuário (username) do perfil cujos comentários serão listados.
+     * @param page     Número da página a ser retornada.
+     * @param size     Quantidade de comentários por página.
+     * @return Página de objetos ComentarioDTO contendo os comentários relacionados ao perfil do usuário.
+     * @throws RegraNegocioException Se o usuário ou perfil não for encontrado.
+     */
+    Page<ComentarioDTO> listarComentariosPorUsername(String username, int page, int size);
 }

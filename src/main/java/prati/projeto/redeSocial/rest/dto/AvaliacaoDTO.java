@@ -10,34 +10,40 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Schema(
-        description = "Classe de transferência de dados referente a avaliação."
+        name = "AvaliacaoDTO",
+        description = "DTO que representa uma avaliação de uma resenha. " +
+                "Contém informações como o ID do perfil que fez a avaliação, o texto da avaliação e a nota atribuída."
 )
 public class AvaliacaoDTO {
 
     @Schema(
-            description = "Identificador único da avaliação",
-            example = "1"
+            description = "ID da avaliação.",
+            example = "1",
+            accessMode = Schema.AccessMode.READ_ONLY
     )
     private Integer id;
 
     @Schema(
-            description = "Identificador único do perfil que está sendo avaliado",
-            example = "123"
+            description = "ID do perfil que fez a avaliação.",
+            example = "1",
+            required = true
     )
     @NotNull(message = "O ID do perfil é obrigatório.")
     private Integer perfilId;
 
     @Schema(
-            description = "Texto da avaliação",
-            example = "Ótimo perfil, recomendo!"
+            description = "Texto da avaliação. Não pode ser vazio ou conter apenas espaços.",
+            example = "Gostei muito da resenha!",
+            required = true
     )
     @NotEmpty(message = "O texto da avaliação é obrigatório.")
     @Pattern(regexp = ".*\\S.*", message = "O texto da avaliação não pode conter apenas espaços.")
     private String texto;
 
     @Schema(
-            description = "Nota da avaliação (deve estar entre 1 e 5)",
-            example = "4"
+            description = "Nota da avaliação. Deve ser um valor entre 1 e 5.",
+            example = "4.5",
+            required = true
     )
     @NotNull(message = "A nota da avaliação é obrigatória.")
     @Min(value = 1, message = "A nota não pode ser menor que 1.")

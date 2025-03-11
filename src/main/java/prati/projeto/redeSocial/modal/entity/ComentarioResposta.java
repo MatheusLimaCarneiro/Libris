@@ -6,6 +6,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -28,6 +32,14 @@ public class ComentarioResposta {
 
     @Column(name = "texto_resposta", length = 500)
     private String texto;
+
+    @Column(name = "quantidade_curtidas")
+    private Integer quantidadeCurtidas = 0;
+
+    @ElementCollection
+    @CollectionTable(name = "curtidas_resposta", joinColumns = @JoinColumn(name = "resposta_id"))
+    @Column(name = "perfil_id")
+    private Set<Integer> perfisQueCurtiram = new HashSet<>();
 
     @Column(name = "data_resposta")
     private LocalDateTime dataResposta;

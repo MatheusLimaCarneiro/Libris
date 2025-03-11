@@ -29,6 +29,9 @@ public class Resenha {
     @JoinColumn(name = "FK_livro")
     private Livro livro;
 
+    @Column(name = "google_id_livro")
+    private String googleIdLivro;
+
     private String titulo;
     private String autor;
     private String texto;
@@ -42,4 +45,10 @@ public class Resenha {
 
     @OneToMany(mappedBy = "resenha", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Avaliacao> avaliacoes = new ArrayList<>();
+
+    @Column(name = "media_resenha")
+    private Double media = 0.0;
+
+    @Column(name = " possui_spoiler")
+    private boolean spoiler;
 }

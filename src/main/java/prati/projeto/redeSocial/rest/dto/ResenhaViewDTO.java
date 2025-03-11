@@ -6,78 +6,92 @@ import lombok.Data;
 
 import java.util.List;
 
-/**
- * DTO para visualização de uma resenha.
- * <p>
- * Este objeto encapsula os dados detalhados de uma resenha, incluindo informações
- * sobre o livro associado, os dados da resenha, datas de publicação e edição,
- * a nota atribuída e as avaliações associadas.
- * </p>
- */
 @Data
 @AllArgsConstructor
-@Schema(description = "DTO para visualização de uma resenha")
+@Schema(
+        name = "ResenhaViewDTO",
+        description = "DTO que representa uma visualização detalhada de uma resenha de livro no sistema. " +
+                "Contém informações como o ID da resenha, ID do perfil que fez a resenha, detalhes do livro, " +
+                "Google ID do livro, título da resenha, autor do livro, texto da resenha, datas de publicação e edição, " +
+                "nota atribuída, indicador de spoiler, média das avaliações e a lista de avaliações associadas."
+)
 public class ResenhaViewDTO {
 
-
     @Schema(
-            description = "Identificador único da resenha",
+            description = "ID da resenha.",
             example = "1"
     )
     private Integer id;
 
-
     @Schema(
-            description = "Identificador do perfil que criou a resenha",
-            example = "2"
+            description = "ID do perfil que fez a resenha.",
+            example = "1"
     )
     private Integer perfilId;
 
-
-    @Schema(description = "Dados resumidos do livro associado à resenha")
+    @Schema(
+            description = "Detalhes do livro associado à resenha.",
+            implementation = LivroResumidoDTO.class
+    )
     private LivroResumidoDTO livro;
 
+    @Schema(
+            description = "Google ID do livro associado à resenha.",
+            example = "1234567890"
+    )
+    private String googleId;
 
     @Schema(
-            description = "Título da resenha",
-            example = "Uma Análise Profunda"
+            description = "Título da resenha.",
+            example = "Uma análise profunda sobre o livro"
     )
     private String titulo;
 
-
     @Schema(
-            description = "Nome do autor da resenha",
-            example = "Maria Oliveira"
+            description = "Nome do autor do livro.",
+            example = "João Silva"
     )
     private String autor;
 
-
     @Schema(
-            description = "Texto completo da resenha",
-            example = "Esta é uma análise detalhada do livro..."
+            description = "Texto da resenha.",
+            example = "Este livro é incrível, recomendo a todos!"
     )
     private String texto;
 
-
-    @Schema(description = "Data de publicação da resenha",
-            example = "2025-02-23"
+    @Schema(
+            description = "Data de publicação da resenha.",
+            example = "2023-10-05T12:34:56.789Z"
     )
     private String dataPublicacao;
 
-
     @Schema(
-            description = "Data da última edição da resenha",
-            example = "2025-02-24"
+            description = "Data da última edição da resenha.",
+            example = "2023-10-06T10:15:30.456Z"
     )
     private String dataEdicao;
 
-
     @Schema(
-            description = "Nota atribuída à resenha",
-            example = "4")
+            description = "Nota atribuída ao livro (deve ser entre 1 e 5).",
+            example = "4.5"
+    )
     private Double nota;
 
+    @Schema(
+            description = "Indica se a resenha contém spoilers.",
+            example = "true"
+    )
+    private boolean spoiler;
 
-    @Schema(description = "Lista de avaliações associadas à resenha")
+    @Schema(
+            description = "Média das avaliações recebidas pela resenha.",
+            example = "4.2"
+    )
+    private Double media;
+
+    @Schema(
+            description = "Lista de avaliações associadas à resenha.",
+            implementation = AvaliacaoDTO.class
+    )
     private List<AvaliacaoDTO> avaliacoes;
 }

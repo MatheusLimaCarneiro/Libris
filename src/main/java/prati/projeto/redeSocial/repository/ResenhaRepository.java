@@ -8,7 +8,7 @@ import prati.projeto.redeSocial.modal.entity.Resenha;
 import java.util.List;
 
 public interface ResenhaRepository extends JpaRepository<Resenha, Integer> {
-    Page<Resenha> findByLivroId(Integer livroId, Pageable pageable);
+    Page<Resenha> findByGoogleIdLivro(String googleIdLivro, Pageable pageable);
     Page<Resenha> findAll(Pageable pageable);
     Resenha findByPerfilIdAndLivroId(Integer perfilId, Integer livroId);
 }

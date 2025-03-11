@@ -1,5 +1,6 @@
 package prati.projeto.redeSocial.service.impl;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import prati.projeto.redeSocial.exception.LivroException;
 import prati.projeto.redeSocial.modal.entity.Livro;
 import prati.projeto.redeSocial.repository.LivroRepository;
+import prati.projeto.redeSocial.rest.dto.LivroResponseDTO;
 import prati.projeto.redeSocial.rest.dto.LivroResumidoDTO;
 import prati.projeto.redeSocial.service.LivroService;
 
@@ -26,28 +28,48 @@ public class LivroServiceImpl implements LivroService {
     }
 
     @Override
-    public Livro saveLivro(Livro livro) {
-        validarIsbnDuplicado(livro.getIsbn());
+    @Transactional
+    public Livro saveLivro(LivroResponseDTO dto) {
+
+        validarGoogleIdUnico(dto.getGoogleId());
+
+        Livro livro = convertToEntity(dto);
+
         return livroRepository.save(livro);
     }
 
     @Override
+    @Transactional
     public void deleteLivro(Integer id) {
         Livro livro = getLivroById(id);
         livroRepository.delete(livro);
     }
 
     @Override
-    public void updateLivro(Integer id, Livro livro) {
+    @Transactional
+    public void updateLivro(Integer id, LivroResponseDTO dto) {
         Livro livroExistente = getLivroById(id);
 
-        if (!livroExistente.getIsbn().equals(livro.getIsbn()) &&
-                livroRepository.existsByIsbn(livro.getIsbn())) {
-            throw new LivroException("ISBN já cadastrado");
+        if (!livroExistente.getGoogleId().equals(dto.getGoogleId())) {
+            validarGoogleIdUnico(dto.getGoogleId());
         }
 
-        livro.setId(livroExistente.getId());
-        livroRepository.save(livro);
+        livroExistente.setGoogleId(dto.getGoogleId());
+        livroExistente.setTitulo(dto.getTitulo());
+        livroExistente.setSubtitulo(dto.getSubtitulo());
+        livroExistente.setAutores(dto.getAutores());
+        livroExistente.setEditora(dto.getEditora());
+        livroExistente.setSinopse(dto.getSinopse());
+        livroExistente.setNumeroPaginas(dto.getNumeroPaginas());
+        livroExistente.setIsbn(dto.getIsbn());
+        livroExistente.setIdioma(dto.getIdioma());
+        livroExistente.setCategoria(dto.getCategoria());
+        livroExistente.setUrlCapa(dto.getUrlCapa());
+        livroExistente.setLinkCompra(dto.getLinkCompra());
+        livroExistente.setFaixaEtaria(dto.getFaixaEtaria());
+        livroExistente.setDataPublicacao(dto.getDataPublicacao());
+
+        livroRepository.save(livroExistente);
     }
 
     @Override
@@ -67,16 +89,45 @@ public class LivroServiceImpl implements LivroService {
         Pageable pageable = PageRequest.of(page, size);
         Page<Livro> livroPage = livroRepository.findAll(pageable);
 
-        return livroPage.map(livro -> new LivroResumidoDTO(
+        return livroPage.map(this::convertToResumidoDTO);
+    }
+
+    @Override
+    public Livro getLivroByGoogleId(String googleId) {
+        return livroRepository.findByGoogleId(googleId)
+                .orElseThrow(() -> new LivroException("Livro com Google ID " + googleId + " não encontrado"));
+    }
+
+    public void validarGoogleIdUnico(String googleId) {
+        if (livroRepository.existsByGoogleId(googleId)) {
+            throw new LivroException("Google ID já cadastrado!");
+        }
+    }
+
+    private Livro convertToEntity(LivroResponseDTO dto) {
+        Livro livro = new Livro();
+        livro.setGoogleId(dto.getGoogleId());
+        livro.setTitulo(dto.getTitulo());
+        livro.setSubtitulo(dto.getSubtitulo());
+        livro.setAutores(dto.getAutores());
+        livro.setEditora(dto.getEditora());
+        livro.setSinopse(dto.getSinopse());
+        livro.setNumeroPaginas(dto.getNumeroPaginas());
+        livro.setIsbn(dto.getIsbn());
+        livro.setIdioma(dto.getIdioma());
+        livro.setCategoria(dto.getCategoria());
+        livro.setUrlCapa(dto.getUrlCapa());
+        livro.setLinkCompra(dto.getLinkCompra());
+        livro.setDataPublicacao(dto.getDataPublicacao());
+        livro.setFaixaEtaria(dto.getFaixaEtaria());
+        return livro;
+    }
+
+    private LivroResumidoDTO convertToResumidoDTO(Livro livro) {
+        return new LivroResumidoDTO(
                 livro.getTitulo(),
                 livro.getAutores(),
                 livro.getDataPublicacao().toString()
-        ));
-    }
-
-    private void validarIsbnDuplicado(String isbn) {
-        if (livroRepository.existsByIsbn(isbn)) {
-            throw new LivroException("ISBN já cadastrado");
-        }
+        );
     }
 }

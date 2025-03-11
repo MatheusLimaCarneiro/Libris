@@ -1,6 +1,7 @@
 package prati.projeto.redeSocial.rest.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -20,140 +21,143 @@ import java.time.format.DateTimeFormatter;
 @RestController
 @RequestMapping("/libris/comentarios/{comentarioId}/respostas")
 @Tag(
-        name = "Resposta de Comentário",
-        description = "Endpoints responsáveis pela gestão das respostas aos comentários."
+        name = "Respostas de Comentários",
+        description = "Endpoints para gerenciar respostas a comentários. " +
+                "Permite adicionar, buscar, listar, atualizar e deletar respostas associadas a um comentário específico."
 )
 public class ComentarioRespostaController {
 
     @Autowired
     private ComentarioRespostaService respostaService;
 
-
     @Operation(
-            summary = "Adicionar resposta",
-            description = "Adiciona uma nova resposta ao comentário especificado e retorna os detalhes da resposta criada.",
+            summary = "Adicionar Resposta",
+            description = "Adiciona uma nova resposta a um comentário específico. " +
+                    "A resposta é associada ao comentário e ao perfil que a criou.",
             responses = {
                     @ApiResponse(
                             responseCode = "201",
-                            description = "Resposta adicionada com sucesso.",
+                            description = "Resposta adicionada com sucesso",
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = ServiceResponse.class)
                             )
                     ),
-                    @ApiResponse(responseCode = "400", description = "Dados inválidos para criação da resposta.")
+                    @ApiResponse(responseCode = "400", description = "Erro de validação dos dados fornecidos"),
+                    @ApiResponse(responseCode = "404", description = "Comentário ou perfil não encontrado")
             }
     )
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ServiceResponse<RespostaDTO> adicionarResposta(
+            @Parameter(description = "ID do comentário ao qual a resposta será adicionada", example = "1", required = true)
             @PathVariable Integer comentarioId,
+            @Parameter(description = "DTO contendo os dados da resposta", required = true)
             @RequestBody @Valid RespostaDTO respostaDTO) {
         RespostaDTO resposta = respostaService.adicionarResposta(comentarioId, respostaDTO);
         return new ServiceResponse<>(resposta, "Resposta adicionada com sucesso", true, getFormattedTimestamp());
     }
 
-
-
     @Operation(
-            summary = "Buscar resposta por ID",
-            description = "Retorna os detalhes da resposta associada ao comentário com base nos identificadores fornecidos.",
+            summary = "Buscar Resposta por ID",
+            description = "Busca uma resposta específica pelo seu ID, desde que pertença ao comentário informado.",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "Resposta encontrada com sucesso.",
+                            description = "Resposta encontrada com sucesso",
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = ServiceResponse.class)
                             )
                     ),
-                    @ApiResponse(responseCode = "404", description = "Resposta ou comentário não encontrado.")
+                    @ApiResponse(responseCode = "404", description = "Resposta ou comentário não encontrado")
             }
     )
     @GetMapping("/{respostaId}")
     @ResponseStatus(HttpStatus.OK)
     public ServiceResponse<RespostaDTO> buscarRespostaPorId(
+            @Parameter(description = "ID do comentário ao qual a resposta pertence", example = "1", required = true)
             @PathVariable Integer comentarioId,
+            @Parameter(description = "ID da resposta a ser buscada", example = "1", required = true)
             @PathVariable Integer respostaId) {
         RespostaDTO resposta = respostaService.buscarRespostaPorId(comentarioId, respostaId);
         return new ServiceResponse<>(resposta, "Resposta encontrada com sucesso", true, getFormattedTimestamp());
     }
 
-
-
     @Operation(
-            summary = "Listar respostas",
-            description = "Lista todas as respostas associadas ao comentário especificado, com suporte a paginação.",
+            summary = "Listar Respostas",
+            description = "Retorna uma lista paginada de respostas associadas a um comentário específico.",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "Respostas encontradas.",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = ServiceResponse.class)
-                            )
-                    )
-            }
-    )
-    @GetMapping("/listar")
-    @ResponseStatus(HttpStatus.OK)
-    public ServiceResponse<Page<RespostaDTO>> listarRespostas(
-            @PathVariable Integer comentarioId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-
-        Page<RespostaDTO> respostas = respostaService.listarRespostasPorComentario(comentarioId, page, size);
-        String mensagem = respostas.isEmpty() ? "Nenhuma resposta encontrada" : "Respostas encontradas";
-        return new ServiceResponse<>(respostas, mensagem, !respostas.isEmpty(), getFormattedTimestamp());
-    }
-
-
-
-    @Operation(
-            summary = "Atualizar resposta",
-            description = "Atualiza os dados de uma resposta existente associada ao comentário e retorna os detalhes atualizados.",
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "Resposta atualizada com sucesso.",
+                            description = "Respostas encontradas com sucesso",
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = ServiceResponse.class)
                             )
                     ),
-                    @ApiResponse(responseCode = "400", description = "Dados inválidos para atualização."),
-                    @ApiResponse(responseCode = "404", description = "Resposta ou comentário não encontrado.")
+                    @ApiResponse(responseCode = "404", description = "Nenhuma resposta encontrada para o comentário")
+            }
+    )
+    @GetMapping("/listar")
+    @ResponseStatus(HttpStatus.OK)
+    public ServiceResponse<Page<RespostaDTO>> listarRespostas(
+            @Parameter(description = "ID do comentário para listar as respostas", example = "1", required = true)
+            @PathVariable Integer comentarioId,
+            @Parameter(description = "Número da página", example = "0")
+            @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "Tamanho da página", example = "10")
+            @RequestParam(defaultValue = "10") int size) {
+        Page<RespostaDTO> respostas = respostaService.listarRespostasPorComentario(comentarioId, page, size);
+        String mensagem = respostas.isEmpty() ? "Nenhuma resposta encontrada" : "Respostas encontradas";
+        return new ServiceResponse<>(respostas, mensagem, !respostas.isEmpty(), getFormattedTimestamp());
+    }
+
+    @Operation(
+            summary = "Atualizar Resposta",
+            description = "Atualiza o texto de uma resposta específica, desde que pertença ao comentário informado.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Resposta atualizada com sucesso",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ServiceResponse.class)
+                            )
+                    ),
+                    @ApiResponse(responseCode = "404", description = "Resposta ou comentário não encontrado")
             }
     )
     @PutMapping("/{respostaId}")
     @ResponseStatus(HttpStatus.OK)
     public ServiceResponse<RespostaDTO> atualizarResposta(
+            @Parameter(description = "ID do comentário ao qual a resposta pertence", example = "1", required = true)
             @PathVariable Integer comentarioId,
+            @Parameter(description = "ID da resposta a ser atualizada", example = "1", required = true)
             @PathVariable Integer respostaId,
+            @Parameter(description = "DTO contendo o novo texto da resposta", required = true)
             @RequestBody @Valid RespostaDTO respostaDTO) {
         RespostaDTO respostaAtualizada = respostaService.atualizarResposta(comentarioId, respostaId, respostaDTO);
         return new ServiceResponse<>(respostaAtualizada, "Resposta atualizada com sucesso", true, getFormattedTimestamp());
     }
 
-
-
     @Operation(
-            summary = "Deletar resposta",
-            description = "Exclui a resposta associada ao comentário com base nos identificadores fornecidos.",
+            summary = "Deletar Resposta",
+            description = "Deleta uma resposta específica, desde que pertença ao comentário informado.",
             responses = {
-                    @ApiResponse(responseCode = "204", description = "Resposta excluída com sucesso."),
-                    @ApiResponse(responseCode = "404", description = "Resposta ou comentário não encontrado.")
+                    @ApiResponse(responseCode = "204", description = "Resposta deletada com sucesso"),
+                    @ApiResponse(responseCode = "404", description = "Resposta ou comentário não encontrado")
             }
     )
     @DeleteMapping("/{respostaId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deletarResposta(
+            @Parameter(description = "ID do comentário ao qual a resposta pertence", example = "1", required = true)
             @PathVariable Integer comentarioId,
+            @Parameter(description = "ID da resposta a ser deletada", example = "1", required = true)
             @PathVariable Integer respostaId) {
         respostaService.deletarResposta(comentarioId, respostaId);
     }
-
-
 
     private String getFormattedTimestamp() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");

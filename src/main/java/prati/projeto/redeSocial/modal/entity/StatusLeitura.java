@@ -30,6 +30,10 @@ public class StatusLeitura {
     @Schema(description = "Livro associado ao status de leitura")
     private Livro livro;
 
+    @Column(name = "google_id_livro")
+    @Schema(description = "ID do livro da api do Google associado", example = "456")
+    private String googleIdLivro;
+
     @Schema(description = "Número da página que o usuário parou de ler", example = "150")
     private Integer pagina;
 

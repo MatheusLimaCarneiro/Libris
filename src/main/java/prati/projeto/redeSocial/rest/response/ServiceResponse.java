@@ -1,5 +1,6 @@
 package prati.projeto.redeSocial.rest.response;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,11 +13,19 @@ import java.time.format.DateTimeFormatter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Schema(description = "Resposta genérica da API")
 public class ServiceResponse<T> {
+    @Schema(description = "Dados da resposta")
     private T data;
+
+    @Schema(description = "Mensagem descritiva da resposta", example = "Operação realizada com sucesso")
     private String message;
+
+    @Schema(description = "Indica se a operação foi bem-sucedida", example = "true")
     private boolean success;
-    private String timestamp ;
+
+    @Schema(description = "Timestamp da resposta", example = "2025-03-07 14:59:36")
+    private String timestamp;
 
     public ServiceResponse(T data, String message, boolean success) {
         this.data = data;
