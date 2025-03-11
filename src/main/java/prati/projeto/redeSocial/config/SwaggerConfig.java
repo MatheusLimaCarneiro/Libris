@@ -16,7 +16,7 @@ public class SwaggerConfig {
         return new OpenAPI()
                 .info(new Info()
                         .title("Back-End: Libris")
-                        .description("PI destinada ao gerenciamento de uma rede social para entusiastas de literatura. Esta API oferece recursos para autenticação de usuários, gerenciamento de perfis personalizados, interações sociais e compartilhamento de informações relacionadas ao universo literário. Desenvolvida para promover a conexão entre leitores e o engajamento em uma comunidade dedicada aos livros.")
+                        .description("API destinada ao gerenciamento de uma rede social para entusiastas de literatura. Esta API oferece recursos para autenticação de usuários, gerenciamento de perfis personalizados, interações sociais e compartilhamento de informações relacionadas ao universo literário. Desenvolvida para promover a conexão entre leitores e o engajamento em uma comunidade dedicada aos livros.")
                         .version("1.0")
                 )
                 .components(new Components()
