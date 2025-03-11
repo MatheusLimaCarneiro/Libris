@@ -28,6 +28,7 @@ public class ComentarioServiceImpl implements ComentarioService {
     private final LivroRepository livroRepository;
     private final ComentarioRespostaService respostaService;
     private final UsuarioRepository usuarioRepository;
+    private final AtividadePerfilServiceImpl atividadePerfilService;
 
     @Override
     @CacheEvict(value = "comentariosPorLivro", key = "{#dto.googleId, 0, 10}")
@@ -36,7 +37,6 @@ public class ComentarioServiceImpl implements ComentarioService {
         Perfil perfil = validarPerfil(dto.getPerfilId());
         Livro livro = livroRepository.findByGoogleId(dto.getGoogleId())
                 .orElseThrow(() -> new RegraNegocioException("Livro com Google ID " + dto.getGoogleId() + " não encontrado"));
-
         validarNota(dto.getNota());
 
         Comentario comentario = new Comentario();
@@ -48,6 +48,8 @@ public class ComentarioServiceImpl implements ComentarioService {
         comentario.setNota(dto.getNota());
         comentario.setSpoiler(dto.isSpoiler());
         comentario.setRespostas(new ArrayList<>());
+
+        atividadePerfilService.registrarAtividade(comentario.getPerfil());
 
         comentario = comentarioRepository.save(comentario);
         return convertToDTO(comentario);

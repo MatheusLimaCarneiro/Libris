@@ -17,6 +17,7 @@ import prati.projeto.redeSocial.rest.dto.AvaliacaoDTO;
 import prati.projeto.redeSocial.rest.dto.LivroResumidoDTO;
 import prati.projeto.redeSocial.rest.dto.ResenhaDTO;
 import prati.projeto.redeSocial.rest.dto.ResenhaViewDTO;
+import prati.projeto.redeSocial.service.AvaliacaoService;
 import prati.projeto.redeSocial.service.ResenhaService;
 
 import java.time.LocalDateTime;
@@ -30,7 +31,8 @@ public class ResenhaServiceImpl implements ResenhaService {
     private final ResenhaRepository resenhaRepository;
     private final PerfilRepository perfilRepository;
     private final LivroRepository livroRepository;
-    private final AvaliacaoServiceImpl avaliacaoService;
+    private final AvaliacaoService avaliacaoService;
+    private final AtividadePerfilServiceImpl atividadePerfilServiceImpl;
 
     @Override
     public ResenhaViewDTO getResenhaById(Integer id) {
@@ -50,6 +52,8 @@ public class ResenhaServiceImpl implements ResenhaService {
 
         Resenha resenha = criarResenha(resenhaDTO, perfil, livro);
         resenhaRepository.save(resenha);
+
+        atividadePerfilServiceImpl.registrarAtividade(resenha.getPerfil());
 
         return converterParaViewDTO(resenha, 0, 10);
     }

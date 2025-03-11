@@ -1,6 +1,7 @@
 package prati.projeto.redeSocial.rest.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -20,144 +21,137 @@ import java.time.format.DateTimeFormatter;
 @RestController
 @RequestMapping("/libris/resenhas/{resenhaId}/avaliacoes")
 @Tag(
-        name = "Avaliação",
-        description = "Endpoints responsáveis pela avaliação da resenha."
+        name = "Avaliações",
+        description = "Endpoints que gerenciam as avaliações de resenhas. " +
+                "Permite adicionar, listar, atualizar e deletar avaliações, bem como listar avaliações por perfil. " +
+                "Esses endpoints fornecem funcionalidades para que os usuários possam avaliar resenhas e visualizar avaliações."
 )
 public class AvaliacaoController {
 
     @Autowired
     private AvaliacaoService avaliacaoService;
 
-
     @Operation(
-            summary = "Registrar uma avaliação",
-            description = "Registra uma nova avaliação e retorna as informações da avaliação cadastrada.",
+            summary = "Adicionar avaliação",
+            description = "Adiciona uma nova avaliação a uma resenha específica.",
             responses = {
                     @ApiResponse(
                             responseCode = "201",
-                            description = "Avaliação adicionada com sucesso.",
+                            description = "Avaliação adicionada com sucesso",
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = ServiceResponse.class)
                             )
                     ),
-                    @ApiResponse(responseCode = "400", description = "Dados inválidos na requisição.")
+                    @ApiResponse(responseCode = "400", description = "Erro de validação dos dados fornecidos")
             }
     )
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ServiceResponse<AvaliacaoDTO> adicionarAvaliacao(
-            @PathVariable Integer resenhaId,
+            @Parameter(description = "ID da resenha", example = "1") @PathVariable Integer resenhaId,
             @RequestBody @Valid AvaliacaoDTO avaliacaoDTO) {
         AvaliacaoDTO resultado = avaliacaoService.adicionarAvaliacao(resenhaId, avaliacaoDTO);
         return new ServiceResponse<>(resultado, "Avaliação adicionada com sucesso.", true, getFormattedTimestamp());
     }
 
-
-
     @Operation(
             summary = "Listar avaliações por resenha",
-            description = "Lista todas as avaliações de uma resenha, com suporte a paginação.",
+            description = "Retorna uma lista paginada de avaliações associadas a uma resenha específica.",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "Avaliações listadas com sucesso.",
+                            description = "Avaliações encontradas com sucesso",
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = ServiceResponse.class)
                             )
                     ),
-                    @ApiResponse(responseCode = "404", description = "Resenha não encontrada.")
+                    @ApiResponse(responseCode = "404", description = "Nenhuma avaliação encontrada para a resenha")
             }
     )
     @GetMapping("/listar")
     @ResponseStatus(HttpStatus.OK)
     public ServiceResponse<Page<AvaliacaoDTO>> listarAvaliacoesPorResenha(
-            @PathVariable Integer resenhaId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @Parameter(description = "ID da resenha", example = "1") @PathVariable Integer resenhaId,
+            @Parameter(description = "Número da página", example = "0") @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "Tamanho da página", example = "10") @RequestParam(defaultValue = "10") int size) {
         Page<AvaliacaoDTO> avaliacoes = avaliacaoService.listarAvaliacaoPorResenha(resenhaId, page, size);
         String mensagem = avaliacoes.isEmpty() ? "Nenhuma avaliação encontrada" : "Avaliações encontradas com sucesso";
         return new ServiceResponse<>(avaliacoes, mensagem, !avaliacoes.isEmpty(), getFormattedTimestamp());
     }
 
-
-
     @Operation(
             summary = "Atualizar avaliação",
-            description = "Atualiza uma avaliação existente e retorna as informações atualizadas.",
+            description = "Atualiza uma avaliação existente de uma resenha.",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "Avaliação atualizada com sucesso.",
+                            description = "Avaliação atualizada com sucesso",
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = ServiceResponse.class)
                             )
                     ),
-                    @ApiResponse(responseCode = "400", description = "Dados inválidos para atualização."),
-                    @ApiResponse(responseCode = "404", description = "Avaliação ou resenha não encontrada.")
+                    @ApiResponse(responseCode = "404", description = "Avaliação não encontrada")
             }
     )
     @PutMapping("/{avaliacaoId}")
     @ResponseStatus(HttpStatus.OK)
     public ServiceResponse<AvaliacaoDTO> atualizarAvaliacao(
-            @PathVariable Integer resenhaId,
-            @PathVariable Integer avaliacaoId,
+            @Parameter(description = "ID da resenha", example = "1") @PathVariable Integer resenhaId,
+            @Parameter(description = "ID da avaliação", example = "1") @PathVariable Integer avaliacaoId,
             @RequestBody @Valid AvaliacaoDTO avaliacaoDTO) {
         AvaliacaoDTO resultado = avaliacaoService.editarAvaliacao(resenhaId, avaliacaoId, avaliacaoDTO);
         return new ServiceResponse<>(resultado, "Avaliação atualizada com sucesso.", true, getFormattedTimestamp());
     }
 
-
-
-
     @Operation(
             summary = "Deletar avaliação",
-            description = "Remove uma avaliação existente associada à resenha informada.",
+            description = "Deleta uma avaliação específica de uma resenha.",
             responses = {
-                    @ApiResponse(responseCode = "204", description = "Avaliação removida com sucesso."),
-                    @ApiResponse(responseCode = "404", description = "Avaliação ou resenha não encontrada.")
+                    @ApiResponse(
+                            responseCode = "204",
+                            description = "Avaliação deletada com sucesso"
+                    ),
+                    @ApiResponse(responseCode = "404", description = "Avaliação não encontrada")
             }
     )
     @DeleteMapping("/{avaliacaoId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deletarAvaliacao(
-            @PathVariable Integer resenhaId,
-            @PathVariable Integer avaliacaoId) {
+            @Parameter(description = "ID da resenha", example = "1") @PathVariable Integer resenhaId,
+            @Parameter(description = "ID da avaliação", example = "1") @PathVariable Integer avaliacaoId) {
         avaliacaoService.deletarAvaliacao(resenhaId, avaliacaoId);
     }
 
-
-
-
     @Operation(
             summary = "Listar avaliações por perfil",
-            description = "Lista as avaliações de uma resenha filtradas por perfil do usuário, com suporte a paginação.",
+            description = "Retorna uma lista paginada de avaliações feitas por um perfil específico.",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "Avaliações do perfil listadas com sucesso.",
+                            description = "Avaliações do perfil listadas com sucesso",
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = ServiceResponse.class)
                             )
+
                     ),
-                    @ApiResponse(responseCode = "404", description = "Perfil ou resenha não encontrada.")
+                    @ApiResponse(responseCode = "404", description = "Nenhuma avaliação encontrada para o perfil")
             }
     )
     @GetMapping("/perfil/{perfilId}")
     @ResponseStatus(HttpStatus.OK)
     public ServiceResponse<Page<AvaliacaoDTO>> listarAvaliacoesPorPerfil(
-            @PathVariable Integer resenhaId,
-            @PathVariable Integer perfilId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @Parameter(description = "ID da resenha", example = "1") @PathVariable Integer resenhaId,
+            @Parameter(description = "ID do perfil", example = "1") @PathVariable Integer perfilId,
+            @Parameter(description = "Número da página", example = "0") @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "Tamanho da página", example = "10") @RequestParam(defaultValue = "10") int size) {
         Page<AvaliacaoDTO> resultado = avaliacaoService.listarAvaliacoesPorPerfil(perfilId, page, size);
         String mensagem = resultado.isEmpty() ? "Nenhuma avaliação encontrada para este perfil." : "Avaliações do perfil listadas com sucesso.";
         return new ServiceResponse<>(resultado.isEmpty() ? null : resultado, mensagem, !resultado.isEmpty(), getFormattedTimestamp());
     }
-
 
     private String getFormattedTimestamp() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");

@@ -47,7 +47,7 @@ public class Resenha {
     private List<Avaliacao> avaliacoes = new ArrayList<>();
 
     @Column(name = "media_resenha")
-    private Integer media = 0;
+    private Double media = 0.0;
 
     @Column(name = " possui_spoiler")
     private boolean spoiler;
