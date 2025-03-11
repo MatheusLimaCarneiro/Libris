@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -13,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import prati.projeto.redeSocial.modal.entity.ResetPasswordRequest;
 import prati.projeto.redeSocial.modal.entity.Usuario;
 import prati.projeto.redeSocial.repository.UsuarioRepository;
+import prati.projeto.redeSocial.rest.dto.ChangePasswordDTO;
 import prati.projeto.redeSocial.rest.dto.ResetPasswordDTO;
 import prati.projeto.redeSocial.rest.dto.UsuarioResumidoDTO;
 import prati.projeto.redeSocial.rest.response.ServiceResponse;
@@ -140,6 +142,32 @@ public class UsuarioController {
     public ServiceResponse<String> resetPassword(@RequestBody ResetPasswordDTO resetPasswordDTO) {
         usuarioService.resetPassword(resetPasswordDTO.getToken(), resetPasswordDTO.getNewPassword());
         return new ServiceResponse<>(null,"Senha redefinida com sucesso", true, getFormattedTimestamp());
+    }
+
+    @Operation(
+            summary = "Alterar senha",
+            description = "Altera a senha de um usuário autenticado.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Senha alterada com sucesso",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ServiceResponse.class)
+                            )
+                    ),
+                    @ApiResponse(responseCode = "400", description = "Senha atual inválida")
+            }
+    )
+    @PutMapping("/change-password")
+    @ResponseStatus(HttpStatus.OK)
+    public ServiceResponse<String> changePassword(@RequestBody @Valid ChangePasswordDTO changePasswordDTO,
+                                                  Authentication authentication) {
+        String email = authentication.getName();
+        usuarioService.changePassword(email,
+                changePasswordDTO.getOldPassword(),
+                changePasswordDTO.getNewPassword());
+        return new ServiceResponse<>(null, "Senha alterada com sucesso", true, getFormattedTimestamp());
     }
 
     private String getFormattedTimestamp() {

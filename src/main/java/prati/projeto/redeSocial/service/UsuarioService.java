@@ -61,4 +61,14 @@ public interface UsuarioService {
      * @throws RegraNegocioException Caso o usuário correspondente ao token não seja encontrado.
      */
     void resetPassword(String token, String newPassword);
+
+    /**
+     * Altera a senha de um usuário autenticado.
+     *
+     * @param email O email do usuário.
+     * @param oldPassword A senha atual do usuário.
+     * @param newPassword A nova senha escolhida pelo usuário.
+     * @throws RegraNegocioException Caso a senha atual seja inválida.
+     */
+    void changePassword(String email, String oldPassword, String newPassword);
 }
