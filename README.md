@@ -51,9 +51,9 @@ cd Libris-Back
 ````
 
 3. Acesse a documentação:
-   ````bash
-   http://localhost:8080/swagger-ui.html
-   ````
+````bash
+    http://localhost:8080/swagger-ui.html
+````
 
 ## 🤝 Contribuições
 Siga os passos abaixo para contribuir:
