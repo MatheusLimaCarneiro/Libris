@@ -33,6 +33,171 @@ Projeto desenvolvido para conclusão do curso, demonstrando habilidades em desen
 - Controle de status de leitura  
 - Sistema de seguidores e relacionamentos  
 
+## Estrutura do Projeto
+```bash
+src/
+└── main/
+    └── java/
+        └── prati/
+            └── projeto/
+                └── redeSocial/
+                    ├── config/
+                    │   ├── CorsConfiguration.java
+                    │   ├── PasswordConfig.java
+                    │   ├── SecurityConfig.java
+                    │   └── SwaggerConfig.java
+                    │
+                    ├── exception/
+                    │   ├── LivroException.java
+                    │   ├── RegraNegocioException.java
+                    │   └── TokenInvalidException.java
+                    │
+                    ├── model/
+                    │   ├── entity/
+                    │   │   ├── AtividadePerfil.java
+                    │   │   ├── Avaliacao.java
+                    │   │   ├── Comentario.java
+                    │   │   ├── ComentarioForum.java
+                    │   │   ├── ComentarioResposta.java
+                    │   │   ├── CustomOAuth2User.java
+                    │   │   ├── CustomUserDetails.java
+                    │   │   ├── Favoritos.java
+                    │   │   ├── Livro.java
+                    │   │   ├── Notificacao.java
+                    │   │   ├── Perfil.java
+                    │   │   ├── PostForum.java
+                    │   │   ├── RelacionamentoSeguidores.java
+                    │   │   ├── Resenha.java
+                    │   │   ├── ResetPasswordRequest.java
+                    │   │   ├── RespostaForum.java
+                    │   │   ├── StatusLeitura.java
+                    │   │   └── Usuario.java
+                    │   │
+                    │   └── enums/
+                    │       ├── GeneroLiterario.java
+                    │       └── StatusLeituraEnum.java
+                    │
+                    ├── repository/
+                    │   ├── AtividadePerfilRepository.java
+                    │   ├── AvaliacaoRepository.java
+                    │   ├── ComentarioRepository.java
+                    │   ├── ComentarioForumRepository.java
+                    │   ├── ComentarioRespostaRepository.java
+                    │   ├── FavoritosRepository.java
+                    │   ├── LivroRepository.java
+                    │   ├── NotificacaoRepository.java
+                    │   ├── PerfilRepository.java
+                    │   ├── PostForumRepository.java
+                    │   ├── RelacionamentoSeguidoresRepository.java
+                    │   ├── ResenhaRepository.java
+                    │   ├── RespostaForumRepository.java
+                    │   ├── StatusLeituraRepository.java
+                    │   └── UsuarioRepository.java
+                    │
+                    ├── rest/
+                    │   ├── controller/
+                    │   │   ├── AtividadePerfilController.java
+                    │   │   ├── AvaliacaoController.java
+                    │   │   ├── ComentarioController.java
+                    │   │   ├── ComentarioForumController.java
+                    │   │   ├── ComentarioRespostaController.java
+                    │   │   ├── CurtidaController.java
+                    │   │   ├── FavoritosController.java
+                    │   │   ├── LivroController.java
+                    │   │   ├── NotificacaoController.java
+                    │   │   ├── OAuth2Controller.java
+                    │   │   ├── PerfilController.java
+                    │   │   ├── PostForumController.java
+                    │   │   ├── RelacionamentoSeguidoresController.java
+                    │   │   ├── ResenhaController.java
+                    │   │   ├── RespostaForumController.java
+                    │   │   ├── StatusLeituraController.java
+                    │   │   └── UsuarioController.java
+                    │   │
+                    │   └── dto/
+                    │       ├── AtividadePerfilDTO.java
+                    │       ├── AvaliacaoDTO.java
+                    │       ├── ComentarioDTO.java
+                    │       ├── ComentarioForumRequestDTO.java
+                    │       ├── ComentarioForumResponseDTO.java
+                    │       ├── ComentarioRequestDTO.java
+                    │       ├── CredenciaisDTO.java
+                    │       ├── FavoritoRequestDTO.java
+                    │       ├── FavoritoResponseDTO.java
+                    │       ├── LivroResponseDTO.java
+                    │       ├── LivroResumidoDTO.java
+                    │       ├── NotificacaoDTO.java
+                    │       ├── PerfilDTO.java
+                    │       ├── PerfilRequestDTO.java
+                    │       ├── PerfilResumidoDTO.java
+                    │       ├── PostForumRequestDTO.java
+                    │       ├── PostForumResponseDTO.java
+                    │       ├── ResenhaDTO.java
+                    │       ├── ResenhaViewDTO.java
+                    │       ├── ResetPasswordDTO.java
+                    │       ├── RespostaDTO.java
+                    │       ├── RespostaForumRequestDTO.java
+                    │       ├── RespostaForumResponseDTO.java
+                    │       ├── StatusLeituraDTO.java
+                    │       ├── TokenDTO.java
+                    │       └── UsuarioResumidoDTO.java
+                    │
+                    ├── response/
+                    │   ├── ApiErrors.java
+                    │   ├── ApplicationControllerAdvice.java
+                    │   └── ServiceResponse.java
+                    │
+                    ├── security/
+                    │   ├── JwtAuthenticationFilter.java
+                    │   ├── JwtService.java
+                    │   └── RsaKeyProvider.java
+                    │
+                    └── service/
+                        ├── AtividadePerfilService.java
+                        ├── AvaliacaoService.java
+                        ├── ComentarioForumService.java
+                        ├── ComentarioRespostaService.java
+                        ├── ComentarioService.java
+                        ├── CurtidaService.java
+                        ├── FavoritoService.java
+                        ├── LivroService.java
+                        ├── NotificacaoService.java
+                        ├── PerfilService.java
+                        ├── PostForumService.java
+                        ├── RelacionamentoSeguidoresService.java
+                        ├── ResenhaService.java
+                        ├── RespostaForumService.java
+                        ├── StatusLeituraService.java
+                        └── UsuarioService.java
+                        │
+                        ├── auth/
+                        │   ├── CustomOAuth2UserService.java
+                        │   └── CustomUserDetailsService.java
+                        │
+                        ├── email/
+                        │   └── EmailService.java
+                        │
+                        └── impl/
+                            ├── AtividadePerfilServiceImpl.java
+                            ├── AvaliacaoServiceImpl.java
+                            ├── ComentarioForumServiceImpl.java
+                            ├── ComentarioRespostaServiceImpl.java
+                            ├── ComentarioServiceImpl.java
+                            ├── CurtidaServiceImpl.java
+                            ├── FavoritoServiceImpl.java
+                            ├── LivroServiceImpl.java
+                            ├── NotificacaoServiceImpl.java
+                            ├── PerfilServiceImpl.java
+                            ├── PostForumServiceImpl.java
+                            ├── RelacionamentoSeguidoresServiceImpl.java
+                            ├── ResenhaServiceImpl.java
+                            ├── RespostaForumServiceImpl.java
+                            ├── StatusLeituraServiceImpl.java
+                            └── UsuarioServiceImpl.java
+
+```
+
+
 ## Pré-requisitos
 
 Certifique-se de ter instalado:
