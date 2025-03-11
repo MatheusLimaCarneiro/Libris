@@ -1,3 +1,4 @@
+![image](https://github.com/user-attachments/assets/81d116b5-dfdf-4fdb-8957-743e21516142)
 # Libris - Rede Social Literária (Back-End)
 
 ## Descrição 
@@ -15,11 +16,13 @@ API para gerenciamento de uma rede social focada em literatura, desenvolvida com
 Projeto desenvolvido para conclusão do curso, demonstrando habilidades em desenvolvimento back-end com Java e Spring Boot. O foco é criar uma base escalável para uma comunidade de leitores, com ênfase em boas práticas de segurança e arquitetura limpa.
 
 ## Tecnologias  
+- **Front-end**: ReactJS
 - **Java 17**  
-- **Spring Boot 3**  
+- **Spring Boot 3.4.1**  
 - **Spring Security**  
 - **JWT**  
-- **OAuth2**  
+- **OAuth2**
+- **Banco de Dados**: MySQL
 - **Swagger** (Documentação)  
 
 ## Funcionalidades  
@@ -30,6 +33,14 @@ Projeto desenvolvido para conclusão do curso, demonstrando habilidades em desen
 - Controle de status de leitura  
 - Sistema de seguidores e relacionamentos  
 
+## Pré-requisitos
+
+Certifique-se de ter instalado:
+
+- Node.js e npm (para o front-end)
+- Java 17+ e Maven (ou outra versão de sua escolha para o back-end)
+- MySQL (para o banco de dados)
+
 ## ⚙ Instalação  
 
 ### Clonagem  
@@ -38,7 +49,7 @@ git clone https://github.com/MatheusLimaCarneiro/Libris-Back.git
 cd Libris-Back
 ````
 
-### Configuração
+## Configuração
 
 1. Configure as variáveis de ambiente no ```application.properties```:
 - Banco de dados
@@ -80,7 +91,14 @@ Siga os passos abaixo para contribuir:
 
 7. Abra um **Pull Request**
 
-## Autores e Reconhecimento
+## Contribuidores
 
-- **Matheus Lima**  
-  - **GitHub:** [MatheusLimaCarneiro](https://github.com/MatheusLimaCarneiro)  
+[![Luan](https://img.shields.io/badge/Luan-009c9d?logo=github&logoColor=f4f4f4&style=flat)](https://github.com/luan-42)
+[![Tainara](https://img.shields.io/badge/Tainara-f4f4f4?logo=github&logoColor=009c9d&style=flat)](https://github.com/tain4ra)
+[![Matheus Lima](https://img.shields.io/badge/Matheus_Lima-009c9d?logo=github&logoColor=f4f4f4&style=flat)](https://github.com/MatheusLimaCarneiro)
+[![Felipe_Roufman](https://img.shields.io/badge/Felipe_Roufman-f4f4f4?logo=github&logoColor=009c9d&style=flat)](https://github.com/FelipeRoufman)
+[![Arthur Gausmann](https://img.shields.io/badge/Arthur_Gausmann-009c9d?logo=github&logoColor=f4f4f4&style=flat)](https://github.com/ArthurGausmann)
+[![Jeffson Garreto](https://img.shields.io/badge/Jeffson_Garreto-f4f4f4?logo=github&logoColor=009c9d&style=flat)](https://github.com/garreto9)
+[![João Fontes](https://img.shields.io/badge/João_Fontes-009c9d?logo=github&logoColor=f4f4f4&style=flat)](https://github.com/JoaoFontes-debug)
+[![Milene Almeida](https://img.shields.io/badge/Milene_Almeida-f4f4f4?logo=github&logoColor=009c9d&style=flat)](https://github.com/Almile)
+
