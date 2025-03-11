@@ -152,6 +152,30 @@ public class FavoritoController {
         return new ServiceResponse<>(favoritos, mensagem, !favoritos.isEmpty(), getFormattedTimestamp());
     }
 
+    @Operation(
+            summary = "Buscar Favorito por ID",
+            description = "Retorna um favorito específico pelo seu ID.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Favorito encontrado",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ServiceResponse.class)
+                            )
+                    ),
+                    @ApiResponse(responseCode = "404", description = "Favorito não encontrado")
+            }
+    )
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ServiceResponse<FavoritoResponseDTO> buscarFavoritoPorId(
+            @Parameter(description = "ID do favorito", example = "1") @PathVariable Integer id) {
+
+        FavoritoResponseDTO favoritoDTO = favoritoService.getFavoritoById(id);
+        return new ServiceResponse<>(favoritoDTO, "Favorito encontrado", true, getFormattedTimestamp());
+    }
+
     private String getFormattedTimestamp() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return LocalDateTime.now().format(formatter);

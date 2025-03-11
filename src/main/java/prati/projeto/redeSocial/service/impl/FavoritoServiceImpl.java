@@ -52,7 +52,6 @@ public class FavoritoServiceImpl implements FavoritoService{
 
         Favoritos favorito = criarFavorito(perfil, livro, dto.getGoogleId());
         favoritoRepository.save(favorito);
-        //Rastreia atividade
         atividadePerfilService.registrarAtividade(favorito.getPerfil());
 
         return converterParaDTO(favorito);
