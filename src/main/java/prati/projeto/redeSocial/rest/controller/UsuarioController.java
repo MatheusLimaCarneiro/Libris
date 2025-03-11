@@ -161,9 +161,8 @@ public class UsuarioController {
     )
     @PutMapping("/change-password")
     @ResponseStatus(HttpStatus.OK)
-    public ServiceResponse<String> changePassword(@RequestBody ChangePasswordDTO changePasswordDTO,
+    public ServiceResponse<String> changePassword(@RequestBody @Valid ChangePasswordDTO changePasswordDTO,
                                                   Authentication authentication) {
-        // Obter o email do usuário autenticado a partir do objeto Authentication
         String email = authentication.getName();
         usuarioService.changePassword(email,
                 changePasswordDTO.getOldPassword(),

@@ -1,5 +1,6 @@
 package prati.projeto.redeSocial.service.impl;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import prati.projeto.redeSocial.config.PasswordConfig;
@@ -34,6 +35,7 @@ public class UsuarioServiceImpl implements UsuarioService{
     }
 
     @Override
+    @Transactional
     public Usuario saveUsuario(Usuario usuario) {
         if (usuarioRepository.existsByEmail(usuario.getEmail())) {
             throw new RegraNegocioException("Email já cadastrado");
@@ -45,6 +47,7 @@ public class UsuarioServiceImpl implements UsuarioService{
     }
 
     @Override
+    @Transactional
     public void deleteUsuario(String email) {
         usuarioRepository.findById(email)
                 .ifPresentOrElse(
@@ -54,6 +57,7 @@ public class UsuarioServiceImpl implements UsuarioService{
     }
 
     @Override
+    @Transactional
     public void updateUsuario(String email, Usuario usuario) {
         Usuario usuarioExistente = usuarioRepository.findById(email)
                 .orElseThrow(() -> new RegraNegocioException("Usuário não encontrado"));
@@ -69,6 +73,7 @@ public class UsuarioServiceImpl implements UsuarioService{
     }
 
     @Override
+    @Transactional
     public void requestPasswordReset(String email) {
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new RegraNegocioException("Usuário não encontrado"));
@@ -84,6 +89,7 @@ public class UsuarioServiceImpl implements UsuarioService{
     }
 
     @Override
+    @Transactional
     public void resetPassword(String token, String newPassword) {
         if (!jwtService.tokenValido(token)) {
             throw new TokenInvalidException("Token inválido ou expirado");
@@ -101,20 +107,18 @@ public class UsuarioServiceImpl implements UsuarioService{
     }
 
     @Override
+    @Transactional
     public void changePassword(String email, String oldPassword, String newPassword) {
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new RegraNegocioException("Usuário não encontrado"));
 
-        // Verificar se a senha atual está correta
         if (!passwordConfig.passwordEncoder().matches(oldPassword, usuario.getSenha())) {
             throw new RegraNegocioException("Senha atual incorreta");
         }
 
-        // Criptografar a nova senha
         String senhaCriptografada = passwordConfig.passwordEncoder().encode(newPassword);
         usuario.setSenha(senhaCriptografada);
 
-        // Salvar a nova senha
         usuarioRepository.save(usuario);
     }
 }
